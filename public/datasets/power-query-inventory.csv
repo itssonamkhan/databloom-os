@@ -1,0 +1,6 @@
+SKU,Item,Category,Warehouse,OnHand,Reserved,ReorderLevel,UnitCost,LastCounted
+sku-101,Wireless Mouse,Accessories,WH-NORTH,18,4,25,850,2026-06-28
+SKU 102,Keyboard,Accessories,North,42,8,20,1450,28/06/2026
+SKU-103,USB-C Hub,Accessories,WH-WEST,error,2,15,2200,
+SKU-104,27-inch Monitor,Displays,WH-SOUTH,11,3,10,"₹18,500",2026/06/27
+sku-101,Wireless Mouse,Accessories,WH-NORTH,18,4,25,850,2026-06-28

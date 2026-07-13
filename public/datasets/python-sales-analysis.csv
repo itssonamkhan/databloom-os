@@ -1,0 +1,9 @@
+OrderID,CustomerName,Region,Product,Category,Quantity,Sales,Cost,OrderDate
+PY-1001,Aisha Khan,North,Analytics Pro,Software,2,2500,1500,2026-01-05
+PY-1002,Rohan Mehta,West,Data Starter,Course,3,675,240,2026-01-12
+PY-1003,Meera Iyer,South,Dashboard Setup,Service,1,980,520,2026-02-03
+PY-1004,Arjun Das,East,Team Insights,Software,4,1440,760,2026-02-18
+PY-1005,Sana Ali,North,Excel Course,Course,5,750,300,2026-03-08
+PY-1006,Vikram Rao,West,Reporting Plus,Software,2,1100,640,2026-03-21
+PY-1007,Diya Shah,South,Dashboard Setup,Service,2,1960,1040,2026-04-02
+PY-1008,Kabir Sen,East,Data Starter,Course,4,900,320,2026-04-17

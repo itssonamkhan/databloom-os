@@ -1,0 +1,7 @@
+OrderID,LineID,OrderDate,Customer,Region,Product,Revenue,Cost,Discount,Quantity
+SO-1001,1,05/01/2026,Aarav Stores," north ",Analytics Pro,"₹12,500",7800,,2
+SO-1002,1,2026-01-07,Bloom Retail,WEST,Data Starter,8400,,0.10,one
+SO-1002,1,2026-01-07,Bloom Retail,WEST,Data Starter,8400,5100,10%,1
+SO-1003,1,13-01-2026,Cedar Goods,South,Dashboard Setup,invalid,6200,0,1
+SO-1004,1,2026/01/18,Dawn Market,east,Training,4250,1700,NULL,3
+SO-1005,1,,Elm Traders,NORTH,Support Plan,6600,3900,0.05,2

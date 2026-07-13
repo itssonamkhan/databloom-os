@@ -1,0 +1,7 @@
+TransactionID,TransactionDate,Account,Description,Amount,Currency,CostCenter,Approved
+TX-5001,2026-06-01,4000-sales,Invoice A-101,125000.00,INR,SALES,Yes
+TX-5002,02/06/2026,5100 | Travel,Client visit,(8500),INR,Consulting,Y
+TX-5002,02/06/2026,5100 | Travel,Client visit,-8500,INR,Consulting,Y
+TX-5003,2026/06/04,6100-rent,June office rent,"₹75,000",INR,ADMIN,TRUE
+TX-5004,invalid,4200 Services,Support renewal,54000,INR,SUCCESS,
+TX-5005,2026-06-18,9999,Suspense item,,INR,,No

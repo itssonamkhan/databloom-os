@@ -1,0 +1,5 @@
+Order ID,Customer ID,Customer,Region,Returned,Sales
+TB-2001,CU-101,Aarav Stores,North,No,1850
+TB-2002,CU-102,Bloom Retail,West,Yes,720
+TB-2003,CU-101,Aarav Stores,North,No,940
+TB-2004,CU-103,Cedar Goods,South,No,1320

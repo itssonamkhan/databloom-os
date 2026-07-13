@@ -1,0 +1,13 @@
+Employee ID,Department,Role,Location,Hire Date,Annual Salary,Performance Rating,Engagement Score,Status
+E1001,Sales,Account Executive,Delhi,2021-04-12,920000,4,86,Active
+E1002,Engineering,Data Engineer,Bengaluru,2020-08-24,1350000,5,91,Active
+E1003,Marketing,Content Strategist,Mumbai,2022-01-17,780000,3,74,Active
+E1004,Operations,Operations Analyst,Pune,2019-11-04,840000,4,82,Active
+E1005,Sales,Sales Analyst,Delhi,2023-06-19,720000,3,68,Exited
+E1006,Engineering,Frontend Engineer,Bengaluru,2022-09-05,1180000,4,88,Active
+E1007,People,HR Business Partner,Mumbai,2020-02-10,1050000,5,94,Active
+E1008,Finance,Financial Analyst,Pune,2021-12-13,890000,4,79,Active
+E1009,Marketing,Growth Manager,Delhi,2018-07-23,1260000,3,71,Exited
+E1010,Operations,Customer Success Lead,Bengaluru,2023-03-27,960000,4,84,Active
+E1011,Finance,Finance Manager,Mumbai,2017-10-09,1480000,5,90,Active
+E1012,People,Talent Specialist,Pune,2024-01-15,680000,3,76,Active

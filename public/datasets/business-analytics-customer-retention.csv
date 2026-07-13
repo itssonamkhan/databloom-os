@@ -1,0 +1,7 @@
+CustomerID,Cohort,AcquisitionChannel,Plan,MonthlyRevenue,MonthsActive,LastLoginDays,SupportTickets,Churned
+CU-1001,2026-01,Organic,Pro,4999,6,2,1,No
+CU-1002,2026-01,Paid Search,Starter,1499,2,47,6,Yes
+CU-1003,2026-02,Partner,Pro,4999,5,4,2,No
+CU-1004,2026-02,Social,Starter,1499,3,31,5,Yes
+CU-1005,2026-03,Organic,Enterprise,14999,4,1,0,No
+CU-1006,2026-03,Paid Search,Pro,4999,2,18,4,No

@@ -1,0 +1,13 @@
+Order Date,Region,Salesperson,Product,Units Sold,Unit Price,Revenue
+2026-01-05,North,Aisha Khan,Analytics Pro,8,125,1000
+2026-01-12,West,Rohan Mehta,Data Starter,15,75,1125
+2026-02-03,South,Meera Iyer,Analytics Pro,11,125,1375
+2026-02-18,East,Arjun Das,Team Insights,6,180,1080
+2026-03-08,North,Aisha Khan,Team Insights,9,180,1620
+2026-03-21,West,Rohan Mehta,Data Starter,20,75,1500
+2026-04-02,South,Meera Iyer,Reporting Plus,10,95,950
+2026-04-14,East,Arjun Das,Analytics Pro,7,125,875
+2026-05-06,North,Aisha Khan,Data Starter,14,75,1050
+2026-05-19,West,Rohan Mehta,Team Insights,8,180,1440
+2026-06-04,South,Meera Iyer,Analytics Pro,12,125,1500
+2026-06-23,East,Arjun Das,Data Starter,18,75,1350

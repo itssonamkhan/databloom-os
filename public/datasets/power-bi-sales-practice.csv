@@ -1,0 +1,9 @@
+OrderID,OrderDate,Customer,Region,Product,Category,Quantity,Revenue,Cost,Profit
+PB-1001,2026-01-05,Aisha Khan,North,Analytics Pro,Software,2,2500,1500,1000
+PB-1002,2026-01-12,Rohan Mehta,West,Data Starter,Course,3,675,240,435
+PB-1003,2026-02-03,Meera Iyer,South,Dashboard Setup,Service,1,980,520,460
+PB-1004,2026-02-18,Arjun Das,East,Team Insights,Software,4,2880,1760,1120
+PB-1005,2026-03-08,Sana Ali,North,Excel Course,Course,5,750,300,450
+PB-1006,2026-03-19,Kabir Shah,West,Dashboard Setup,Service,2,1960,1040,920
+PB-1007,2026-04-02,Nisha Rao,South,Analytics Pro,Software,1,1250,750,500
+PB-1008,2026-04-17,Vikram Singh,East,Data Starter,Course,4,900,320,580

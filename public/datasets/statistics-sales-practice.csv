@@ -1,0 +1,11 @@
+OrderID,Region,Category,Quantity,Sales,Cost,Profit,DeliveryDays,Satisfaction,OrderDate
+ST-1001,North,Software,2,2500,1500,1000,2,5,2026-01-05
+ST-1002,West,Course,3,675,240,435,5,4,2026-01-12
+ST-1003,South,Service,1,980,520,460,4,4,2026-02-03
+ST-1004,East,Software,4,1440,760,680,3,5,2026-02-18
+ST-1005,North,Course,5,750,300,450,6,3,2026-03-08
+ST-1006,West,Software,2,1100,640,460,2,4,2026-03-21
+ST-1007,South,Service,2,1960,1040,920,7,5,2026-04-02
+ST-1008,East,Course,4,900,320,580,4,4,2026-04-17
+ST-1009,North,Service,1,1250,700,550,3,5,2026-05-06
+ST-1010,West,Course,6,1080,420,660,5,3,2026-05-22

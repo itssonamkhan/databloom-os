@@ -1,0 +1,4 @@
+OrderID,OrderDate,Region,Product,Quantity,Revenue,SalesChannel
+M-3001,2026-03-08,South,Analytics Pro,2,15200,Partner
+M-3002,2026-03-14,North,Dashboard Setup,1,9800,Direct
+M-3003,2026-03-27,West,Data Starter,5,13750,Online

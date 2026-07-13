@@ -1,0 +1,7 @@
+EmployeeID,Department,Role,TenureYears,MonthlySalary,EngagementScore,Overtime,MonthsSincePromotion,TrainingHours,Attrition
+E-1001,Sales,Account Executive,1.4,68000,2,Frequent,14,8,Yes
+E-1002,Finance,Financial Analyst,6.8,92000,4,Rare,10,24,No
+E-1003,Operations,Process Lead,3.1,78000,3,Sometimes,28,16,No
+E-1004,Technology,Data Engineer,2.2,118000,2,Frequent,21,10,Yes
+E-1005,HR,Talent Partner,4.7,84000,4,Rare,7,30,No
+E-1006,Sales,Sales Development Rep,0.9,52000,1,Frequent,11,4,Yes

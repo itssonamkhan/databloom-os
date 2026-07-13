@@ -1,0 +1,9 @@
+OrderID,CustomerName,Region,Product,Category,Quantity,Sales,OrderDate
+SO-1001,Aisha Khan,North,Analytics Pro,Software,2,1250,2026-01-05
+SO-1002,Rohan Mehta,West,Data Starter,Course,3,675,2026-01-12
+SO-1003,Meera Iyer,South,Dashboard Setup,Service,1,980,2026-02-03
+SO-1004,Arjun Das,East,Team Insights,Software,4,1440,2026-02-18
+SO-1005,Sana Ali,North,Excel Course,Course,5,750,2026-03-08
+SO-1006,Vikram Rao,West,Reporting Plus,Software,2,1100,2026-03-21
+SO-1007,Diya Shah,South,Dashboard Setup,Service,2,1960,2026-04-02
+SO-1008,Kabir Sen,East,Data Starter,Course,4,900,2026-04-17

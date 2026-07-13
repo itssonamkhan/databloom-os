@@ -1,0 +1,7 @@
+Month,Department,Account,Budget,Forecast,Actual,Owner,Driver
+2026-06,Sales,Revenue,5200000,5050000,4920000,VP Sales,Lower enterprise close rate
+2026-06,Marketing,Campaign Cost,680000,720000,765000,CMO,Added video inventory
+2026-06,Operations,Freight,410000,445000,438000,COO,Fuel surcharge
+2026-06,Technology,Cloud Cost,560000,590000,642000,CTO,Unplanned compute usage
+2026-06,HR,Recruiting Cost,240000,210000,198000,CHRO,Fewer agency hires
+2026-06,Customer Success,Renewal Revenue,1850000,1790000,1715000,VP CS,Delayed renewals

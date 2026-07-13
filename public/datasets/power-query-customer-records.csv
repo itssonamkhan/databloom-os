@@ -1,0 +1,6 @@
+CustomerID,CustomerName,Email,Phone,City,State,Status,UpdatedAt
+C-001," aarav stores ",SALES@AARAV.IN,+91 98765 41001,delhi,Delhi,Active,2026-06-01
+C001,Aarav Stores,sales@aarav.in,9876541001,Delhi,DL,active,2026-06-18
+C-002,Bloom Retail,,+91-99887-22002,Mumbai,Maharashtra,Inactive,18/06/2026
+C-003,"Cedar  Goods",orders@cedargoods.in,080 4123 8700,Bengaluru,Karnataka,ACTIVE,2026-06-20
+C-004,Dawn Market,hello@dawnmarket,044-2876-1100,Chennai,Tamil Nadu,Active,

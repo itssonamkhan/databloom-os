@@ -1,0 +1,7 @@
+SKU,Category,Warehouse,OnHand,MonthlyDemand,ReorderLevel,LeadDays,StockoutDays,UnitCost,GrossMarginPct
+SKU-101,Accessories,North,18,42,25,12,5,850,38
+SKU-102,Displays,West,126,20,18,35,0,18500,24
+SKU-103,Networking,South,8,36,22,21,9,4200,31
+SKU-104,Accessories,North,240,55,40,8,0,450,42
+SKU-105,Computing,West,14,18,20,28,4,46500,19
+SKU-106,Displays,South,75,72,55,16,2,12900,27
