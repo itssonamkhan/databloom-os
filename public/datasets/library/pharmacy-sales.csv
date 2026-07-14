@@ -1,0 +1,9 @@
+OrderID,OrderDate,Customer,Region,Category,Revenue,Cost,Status
+PH-2101,2026-05-01,Walk-in-114,North,Prescription,2850,2140,Completed
+PH-2102,2026-05-01,Member-282,West,Wellness,1640,910,Completed
+PH-2103,2026-05-02,Member-391,South,Diabetes Care,4280,3180,Delayed
+PH-2104,2026-05-02,Walk-in-477,East,Personal Care,920,480,Completed
+PH-2105,2026-05-03,Member-538,North,Prescription,6120,4870,Completed
+PH-2106,2026-05-03,Walk-in-649,West,Wellness,2180,1260,Returned
+PH-2107,2026-05-04,Member-716,South,Baby Care,3470,2310,Completed
+PH-2108,2026-05-04,Member-884,East,Diabetes Care,5350,4020,Completed

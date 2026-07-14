@@ -1,0 +1,9 @@
+RecordID,Date,Customer,Product,Amount,Rate,RiskBand,Status
+LN-6001,2026-01-05,Customer-118,Home Loan,4500000,8.4,Low,Approved
+LN-6002,2026-01-08,Customer-224,Personal Loan,480000,13.9,Medium,Approved
+LN-6003,2026-01-10,Customer-392,Business Loan,2200000,15.2,High,Review
+LN-6004,2026-01-14,Customer-405,Auto Loan,920000,9.8,Low,Approved
+LN-6005,2026-01-18,Customer-517,Personal Loan,650000,17.4,High,Declined
+LN-6006,2026-01-22,Customer-633,Home Loan,6800000,8.1,Low,Approved
+LN-6007,2026-01-25,Customer-741,Education Loan,1200000,10.6,Medium,Review
+LN-6008,2026-01-29,Customer-886,Business Loan,3400000,14.7,Medium,Approved

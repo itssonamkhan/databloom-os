@@ -10,6 +10,7 @@ import { pythonLessons } from "@/lib/pythonLessons";
 import { statisticsLessons } from "@/lib/statisticsLessons";
 import { powerQueryLessons } from "@/lib/powerQueryLessons";
 import { businessAnalyticsLessons } from "@/lib/businessAnalyticsLessons";
+import { datasetLibrary } from "@/lib/datasetLibrary";
 
 export default function PracticePage() {
   return (
@@ -46,7 +47,7 @@ export default function PracticePage() {
             </div>
             <p className="flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-slate-700 shadow-sm">
               <Sparkles aria-hidden="true" size={17} className="text-purple-700" />
-              9 learning paths · 9 dashboard tasks + SQL + Power BI + Power Query + Business Analytics + Python + Statistics
+              10 learning paths · 42 datasets + dashboard tasks + Studio practice
             </p>
           </div>
 
@@ -247,6 +248,40 @@ export default function PracticePage() {
               </div>
               <span className="mt-6 inline-flex items-center gap-2 font-black text-rose-800">
                 Open Statistics Studio
+                <ArrowRight
+                  aria-hidden="true"
+                  size={19}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </span>
+            </Link>
+
+            <Link
+              href="/dataset-library"
+              className="group flex min-h-72 flex-col rounded-3xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 via-white to-sky-50 p-7 shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-700"
+            >
+              <Database
+                aria-hidden="true"
+                className="text-violet-800 transition group-hover:scale-110"
+                size={42}
+              />
+              <h3 className="mt-5 text-2xl font-black text-slate-950">
+                Dataset Library
+              </h3>
+              <p className="mt-3 flex-1 font-medium leading-6 text-slate-700">
+                Preview, filter, sort, and download realistic CSV datasets for
+                every major DataBloom learning path.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold">
+                <span className="rounded-full bg-white/90 px-3 py-1.5 text-slate-800 shadow-sm">
+                  {datasetLibrary.length} datasets
+                </span>
+                <span className="rounded-full bg-violet-100 px-3 py-1.5 text-violet-950 shadow-sm">
+                  Downloadable CSV
+                </span>
+              </div>
+              <span className="mt-6 inline-flex items-center gap-2 font-black text-violet-800">
+                Open Dataset Library
                 <ArrowRight
                   aria-hidden="true"
                   size={19}

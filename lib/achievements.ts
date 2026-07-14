@@ -80,6 +80,48 @@ export const achievements: Achievement[] = [
     description: "Complete 10 Statistics Studio lessons.",
     reward: 75,
   },
+  {
+    id: "practice_starter",
+    title: "🧪 Practice Seedling",
+    description: "Complete your first Practice Lab session.",
+    reward: 25,
+  },
+  {
+    id: "practice_perfect",
+    title: "🎯 Perfect Practice",
+    description: "Complete a Practice Lab session with 100% first-try accuracy.",
+    reward: 50,
+  },
+  {
+    id: "practice_explorer",
+    title: "🌈 Skill Explorer",
+    description: "Solve Practice Lab challenges across four skill categories.",
+    reward: 75,
+  },
+  {
+    id: "interview_starter",
+    title: "🎤 Interview Starter",
+    description: "Learn your first Interview Hub question.",
+    reward: 25,
+  },
+  {
+    id: "mock_interviewer",
+    title: "⏱️ Mock Interviewer",
+    description: "Complete your first mock interview.",
+    reward: 50,
+  },
+  {
+    id: "interview_ready",
+    title: "💬 Interview Ready",
+    description: "Learn 50 Interview Hub questions.",
+    reward: 100,
+  },
+  {
+    id: "portfolio_ready",
+    title: "📄 Application Ready",
+    description: "Complete every resume and portfolio review check.",
+    reward: 75,
+  },
 ];
 
 export function getAchievement(id: string) {

@@ -18,6 +18,16 @@ import {
   type DailyStats,
 } from "@/lib/stats";
 import {
+  getPracticeSummary,
+  loadPracticeLabState,
+  PRACTICE_LAB_EVENT,
+} from "@/lib/practiceLab";
+import {
+  getInterviewSummary,
+  INTERVIEW_HUB_EVENT,
+  loadInterviewHubState,
+} from "@/lib/interviewHub";
+import {
   loadStreak,
   type StreakData,
 } from "@/lib/streak";
@@ -44,12 +54,21 @@ export default function ProfilePage() {
   const [favoriteFormulas, setFavoriteFormulas] =
     useState<Formula[]>([]);
 
+  const [practiceSummary, setPracticeSummary] = useState(() =>
+    getPracticeSummary(loadPracticeLabState()),
+  );
+  const [interviewSummary, setInterviewSummary] = useState(() =>
+    getInterviewSummary(loadInterviewHubState()),
+  );
+
   useEffect(() => {
     function loadProfileData() {
       setStreak(loadStreak());
       setMochi(loadMochiData());
       setStats(loadTodayStats());
       setBadges(loadUnlockedAchievements());
+      setPracticeSummary(getPracticeSummary(loadPracticeLabState()));
+      setInterviewSummary(getInterviewSummary(loadInterviewHubState()));
 
       const favoriteIds = getFavorites();
 
@@ -75,6 +94,14 @@ export default function ProfilePage() {
       "storage",
       loadProfileData
     );
+    window.addEventListener(
+      PRACTICE_LAB_EVENT,
+      loadProfileData
+    );
+    window.addEventListener(
+      INTERVIEW_HUB_EVENT,
+      loadProfileData
+    );
 
     return () => {
       window.removeEventListener(
@@ -84,6 +111,14 @@ export default function ProfilePage() {
 
       window.removeEventListener(
         "storage",
+        loadProfileData
+      );
+      window.removeEventListener(
+        PRACTICE_LAB_EVENT,
+        loadProfileData
+      );
+      window.removeEventListener(
+        INTERVIEW_HUB_EVENT,
         loadProfileData
       );
     };
@@ -213,7 +248,7 @@ export default function ProfilePage() {
             description="A quick look at your learning journey so far."
           />
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-7">
             <ProfileCard
               emoji="🌱"
               label="Current level"
@@ -251,6 +286,20 @@ export default function ProfilePage() {
               label="Achievements"
               value={`${badges.length} Unlocked`}
               background="from-purple-50 to-blue-50"
+            />
+
+            <ProfileCard
+              emoji="🧪"
+              label="Practice progress"
+              value={`${practiceSummary.averageAccuracy}% · ${practiceSummary.sessions} sessions`}
+              background="from-fuchsia-50 to-sky-50"
+            />
+
+            <ProfileCard
+              emoji="🎤"
+              label="Interview readiness"
+              value={`${interviewSummary.learned} learned · ${interviewSummary.sessions} mocks`}
+              background="from-violet-50 to-pink-50"
             />
           </div>
         </section>

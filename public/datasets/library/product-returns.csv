@@ -1,0 +1,9 @@
+OrderID,OrderDate,Customer,Region,Category,Revenue,Cost,Status
+PR-2301,2026-04-01,Customer-125,North,Footwear,6400,3900,Returned
+PR-2302,2026-04-02,Customer-246,West,Electronics,28900,23100,Delivered
+PR-2303,2026-04-03,Customer-338,South,Fashion,4800,2450,Returned
+PR-2304,2026-04-04,Customer-459,East,Home,9200,5800,Delivered
+PR-2305,2026-04-05,Customer-571,North,Beauty,3100,1720,Refunded
+PR-2306,2026-04-06,Customer-683,West,Footwear,7600,4520,Delivered
+PR-2307,2026-04-07,Customer-794,South,Electronics,44500,36700,Returned
+PR-2308,2026-04-08,Customer-865,East,Fashion,5600,2880,Delivered

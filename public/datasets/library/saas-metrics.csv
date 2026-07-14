@@ -1,0 +1,9 @@
+CustomerID,Segment,Region,TenureMonths,MonthlyValue,EngagementScore,SupportCases,Outcome
+SAAS-1701,Enterprise,India,38,280000,92,2,Expanded
+SAAS-1702,SMB,APAC,7,24000,44,5,At Risk
+SAAS-1703,Mid-Market,Europe,21,86000,78,1,Renewed
+SAAS-1704,SMB,North America,4,18000,29,8,Churned
+SAAS-1705,Enterprise,Europe,46,340000,88,4,Renewed
+SAAS-1706,Mid-Market,India,16,74000,63,3,At Risk
+SAAS-1707,SMB,APAC,12,32000,71,2,Renewed
+SAAS-1708,Enterprise,North America,31,410000,81,6,Expanded

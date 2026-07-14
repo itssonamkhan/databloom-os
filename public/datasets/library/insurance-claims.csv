@@ -1,0 +1,9 @@
+RecordID,Date,Customer,Product,Amount,Rate,RiskBand,Status
+CL-1401,2026-02-01,Policy-118,Motor,185000,3.2,Medium,Settled
+CL-1402,2026-02-03,Policy-227,Health,420000,4.8,High,Review
+CL-1403,2026-02-05,Policy-349,Home,95000,2.1,Low,Settled
+CL-1404,2026-02-08,Policy-451,Travel,62000,5.4,Medium,Rejected
+CL-1405,2026-02-11,Policy-566,Motor,780000,6.2,High,Investigation
+CL-1406,2026-02-14,Policy-672,Health,128000,2.9,Low,Settled
+CL-1407,2026-02-18,Policy-785,Home,310000,4.1,Medium,Review
+CL-1408,2026-02-22,Policy-893,Travel,44000,1.8,Low,Settled

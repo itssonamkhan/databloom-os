@@ -1,0 +1,9 @@
+EmployeeID,Department,Role,TenureYears,MonthlySalary,PerformanceScore,EngagementScore,Outcome
+EE-2001,Sales,Account Manager,3.2,82000,4,78,Engaged
+EE-2002,Finance,Analyst,1.7,68000,3,54,Neutral
+EE-2003,Technology,Engineer,4.5,126000,5,88,Engaged
+EE-2004,Operations,Coordinator,2.1,59000,4,42,Needs Follow-up
+EE-2005,Marketing,Designer,5.8,91000,4,81,Engaged
+EE-2006,HR,Recruiter,0.8,56000,3,49,Needs Follow-up
+EE-2007,Customer Success,Manager,6.4,105000,5,73,Engaged
+EE-2008,Operations,Planner,3.9,76000,4,62,Neutral

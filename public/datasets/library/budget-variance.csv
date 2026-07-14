@@ -1,0 +1,9 @@
+RecordID,Date,Customer,Product,Amount,Rate,RiskBand,Status
+BV-3201,2026-06-01,Sales,Revenue,-280000,-5.4,High,Unfavorable
+BV-3202,2026-06-01,Marketing,Campaign Cost,85000,12.5,Medium,Unfavorable
+BV-3203,2026-06-01,Operations,Freight,28000,6.8,Medium,Unfavorable
+BV-3204,2026-06-01,Technology,Cloud Cost,82000,14.6,High,Unfavorable
+BV-3205,2026-06-01,HR,Recruiting Cost,-42000,-17.5,Low,Favorable
+BV-3206,2026-06-01,Customer Success,Renewal Revenue,-135000,-7.3,High,Unfavorable
+BV-3207,2026-06-01,Finance,Professional Fees,-18000,-4.2,Low,Favorable
+BV-3208,2026-06-01,Facilities,Utilities,12000,3.8,Low,Review

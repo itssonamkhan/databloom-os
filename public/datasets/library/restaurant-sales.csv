@@ -1,0 +1,9 @@
+OrderID,OrderDate,Customer,Region,Category,Revenue,Cost,Status
+RS-1301,2026-06-01,Table-12,Delhi,Main Course,4800,1920,Served
+RS-1302,2026-06-01,Delivery-44,Mumbai,Beverage,1250,380,Delivered
+RS-1303,2026-06-02,Table-07,Bengaluru,Dessert,1860,620,Served
+RS-1304,2026-06-02,Delivery-19,Chennai,Main Course,3290,1510,Refunded
+RS-1305,2026-06-03,Table-21,Delhi,Starter,2140,890,Served
+RS-1306,2026-06-03,Takeaway-08,Mumbai,Combo,2760,1210,Completed
+RS-1307,2026-06-04,Table-15,Bengaluru,Beverage,980,260,Served
+RS-1308,2026-06-04,Delivery-62,Chennai,Dessert,1540,510,Delivered

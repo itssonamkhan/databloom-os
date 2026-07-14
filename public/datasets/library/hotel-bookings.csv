@@ -1,0 +1,9 @@
+BookingID,Date,Origin,Destination,CustomerType,Revenue,DelayMinutes,Status
+HB-7001,2026-05-01,Delhi,Jaipur,Leisure,18500,0,Completed
+HB-7002,2026-05-02,Mumbai,Goa,Leisure,26400,15,Completed
+HB-7003,2026-05-03,Bengaluru,Hyderabad,Business,21900,0,Cancelled
+HB-7004,2026-05-04,Chennai,Kochi,Leisure,17800,25,Completed
+HB-7005,2026-05-05,Delhi,Mumbai,Business,32600,0,Completed
+HB-7006,2026-05-06,Kolkata,Darjeeling,Leisure,24100,10,No Show
+HB-7007,2026-05-07,Ahmedabad,Udaipur,Group,49800,0,Completed
+HB-7008,2026-05-08,Pune,Goa,Leisure,28700,35,Completed

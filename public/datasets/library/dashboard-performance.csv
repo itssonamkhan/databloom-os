@@ -1,0 +1,9 @@
+InteractionID,Date,Team,Channel,Topic,HandleMinutes,SatisfactionScore,Resolution
+BI-3301,2026-06-01,Sales Analytics,Portal,Slow Load,6.2,3,Optimized
+BI-3302,2026-06-01,Finance BI,Email,Metric Definition,18.4,2,Escalated
+BI-3303,2026-06-02,Operations BI,Chat,Refresh Failure,12.8,4,Resolved
+BI-3304,2026-06-02,Executive BI,Portal,Access Request,4.1,5,Resolved
+BI-3305,2026-06-03,Sales Analytics,Email,Filter Confusion,14.6,3,Training Sent
+BI-3306,2026-06-03,Finance BI,Chat,Slow Load,9.7,4,Optimized
+BI-3307,2026-06-04,Operations BI,Portal,Data Quality,22.3,2,Escalated
+BI-3308,2026-06-04,Executive BI,Email,New KPI,16.5,4,Backlog

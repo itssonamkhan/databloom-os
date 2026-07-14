@@ -1,0 +1,9 @@
+SKU,Product,Category,Location,OnHand,ReorderPoint,UnitCost,MonthlyDemand
+SKU-101,Canvas Tote,Accessories,Delhi,18,25,850,42
+SKU-102,Desk Display,Electronics,Mumbai,126,18,18500,20
+SKU-103,WiFi Router,Electronics,Bengaluru,8,22,4200,36
+SKU-104,Ceramic Mug,Home,240,40,450,55
+SKU-105,Office Laptop,Computing,Mumbai,14,20,46500,18
+SKU-106,Monitor Stand,Office,Hyderabad,75,55,1290,72
+SKU-107,Linen Shirt,Fashion,Delhi,33,28,1150,64
+SKU-108,Running Shoes,Fashion,Chennai,11,30,2450,58

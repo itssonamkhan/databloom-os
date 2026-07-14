@@ -18,6 +18,7 @@ const studioColors: Record<StudioProgress["id"], string> = {
   "power-bi": "#f59e0b",
   "power-query": "#0f766e",
   "business-analytics": "#4f46e5",
+  datasets: "#7c3aed",
   python: "#6366f1",
   statistics: "#ec4899",
   dashboards: "#8b5cf6",

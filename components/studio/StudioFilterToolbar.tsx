@@ -14,6 +14,7 @@ export type StudioFilterToolbarProps = {
   difficulties: readonly string[];
   resultCount: number;
   searchPlaceholder: string;
+  heading?: string;
   actions?: ReactNode;
 };
 
@@ -28,6 +29,7 @@ export default function StudioFilterToolbar({
   difficulties,
   resultCount,
   searchPlaceholder,
+  heading = "Find your next lesson",
   actions,
 }: StudioFilterToolbarProps) {
   const id = useId();
@@ -46,7 +48,7 @@ export default function StudioFilterToolbar({
             <Sparkles size={16} aria-hidden="true" />
           </span>
           <h3 className="text-base font-black text-slate-950 sm:text-lg">
-            Find your next lesson
+            {heading}
           </h3>
         </div>
         <span

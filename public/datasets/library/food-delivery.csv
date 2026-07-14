@@ -1,0 +1,9 @@
+BookingID,Date,Origin,Destination,CustomerType,Revenue,DelayMinutes,Status
+FD-8001,2026-06-01,Indiranagar,Koramangala,Subscriber,680,8,Delivered
+FD-8002,2026-06-01,Andheri,Bandra,Guest,940,24,Delivered
+FD-8003,2026-06-02,Gurugram,Saket,Subscriber,520,0,Delivered
+FD-8004,2026-06-02,Adyar,T Nagar,Guest,760,42,Cancelled
+FD-8005,2026-06-03,Salt Lake,Park Street,Subscriber,1180,16,Delivered
+FD-8006,2026-06-03,Banjara Hills,Hitech City,Guest,830,31,Delivered
+FD-8007,2026-06-04,Viman Nagar,Baner,Subscriber,610,5,Delivered
+FD-8008,2026-06-04,Navrangpura,Satellite,Guest,720,27,Refunded

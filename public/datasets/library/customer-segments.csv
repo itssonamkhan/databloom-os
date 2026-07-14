@@ -1,0 +1,9 @@
+CustomerID,Segment,Region,TenureMonths,MonthlyValue,EngagementScore,SupportCases,Outcome
+SEG-3401,Champions,North,36,12800,92,1,Retained
+SEG-3402,New Customers,West,2,2400,74,2,Onboarding
+SEG-3403,At Risk,South,18,8600,38,6,Intervention
+SEG-3404,Loyal,East,42,9800,85,1,Retained
+SEG-3405,High Potential,North,9,6200,78,3,Upsell
+SEG-3406,Hibernating,West,27,3400,24,4,Winback
+SEG-3407,Price Sensitive,South,14,2900,61,5,Retained
+SEG-3408,Champions,East,31,15400,95,0,Advocacy

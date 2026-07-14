@@ -1,0 +1,9 @@
+RecordID,Date,Site,Process,Units,Defects,CycleMinutes,Cost
+MQ-1201,2026-05-01,Pune Plant,Assembly A,1240,18,4.8,842000
+MQ-1202,2026-05-02,Pune Plant,Assembly B,980,31,6.2,715000
+MQ-1203,2026-05-03,Chennai Plant,Finishing,1420,12,3.9,926000
+MQ-1204,2026-05-04,Chennai Plant,Packing,1680,9,2.6,548000
+MQ-1205,2026-05-05,Ahmedabad Plant,Assembly A,1110,46,5.4,804000
+MQ-1206,2026-05-06,Ahmedabad Plant,Finishing,1360,22,4.1,887000
+MQ-1207,2026-05-07,Pune Plant,Packing,1740,14,2.9,576000
+MQ-1208,2026-05-08,Chennai Plant,Assembly B,1020,27,5.8,749000

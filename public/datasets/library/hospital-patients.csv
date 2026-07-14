@@ -1,0 +1,9 @@
+RecordID,Date,Facility,Department,PatientGroup,Service,Cost,Outcome
+HP-5001,2026-04-01,Central Hospital,Cardiology,Adult,Consultation,4200,Follow-up
+HP-5002,2026-04-01,North Clinic,Pediatrics,Child,Vaccination,1800,Completed
+HP-5003,2026-04-02,Central Hospital,Emergency,Senior,Emergency Visit,12600,Admitted
+HP-5004,2026-04-02,West Centre,Orthopedics,Adult,Imaging,5600,Completed
+HP-5005,2026-04-03,North Clinic,General Medicine,Adult,Consultation,2200,Completed
+HP-5006,2026-04-03,Central Hospital,Oncology,Senior,Infusion,18400,Follow-up
+HP-5007,2026-04-04,West Centre,Dermatology,Adult,Procedure,3900,Completed
+HP-5008,2026-04-04,Central Hospital,Emergency,Child,Emergency Visit,9800,Discharged

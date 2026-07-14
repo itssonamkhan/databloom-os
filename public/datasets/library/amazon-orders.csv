@@ -1,0 +1,9 @@
+OrderID,OrderDate,Customer,Region,Category,Revenue,Cost,Status
+AMZ-2001,2026-03-01,Prime-441,North,Electronics,45999,38200,Delivered
+AMZ-2002,2026-03-02,Prime-772,West,Home,8999,5700,Delivered
+AMZ-2003,2026-03-03,Guest-118,South,Books,2499,1320,Delayed
+AMZ-2004,2026-03-04,Prime-305,East,Fashion,6599,3600,Returned
+AMZ-2005,2026-03-05,Prime-924,North,Grocery,3180,2440,Delivered
+AMZ-2006,2026-03-06,Guest-527,West,Electronics,72500,60400,Delivered
+AMZ-2007,2026-03-07,Prime-166,South,Home,12990,8100,Cancelled
+AMZ-2008,2026-03-08,Prime-683,East,Books,4590,2210,Delivered

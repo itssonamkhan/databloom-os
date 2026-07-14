@@ -39,6 +39,11 @@ const studioPalette: Record<
     badge: "bg-indigo-100 text-indigo-800",
     border: "border-indigo-100",
   },
+  datasets: {
+    bar: "from-violet-600 to-sky-400",
+    badge: "bg-violet-100 text-violet-800",
+    border: "border-violet-100",
+  },
   python: {
     bar: "from-blue-500 to-yellow-400",
     badge: "bg-blue-100 text-blue-800",

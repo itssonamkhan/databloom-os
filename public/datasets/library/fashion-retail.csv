@@ -1,0 +1,9 @@
+SKU,Product,Category,Location,OnHand,ReorderPoint,UnitCost,MonthlyDemand
+FR-101,Linen Shirt,Menswear,Delhi,42,35,1150,68
+FR-102,Wide Leg Jeans,Womenswear,Mumbai,18,30,1680,74
+FR-103,Canvas Sneakers,Footwear,Bengaluru,11,28,1920,61
+FR-104,Silk Scarf,Accessories,Delhi,86,24,780,39
+FR-105,Summer Dress,Womenswear,Chennai,22,32,1450,82
+FR-106,Oxford Shirt,Menswear,Mumbai,64,38,1320,57
+FR-107,Leather Belt,Accessories,Hyderabad,105,30,620,44
+FR-108,Running Jacket,Sportswear,Bengaluru,15,25,2240,53

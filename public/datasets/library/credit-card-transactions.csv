@@ -1,0 +1,9 @@
+RecordID,Date,Customer,Product,Amount,Rate,RiskBand,Status
+TX-2701,2026-06-01,Card-118,Travel,84200,1.0,Low,Approved
+TX-2702,2026-06-01,Card-224,Electronics,126500,1.0,Medium,Review
+TX-2703,2026-06-02,Card-339,Grocery,8900,0.5,Low,Approved
+TX-2704,2026-06-02,Card-447,Jewellery,284000,1.5,High,Blocked
+TX-2705,2026-06-03,Card-552,Fuel,6200,0.5,Low,Approved
+TX-2706,2026-06-03,Card-668,Online Services,48500,1.0,Medium,Approved
+TX-2707,2026-06-04,Card-773,Travel,198000,1.5,High,Review
+TX-2708,2026-06-04,Card-889,Dining,14600,0.5,Low,Approved

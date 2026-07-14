@@ -1,0 +1,9 @@
+EmployeeID,Department,Role,TenureYears,MonthlySalary,PerformanceScore,EngagementScore,Outcome
+EMP-4001,Sales,Account Executive,1.4,68000,3,2,Exited
+EMP-4002,Finance,Financial Analyst,6.8,92000,4,4,Retained
+EMP-4003,Operations,Process Lead,3.1,78000,4,3,Retained
+EMP-4004,Technology,Data Engineer,2.2,118000,4,2,Exited
+EMP-4005,HR,Talent Partner,4.7,84000,5,4,Retained
+EMP-4006,Sales,Sales Development Rep,0.9,52000,3,1,Exited
+EMP-4007,Marketing,Growth Manager,5.2,99000,4,3,At Risk
+EMP-4008,Operations,Warehouse Associate,1.8,46000,3,4,Retained

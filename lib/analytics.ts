@@ -1,17 +1,22 @@
 import { achievements, type Achievement } from "@/lib/achievements";
 import { businessAnalyticsLessons } from "@/lib/businessAnalyticsLessons";
 import { loadBusinessAnalyticsProgress } from "@/lib/businessAnalyticsProgress";
+import { datasetLibrary } from "@/lib/datasetLibrary";
+import { loadDatasetLibraryProgress } from "@/lib/datasetLibraryProgress";
 import { daxLessons } from "@/lib/daxFormulas";
 import { loadDashboardPracticeState, practiceProjects } from "@/lib/dashboardPractice";
 import { getCompletedDashboards } from "@/lib/dashboardProgress";
 import { dashboardProjects } from "@/lib/dashboardProjects";
 import { formulas } from "@/lib/formulas";
 import { getLearnedFormulas } from "@/lib/learnedFormulas";
+import { getInterviewSummary, loadInterviewHubState } from "@/lib/interviewHub";
 import { levels } from "@/lib/levels";
 import { powerBILessons } from "@/lib/powerBILessons";
 import { loadPowerBIProgress } from "@/lib/powerBIProgress";
 import { powerQueryLessons } from "@/lib/powerQueryLessons";
 import { loadPowerQueryProgress } from "@/lib/powerQueryProgress";
+import { getPracticeSummary, loadPracticeLabState } from "@/lib/practiceLab";
+import { practiceQuestions } from "@/lib/practiceLabQuestions";
 import { pythonLessons } from "@/lib/pythonLessons";
 import { loadPythonProgress } from "@/lib/pythonProgress";
 import { sqlLessons } from "@/lib/sqlLessons";
@@ -38,6 +43,7 @@ export type StudioProgressId =
   | "power-bi"
   | "power-query"
   | "business-analytics"
+  | "datasets"
   | "python"
   | "statistics"
   | "dashboards";
@@ -76,6 +82,11 @@ export type AnalyticsLevel = {
 export type AnalyticsTotals = {
   completedLessons: number;
   completedPractice: number;
+  practiceSessions: number;
+  practiceAccuracy: number;
+  interviewQuestions: number;
+  interviewMockSessions: number;
+  interviewAverageScore: number;
   dashboardProjects: number;
   focusSessions: number;
 };
@@ -315,6 +326,7 @@ function getStudioProgress(): StudioProgress[] {
   const powerBI = loadPowerBIProgress();
   const powerQuery = loadPowerQueryProgress();
   const businessAnalytics = loadBusinessAnalyticsProgress();
+  const datasets = loadDatasetLibraryProgress();
   const python = loadPythonProgress();
   const statistics = loadStatisticsProgress();
 
@@ -385,6 +397,18 @@ function getStudioProgress(): StudioProgress[] {
       total: businessAnalyticsLessons.length,
     },
     {
+      id: "datasets",
+      name: "Dataset Library",
+      icon: "🗂️",
+      href: "/dataset-library",
+      color: "#7c3aed",
+      completed: countKnownIds(
+        datasets.completedLessonIds,
+        datasetLibrary.map((dataset) => dataset.id),
+      ),
+      total: datasetLibrary.length,
+    },
+    {
       id: "python",
       name: "Python Studio",
       icon: "🐍",
@@ -439,6 +463,7 @@ function getCompletedPracticeCount(): number {
   const dashboardTaskIds = practiceProjects.flatMap((project) =>
     project.tasks.map((task) => `${project.id}:${task.id}`),
   );
+  const practiceLab = loadPracticeLabState();
 
   return (
     countKnownIds(
@@ -465,7 +490,11 @@ function getCompletedPracticeCount(): number {
       statistics.completedPracticeIds,
       statisticsLessons.map((lesson) => lesson.id),
     ) +
-    countKnownIds(dashboards.completedTaskIds, dashboardTaskIds)
+    countKnownIds(dashboards.completedTaskIds, dashboardTaskIds) +
+    countKnownIds(
+      practiceLab.completedQuestionIds,
+      practiceQuestions.map((question) => question.id),
+    )
   );
 }
 
@@ -584,7 +613,7 @@ function getInsight(
     actionHref = weakestStudio.href;
   } else if (allStudiosComplete) {
     actionLabel = "Keep sharp in Practice Lab";
-    actionHref = "/practice";
+    actionHref = "/practice-lab";
   }
 
   const title = strongestStudio
@@ -636,6 +665,8 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
   const dashboardProjectsCompleted =
     studioProgress.find((studio) => studio.id === "dashboards")?.completed ?? 0;
   const completedPractice = getCompletedPracticeCount();
+  const practiceSummary = getPracticeSummary(loadPracticeLabState());
+  const interviewSummary = getInterviewSummary(loadInterviewHubState());
   const focusSessions = loadFocusSessions();
   const achievementAnalytics = getAchievementAnalytics();
   const weeklyActivity = loadWeeklyActivity(new Date(generatedAt));
@@ -662,6 +693,11 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
     totals: {
       completedLessons,
       completedPractice,
+      practiceSessions: practiceSummary.sessions,
+      practiceAccuracy: practiceSummary.averageAccuracy,
+      interviewQuestions: interviewSummary.learned,
+      interviewMockSessions: interviewSummary.sessions,
+      interviewAverageScore: interviewSummary.averageScore,
       dashboardProjects: dashboardProjectsCompleted,
       focusSessions,
     },

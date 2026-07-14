@@ -1,0 +1,9 @@
+BookingID,Date,Origin,Destination,CustomerType,Revenue,DelayMinutes,Status
+RD-2401,2026-06-01,Airport,City Centre,Business,840,6,Completed
+RD-2402,2026-06-01,Station,Tech Park,Subscriber,460,18,Completed
+RD-2403,2026-06-02,University,Market,Student,280,3,Completed
+RD-2404,2026-06-02,City Centre,Airport,Guest,920,27,Cancelled
+RD-2405,2026-06-03,Tech Park,Suburb,Business,620,11,Completed
+RD-2406,2026-06-03,Market,Station,Subscriber,350,22,Completed
+RD-2407,2026-06-04,Suburb,Hospital,Guest,510,7,Completed
+RD-2408,2026-06-04,Hospital,City Centre,Subscriber,430,34,Driver Cancelled

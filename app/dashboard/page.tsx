@@ -46,6 +46,22 @@ import {
   calculateBusinessAnalyticsProgress,
   loadBusinessAnalyticsProgress,
 } from "@/lib/businessAnalyticsProgress";
+import { datasetLibrary } from "@/lib/datasetLibrary";
+import {
+  calculateDatasetLibraryProgress,
+  DATASET_LIBRARY_PROGRESS_EVENT,
+  loadDatasetLibraryProgress,
+} from "@/lib/datasetLibraryProgress";
+import {
+  getPracticeSummary,
+  loadPracticeLabState,
+  PRACTICE_LAB_EVENT,
+} from "@/lib/practiceLab";
+import {
+  getInterviewSummary,
+  INTERVIEW_HUB_EVENT,
+  loadInterviewHubState,
+} from "@/lib/interviewHub";
 
 const categories = Array.from(
   new Set(dashboardProjects.map((project) => project.category)),
@@ -89,6 +105,15 @@ export default function DashboardPage() {
   });
   const [businessAnalyticsCompletedCount, setBusinessAnalyticsCompletedCount] =
     useState(() => loadBusinessAnalyticsProgress().completedLessonIds.length);
+  const [datasetCompletedCount, setDatasetCompletedCount] = useState(
+    () => loadDatasetLibraryProgress().completedLessonIds.length,
+  );
+  const [practiceSummary, setPracticeSummary] = useState(() =>
+    getPracticeSummary(loadPracticeLabState()),
+  );
+  const [interviewSummary, setInterviewSummary] = useState(() =>
+    getInterviewSummary(loadInterviewHubState()),
+  );
   const excelProgress =
     formulas.length === 0
       ? 0
@@ -115,6 +140,40 @@ export default function DashboardPage() {
     businessAnalyticsCompletedCount,
     businessAnalyticsLessons.length,
   );
+  const datasetProgress = calculateDatasetLibraryProgress(
+    datasetCompletedCount,
+    datasetLibrary.length,
+  );
+
+  useEffect(() => {
+    const syncInterviewProgress = () =>
+      setInterviewSummary(getInterviewSummary(loadInterviewHubState()));
+    window.addEventListener(INTERVIEW_HUB_EVENT, syncInterviewProgress);
+    return () =>
+      window.removeEventListener(INTERVIEW_HUB_EVENT, syncInterviewProgress);
+  }, []);
+
+  useEffect(() => {
+    const syncPracticeProgress = () =>
+      setPracticeSummary(getPracticeSummary(loadPracticeLabState()));
+    window.addEventListener(PRACTICE_LAB_EVENT, syncPracticeProgress);
+    return () =>
+      window.removeEventListener(PRACTICE_LAB_EVENT, syncPracticeProgress);
+  }, []);
+
+  useEffect(() => {
+    const syncDatasetProgress = () => {
+      setDatasetCompletedCount(
+        loadDatasetLibraryProgress().completedLessonIds.length,
+      );
+    };
+    window.addEventListener(DATASET_LIBRARY_PROGRESS_EVENT, syncDatasetProgress);
+    return () =>
+      window.removeEventListener(
+        DATASET_LIBRARY_PROGRESS_EVENT,
+        syncDatasetProgress,
+      );
+  }, []);
 
   useEffect(() => {
     const syncBusinessAnalytics = () => {
@@ -259,7 +318,7 @@ export default function DashboardPage() {
               Skill progress
             </h2>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5 2xl:grid-cols-10">
             <SkillProgress title="📗 Excel" progress={excelProgress} />
             <SkillProgress title="🗄 SQL" progress={sqlProgress} />
             <SkillProgress title="📈 Power BI" progress={powerBIProgress} />
@@ -270,10 +329,19 @@ export default function DashboardPage() {
               title="💼 Business Analytics"
               progress={businessAnalyticsProgress}
             />
+            <SkillProgress title="🗂 Datasets" progress={datasetProgress} />
+            <SkillProgress
+              title="🧪 Practice Lab"
+              progress={practiceSummary.progressPercentage}
+            />
+            <SkillProgress
+              title="🎤 Interview Hub"
+              progress={interviewSummary.progressPercentage}
+            />
           </div>
           <p className="mt-3 text-sm text-gray-700">
             Excel progress is based on {excelLearnedCount} of the {formulas.length}
-            {" "}Formula Studio lessons. SQL progress is based on {sqlCompletedCount} of the {sqlLessons.length} SQL Studio lessons. Power BI progress is based on {powerBICompletedCount} of {powerBITotal} Power BI and DAX lessons. Power Query progress is based on {powerQueryCompletedCount} of {powerQueryLessons.length} Power Query lessons. Python progress is based on {pythonCompletedCount} of {pythonLessons.length} Python Studio lessons. Statistics progress is based on {statisticsCompletedCount} of {statisticsLessons.length} Statistics Studio lessons. Business Analytics progress is based on {businessAnalyticsCompletedCount} of {businessAnalyticsLessons.length} Business Analytics lessons.
+            {" "}Formula Studio lessons. SQL progress is based on {sqlCompletedCount} of the {sqlLessons.length} SQL Studio lessons. Power BI progress is based on {powerBICompletedCount} of {powerBITotal} Power BI and DAX lessons. Power Query progress is based on {powerQueryCompletedCount} of {powerQueryLessons.length} Power Query lessons. Python progress is based on {pythonCompletedCount} of {pythonLessons.length} Python Studio lessons. Statistics progress is based on {statisticsCompletedCount} of {statisticsLessons.length} Statistics Studio lessons. Business Analytics progress is based on {businessAnalyticsCompletedCount} of {businessAnalyticsLessons.length} Business Analytics lessons. Dataset progress is based on {datasetCompletedCount} of {datasetLibrary.length} practice datasets. Practice Lab progress is {practiceSummary.completedQuestions} completed challenges across {practiceSummary.sessions} saved sessions. Interview Hub progress is {interviewSummary.learned} learned questions across {interviewSummary.sessions} mock interviews.
           </p>
         </section>
 
@@ -366,6 +434,9 @@ export default function DashboardPage() {
             <Link href="/power-bi-studio" onClick={playClickSound} className="rounded-xl bg-amber-700 px-5 py-3 font-bold text-white transition hover:bg-amber-800">📊 Power BI Studio</Link>
             <Link href="/power-query-studio" onClick={playClickSound} className="rounded-xl bg-teal-700 px-5 py-3 font-bold text-white transition hover:bg-teal-800">🧹 Power Query Studio</Link>
             <Link href="/business-analytics-studio" onClick={playClickSound} className="rounded-xl bg-indigo-700 px-5 py-3 font-bold text-white transition hover:bg-indigo-800">💼 Business Analytics Studio</Link>
+            <Link href="/dataset-library" onClick={playClickSound} className="rounded-xl bg-violet-700 px-5 py-3 font-bold text-white transition hover:bg-violet-800">🗂 Dataset Library</Link>
+            <Link href="/practice-lab" onClick={playClickSound} className="rounded-xl bg-fuchsia-700 px-5 py-3 font-bold text-white transition hover:bg-fuchsia-800">🧩 Continue Practice</Link>
+            <Link href="/interview-hub" onClick={playClickSound} className="rounded-xl bg-violet-700 px-5 py-3 font-bold text-white transition hover:bg-violet-800">🎤 Interview Hub</Link>
             <Link
               href="/python-studio"
               onClick={playClickSound}

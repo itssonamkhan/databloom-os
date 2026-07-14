@@ -1,0 +1,9 @@
+InteractionID,Date,Team,Channel,Topic,HandleMinutes,SatisfactionScore,Resolution
+CC-1501,2026-06-01,North Team,Phone,Billing,8.4,4,Resolved
+CC-1502,2026-06-01,West Team,Chat,Delivery,12.1,2,Escalated
+CC-1503,2026-06-02,South Team,Email,Returns,18.6,3,Resolved
+CC-1504,2026-06-02,East Team,Phone,Technical,22.4,1,Repeat Contact
+CC-1505,2026-06-03,North Team,Chat,Account,6.8,5,Resolved
+CC-1506,2026-06-03,West Team,Phone,Billing,10.3,4,Resolved
+CC-1507,2026-06-04,South Team,Email,Delivery,16.7,2,Escalated
+CC-1508,2026-06-04,East Team,Chat,Returns,7.5,5,Resolved

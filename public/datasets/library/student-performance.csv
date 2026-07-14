@@ -1,0 +1,9 @@
+StudentID,Course,Term,StudyHours,AttendancePct,AssessmentScore,FinalScore,Outcome
+ST-1601,Statistics,Spring,8.5,94,82,86,Distinction
+ST-1602,SQL,Spring,4.0,72,58,61,Pass
+ST-1603,Python,Spring,6.5,88,76,79,Pass
+ST-1604,Excel,Spring,2.5,61,42,48,Support
+ST-1605,Tableau,Spring,7.0,91,84,88,Distinction
+ST-1606,Power BI,Spring,5.5,83,69,73,Pass
+ST-1607,Business Analytics,Spring,3.5,68,55,59,Support
+ST-1608,Statistics,Spring,9.0,97,91,93,Distinction

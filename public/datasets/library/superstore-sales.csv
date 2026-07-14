@@ -1,0 +1,9 @@
+OrderID,OrderDate,Customer,Region,Category,Revenue,Cost,Status
+SS-1001,2026-01-04,Asha Retail,North,Furniture,84200,61100,Delivered
+SS-1002,2026-01-07,Bluebird Co,West,Technology,126500,83400,Delivered
+SS-1003,2026-01-12,Cedar Labs,South,Office Supplies,28900,17400,Returned
+SS-1004,2026-01-18,Delta Stores,East,Furniture,67400,49200,Delivered
+SS-1005,2026-02-02,Evergreen Ltd,North,Technology,159800,104600,Delayed
+SS-1006,2026-02-09,Falcon Mart,West,Office Supplies,43600,25100,Delivered
+SS-1007,2026-02-16,Grove Studio,South,Furniture,91200,66700,Delivered
+SS-1008,2026-02-24,Horizon Shop,East,Technology,118300,76500,Returned

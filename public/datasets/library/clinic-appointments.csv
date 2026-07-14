@@ -1,0 +1,9 @@
+RecordID,Date,Facility,Department,PatientGroup,Service,Cost,Outcome
+AP-3001,2026-06-01,Central Clinic,General Medicine,Adult,Consultation,1800,Completed
+AP-3002,2026-06-01,North Clinic,Pediatrics,Child,Vaccination,1400,Completed
+AP-3003,2026-06-02,Central Clinic,Dental,Adult,Procedure,3600,No Show
+AP-3004,2026-06-02,West Clinic,Orthopedics,Senior,Consultation,2400,Rescheduled
+AP-3005,2026-06-03,North Clinic,Dermatology,Adult,Procedure,3200,Completed
+AP-3006,2026-06-03,Central Clinic,Diagnostics,Senior,Imaging,5200,Completed
+AP-3007,2026-06-04,West Clinic,General Medicine,Child,Consultation,1700,No Show
+AP-3008,2026-06-04,North Clinic,Dental,Adult,Procedure,4100,Completed

@@ -9,7 +9,15 @@ import {
   DASHBOARD_PRACTICE_STORAGE_KEY,
 } from "@/lib/dashboardPractice";
 import { DASHBOARD_STORAGE_EVENT } from "@/lib/dashboardProgress";
+import {
+  INTERVIEW_HUB_EVENT,
+  INTERVIEW_HUB_STORAGE_KEY,
+} from "@/lib/interviewHub";
 import { POWER_BI_PROGRESS_EVENT } from "@/lib/powerBIProgress";
+import {
+  PRACTICE_LAB_EVENT,
+  PRACTICE_LAB_STORAGE_KEY,
+} from "@/lib/practiceLab";
 import { PYTHON_PROGRESS_EVENT } from "@/lib/pythonProgress";
 import { SQL_PROGRESS_EVENT } from "@/lib/sqlProgress";
 import { STATISTICS_PROGRESS_EVENT } from "@/lib/statisticsProgress";
@@ -23,6 +31,8 @@ const progressEvents = [
   STATISTICS_PROGRESS_EVENT,
   DASHBOARD_STORAGE_EVENT,
   DASHBOARD_PRACTICE_EVENT,
+  PRACTICE_LAB_EVENT,
+  INTERVIEW_HUB_EVENT,
   ACHIEVEMENTS_UPDATED_EVENT,
   USER_PREFERENCES_EVENT,
 ] as const;
@@ -38,6 +48,8 @@ const trackedStorageKeys = new Set([
   "databloom-statistics-progress-v1",
   "dashboard_progress",
   DASHBOARD_PRACTICE_STORAGE_KEY,
+  PRACTICE_LAB_STORAGE_KEY,
+  INTERVIEW_HUB_STORAGE_KEY,
   "databloom-unlocked-achievements",
   "databloom-daily-tasks",
   "databloom-daily-date",

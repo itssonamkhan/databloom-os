@@ -1,0 +1,9 @@
+CustomerID,Segment,Region,TenureMonths,MonthlyValue,EngagementScore,SupportCases,Outcome
+CU-3001,Pro,North,28,4999,82,1,Retained
+CU-3002,Starter,West,4,1499,31,6,Churned
+CU-3003,Enterprise,South,41,14999,91,2,Retained
+CU-3004,Starter,East,7,1499,44,4,At Risk
+CU-3005,Pro,North,16,4999,68,3,Retained
+CU-3006,Pro,West,9,4999,39,7,Churned
+CU-3007,Enterprise,South,35,14999,76,5,At Risk
+CU-3008,Starter,East,13,1499,71,1,Retained

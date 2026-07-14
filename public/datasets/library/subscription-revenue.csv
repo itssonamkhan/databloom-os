@@ -1,0 +1,9 @@
+CustomerID,Segment,Region,TenureMonths,MonthlyValue,EngagementScore,SupportCases,Outcome
+SUB-1901,Annual,North,24,7800,86,1,Renewed
+SUB-1902,Monthly,West,3,899,38,4,Churned
+SUB-1903,Annual,South,18,7800,74,2,Renewed
+SUB-1904,Quarterly,East,8,2400,51,5,At Risk
+SUB-1905,Monthly,North,11,899,67,1,Renewed
+SUB-1906,Annual,West,31,7800,91,0,Expanded
+SUB-1907,Quarterly,South,14,2400,46,6,Churned
+SUB-1908,Monthly,East,6,899,59,3,At Risk

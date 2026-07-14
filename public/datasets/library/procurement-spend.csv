@@ -1,0 +1,9 @@
+RecordID,Date,Customer,Product,Amount,Rate,RiskBand,Status
+PO-2901,2026-05-01,Supplier-A,Packaging,842000,4.2,Low,Approved
+PO-2902,2026-05-03,Supplier-B,Cloud Services,1680000,7.8,Medium,Review
+PO-2903,2026-05-05,Supplier-C,Logistics,1260000,6.4,High,Approved
+PO-2904,2026-05-08,Supplier-D,Raw Material,2840000,9.1,High,Negotiation
+PO-2905,2026-05-11,Supplier-E,Facilities,620000,3.7,Low,Approved
+PO-2906,2026-05-14,Supplier-B,Software,940000,5.6,Medium,Review
+PO-2907,2026-05-18,Supplier-F,Consulting,1180000,8.3,Medium,Approved
+PO-2908,2026-05-22,Supplier-C,Freight,760000,6.9,High,Negotiation

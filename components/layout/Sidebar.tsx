@@ -13,6 +13,8 @@ import {
   RefreshCcw,
   Sigma,
   BriefcaseBusiness,
+  FlaskConical,
+  MessagesSquare,
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
@@ -110,6 +112,24 @@ export default function Sidebar() {
           icon={<BriefcaseBusiness size={20} />}
           text="Business Analytics Studio"
           onClick={() => router.push("/business-analytics-studio")}
+        />
+
+        <SidebarButton
+          icon={<Database size={20} />}
+          text="Dataset Library"
+          onClick={() => router.push("/dataset-library")}
+        />
+
+        <SidebarButton
+          icon={<FlaskConical size={20} />}
+          text="Practice Lab"
+          onClick={() => router.push("/practice-lab")}
+        />
+
+        <SidebarButton
+          icon={<MessagesSquare size={20} />}
+          text="Interview Hub"
+          onClick={() => router.push("/interview-hub")}
         />
 
 

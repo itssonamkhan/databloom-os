@@ -1,0 +1,9 @@
+CustomerID,Segment,Region,TenureMonths,MonthlyValue,EngagementScore,SupportCases,Outcome
+OPP-2801,Enterprise,North,5,420000,86,1,Won
+OPP-2802,SMB,West,2,48000,54,3,Qualification
+OPP-2803,Mid-Market,South,4,135000,72,2,Proposal
+OPP-2804,Enterprise,East,7,680000,41,6,At Risk
+OPP-2805,SMB,North,1,32000,63,1,Discovery
+OPP-2806,Mid-Market,West,6,188000,78,2,Won
+OPP-2807,Enterprise,South,8,760000,47,5,Lost
+OPP-2808,SMB,East,3,56000,69,2,Negotiation

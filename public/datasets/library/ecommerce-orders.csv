@@ -1,0 +1,9 @@
+OrderID,OrderDate,Customer,Region,Category,Revenue,Cost,Status
+EC-9001,2026-04-10,Customer-114,North,Beauty,4200,2500,Delivered
+EC-9002,2026-04-11,Customer-239,West,Electronics,38900,31200,Returned
+EC-9003,2026-04-12,Customer-355,South,Home,12800,7900,Delivered
+EC-9004,2026-04-13,Customer-482,East,Fashion,7600,4100,Delivered
+EC-9005,2026-04-14,Customer-519,North,Grocery,2900,2180,Cancelled
+EC-9006,2026-04-15,Customer-647,West,Beauty,5400,3050,Delivered
+EC-9007,2026-04-16,Customer-708,South,Electronics,61200,50300,Delayed
+EC-9008,2026-04-17,Customer-896,East,Home,17600,11200,Delivered

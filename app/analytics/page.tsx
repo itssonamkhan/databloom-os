@@ -234,7 +234,7 @@ export default function AnalyticsPage() {
             <AnalyticsStatCard
               label="Completed lessons"
               value={snapshot.totals.completedLessons}
-              detail="Across seven learning studios"
+              detail="Across eight learning paths"
               icon={<BookCheck size={21} />}
               tone="green"
               delay={0.15}
@@ -246,6 +246,24 @@ export default function AnalyticsPage() {
               icon={<Target size={21} />}
               tone="blue"
               delay={0.18}
+            />
+            <AnalyticsStatCard
+              label="Practice accuracy"
+              value={`${snapshot.totals.practiceAccuracy}%`}
+              detail={`${snapshot.totals.practiceSessions} saved session${
+                snapshot.totals.practiceSessions === 1 ? "" : "s"
+              }`}
+              icon={<Target size={21} />}
+              tone="green"
+              delay={0.2}
+            />
+            <AnalyticsStatCard
+              label="Interview readiness"
+              value={`${snapshot.totals.interviewAverageScore}%`}
+              detail={`${snapshot.totals.interviewQuestions} learned · ${snapshot.totals.interviewMockSessions} mocks`}
+              icon={<Target size={21} />}
+              tone="purple"
+              delay={0.205}
             />
             <AnalyticsStatCard
               label="Dashboard projects"
@@ -274,6 +292,14 @@ export default function AnalyticsPage() {
               delay={0.27}
             />
           </div>
+
+          <Link
+            href="/practice-lab"
+            onClick={playClickSound}
+            className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-fuchsia-200 bg-fuchsia-50 px-5 font-black text-fuchsia-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-fuchsia-100 hover:shadow-md"
+          >
+            🧩 Open Practice Lab
+          </Link>
         </section>
 
         <section aria-labelledby="skills-heading">

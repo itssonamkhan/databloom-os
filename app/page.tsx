@@ -115,6 +115,30 @@ export default function Home() {
               color="border-indigo-200 hover:bg-indigo-50"
             />
 
+            <FeatureCard
+              title="Dataset Library"
+              description="Preview and download 42 realistic datasets for hands-on practice"
+              icon="🗂️"
+              href="/dataset-library"
+              color="border-violet-200 hover:bg-violet-50"
+            />
+
+            <FeatureCard
+              title="Practice Lab"
+              description="Practice everything you've learned with quizzes, challenges, and XP."
+              icon="🧩"
+              href="/practice-lab"
+              color="border-fuchsia-200 hover:bg-fuchsia-50"
+            />
+
+            <FeatureCard
+              title="Interview Hub"
+              description="Practice 500+ technical and HR interview questions"
+              icon="🎯"
+              href="/interview-hub"
+              color="border-pink-200 hover:bg-pink-50"
+            />
+
 
           </div>
 
