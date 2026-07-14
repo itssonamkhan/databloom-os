@@ -15,6 +15,7 @@ import {
   BriefcaseBusiness,
   FlaskConical,
   MessagesSquare,
+  Compass,
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
@@ -124,6 +125,12 @@ export default function Sidebar() {
           icon={<FlaskConical size={20} />}
           text="Practice Lab"
           onClick={() => router.push("/practice-lab")}
+        />
+
+        <SidebarButton
+          icon={<Compass size={20} />}
+          text="Career Hub"
+          onClick={() => router.push("/career-hub")}
         />
 
         <SidebarButton

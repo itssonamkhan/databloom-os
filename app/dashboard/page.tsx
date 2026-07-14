@@ -62,6 +62,11 @@ import {
   INTERVIEW_HUB_EVENT,
   loadInterviewHubState,
 } from "@/lib/interviewHub";
+import {
+  CAREER_HUB_EVENT,
+  getCareerSummary,
+  loadCareerHubState,
+} from "@/lib/careerHub";
 
 const categories = Array.from(
   new Set(dashboardProjects.map((project) => project.category)),
@@ -114,6 +119,9 @@ export default function DashboardPage() {
   const [interviewSummary, setInterviewSummary] = useState(() =>
     getInterviewSummary(loadInterviewHubState()),
   );
+  const [careerSummary, setCareerSummary] = useState(() =>
+    getCareerSummary(loadCareerHubState()),
+  );
   const excelProgress =
     formulas.length === 0
       ? 0
@@ -144,6 +152,14 @@ export default function DashboardPage() {
     datasetCompletedCount,
     datasetLibrary.length,
   );
+
+  useEffect(() => {
+    const syncCareerProgress = () =>
+      setCareerSummary(getCareerSummary(loadCareerHubState()));
+    window.addEventListener(CAREER_HUB_EVENT, syncCareerProgress);
+    return () =>
+      window.removeEventListener(CAREER_HUB_EVENT, syncCareerProgress);
+  }, []);
 
   useEffect(() => {
     const syncInterviewProgress = () =>
@@ -318,7 +334,7 @@ export default function DashboardPage() {
               Skill progress
             </h2>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5 2xl:grid-cols-10">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-11">
             <SkillProgress title="📗 Excel" progress={excelProgress} />
             <SkillProgress title="🗄 SQL" progress={sqlProgress} />
             <SkillProgress title="📈 Power BI" progress={powerBIProgress} />
@@ -338,10 +354,14 @@ export default function DashboardPage() {
               title="🎤 Interview Hub"
               progress={interviewSummary.progressPercentage}
             />
+            <SkillProgress
+              title="🌱 Career Hub"
+              progress={careerSummary.readiness}
+            />
           </div>
           <p className="mt-3 text-sm text-gray-700">
             Excel progress is based on {excelLearnedCount} of the {formulas.length}
-            {" "}Formula Studio lessons. SQL progress is based on {sqlCompletedCount} of the {sqlLessons.length} SQL Studio lessons. Power BI progress is based on {powerBICompletedCount} of {powerBITotal} Power BI and DAX lessons. Power Query progress is based on {powerQueryCompletedCount} of {powerQueryLessons.length} Power Query lessons. Python progress is based on {pythonCompletedCount} of {pythonLessons.length} Python Studio lessons. Statistics progress is based on {statisticsCompletedCount} of {statisticsLessons.length} Statistics Studio lessons. Business Analytics progress is based on {businessAnalyticsCompletedCount} of {businessAnalyticsLessons.length} Business Analytics lessons. Dataset progress is based on {datasetCompletedCount} of {datasetLibrary.length} practice datasets. Practice Lab progress is {practiceSummary.completedQuestions} completed challenges across {practiceSummary.sessions} saved sessions. Interview Hub progress is {interviewSummary.learned} learned questions across {interviewSummary.sessions} mock interviews.
+            {" "}Formula Studio lessons. SQL progress is based on {sqlCompletedCount} of the {sqlLessons.length} SQL Studio lessons. Power BI progress is based on {powerBICompletedCount} of {powerBITotal} Power BI and DAX lessons. Power Query progress is based on {powerQueryCompletedCount} of {powerQueryLessons.length} Power Query lessons. Python progress is based on {pythonCompletedCount} of {pythonLessons.length} Python Studio lessons. Statistics progress is based on {statisticsCompletedCount} of {statisticsLessons.length} Statistics Studio lessons. Business Analytics progress is based on {businessAnalyticsCompletedCount} of {businessAnalyticsLessons.length} Business Analytics lessons. Dataset progress is based on {datasetCompletedCount} of {datasetLibrary.length} practice datasets. Practice Lab progress is {practiceSummary.completedQuestions} completed challenges across {practiceSummary.sessions} saved sessions. Interview Hub progress is {interviewSummary.learned} learned questions across {interviewSummary.sessions} mock interviews. Career readiness is {careerSummary.readiness}% from the Career Checklist.
           </p>
         </section>
 
@@ -437,6 +457,7 @@ export default function DashboardPage() {
             <Link href="/dataset-library" onClick={playClickSound} className="rounded-xl bg-violet-700 px-5 py-3 font-bold text-white transition hover:bg-violet-800">🗂 Dataset Library</Link>
             <Link href="/practice-lab" onClick={playClickSound} className="rounded-xl bg-fuchsia-700 px-5 py-3 font-bold text-white transition hover:bg-fuchsia-800">🧩 Continue Practice</Link>
             <Link href="/interview-hub" onClick={playClickSound} className="rounded-xl bg-violet-700 px-5 py-3 font-bold text-white transition hover:bg-violet-800">🎤 Interview Hub</Link>
+            <Link href="/career-hub" onClick={playClickSound} className="rounded-xl bg-emerald-700 px-5 py-3 font-bold text-white transition hover:bg-emerald-800">🌱 Career Hub</Link>
             <Link
               href="/python-studio"
               onClick={playClickSound}

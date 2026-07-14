@@ -520,6 +520,15 @@ export default function PracticeLabHub() {
           </span>
         </Link>
 
+        <Link
+          href="/career-hub"
+          onClick={playClickSound}
+          className="flex min-h-16 items-center justify-between gap-4 rounded-3xl border border-emerald-200 bg-emerald-50/80 px-6 py-4 font-black text-emerald-900 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <span>🌱 Practice with a target role and application plan</span>
+          <span className="inline-flex items-center gap-2">Open Career Hub <ArrowRight size={17} /></span>
+        </Link>
+
         {state.activeSession ? (
           <section className="rounded-[2rem] border border-sky-200 bg-sky-50 p-6 shadow-md sm:flex sm:items-center sm:justify-between sm:gap-5">
             <div>

@@ -28,6 +28,11 @@ import {
   loadInterviewHubState,
 } from "@/lib/interviewHub";
 import {
+  CAREER_HUB_EVENT,
+  getCareerSummary,
+  loadCareerHubState,
+} from "@/lib/careerHub";
+import {
   loadStreak,
   type StreakData,
 } from "@/lib/streak";
@@ -60,6 +65,9 @@ export default function ProfilePage() {
   const [interviewSummary, setInterviewSummary] = useState(() =>
     getInterviewSummary(loadInterviewHubState()),
   );
+  const [careerSummary, setCareerSummary] = useState(() =>
+    getCareerSummary(loadCareerHubState()),
+  );
 
   useEffect(() => {
     function loadProfileData() {
@@ -69,6 +77,7 @@ export default function ProfilePage() {
       setBadges(loadUnlockedAchievements());
       setPracticeSummary(getPracticeSummary(loadPracticeLabState()));
       setInterviewSummary(getInterviewSummary(loadInterviewHubState()));
+      setCareerSummary(getCareerSummary(loadCareerHubState()));
 
       const favoriteIds = getFavorites();
 
@@ -102,6 +111,10 @@ export default function ProfilePage() {
       INTERVIEW_HUB_EVENT,
       loadProfileData
     );
+    window.addEventListener(
+      CAREER_HUB_EVENT,
+      loadProfileData
+    );
 
     return () => {
       window.removeEventListener(
@@ -119,6 +132,10 @@ export default function ProfilePage() {
       );
       window.removeEventListener(
         INTERVIEW_HUB_EVENT,
+        loadProfileData
+      );
+      window.removeEventListener(
+        CAREER_HUB_EVENT,
         loadProfileData
       );
     };
@@ -248,7 +265,7 @@ export default function ProfilePage() {
             description="A quick look at your learning journey so far."
           />
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-7">
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
             <ProfileCard
               emoji="🌱"
               label="Current level"
@@ -300,6 +317,13 @@ export default function ProfilePage() {
               label="Interview readiness"
               value={`${interviewSummary.learned} learned · ${interviewSummary.sessions} mocks`}
               background="from-violet-50 to-pink-50"
+            />
+
+            <ProfileCard
+              emoji="🌱"
+              label="Career readiness"
+              value={`${careerSummary.readiness}% · ${careerSummary.applications} applications`}
+              background="from-emerald-50 to-sky-50"
             />
           </div>
         </section>

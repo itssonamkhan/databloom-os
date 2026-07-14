@@ -404,6 +404,15 @@ export default function InterviewHub() {
           </span>
         </Link>
 
+        <Link
+          href="/career-hub"
+          onClick={playClickSound}
+          className="flex min-h-16 items-center justify-between gap-4 rounded-3xl border border-emerald-200 bg-emerald-50/80 px-6 py-4 font-black text-emerald-900 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <span>🌱 Turn interview preparation into a career plan</span>
+          <span className="inline-flex items-center gap-2">Open Career Hub <ArrowRight size={17} /></span>
+        </Link>
+
         {state.activeMock ? (
           <section className="rounded-[2rem] border border-sky-200 bg-sky-50 p-6 shadow-md sm:flex sm:items-center sm:justify-between sm:gap-5">
             <div><p className="font-black text-sky-900">Continue mock interview</p><p className="mt-1 text-slate-700">Question {state.activeMock.currentIndex + 1} of {state.activeMock.questionIds.length} · your progress is saved.</p></div>

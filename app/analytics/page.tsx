@@ -266,6 +266,14 @@ export default function AnalyticsPage() {
               delay={0.205}
             />
             <AnalyticsStatCard
+              label="Career readiness"
+              value={`${snapshot.totals.careerReadiness}%`}
+              detail={`${snapshot.totals.careerTasks} tasks · ${snapshot.totals.careerApplications} applications`}
+              icon={<Target size={21} />}
+              tone="green"
+              delay={0.208}
+            />
+            <AnalyticsStatCard
               label="Dashboard projects"
               value={snapshot.totals.dashboardProjects}
               detail="Completed portfolio projects"

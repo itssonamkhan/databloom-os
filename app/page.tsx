@@ -139,6 +139,14 @@ export default function Home() {
               color="border-pink-200 hover:bg-pink-50"
             />
 
+            <FeatureCard
+              title="Career Hub"
+              description="Build roadmaps, career materials, and a focused application pipeline"
+              icon="🌱"
+              href="/career-hub"
+              color="border-emerald-200 hover:bg-emerald-50"
+            />
+
 
           </div>
 

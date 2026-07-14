@@ -1,6 +1,7 @@
 import { achievements, type Achievement } from "@/lib/achievements";
 import { businessAnalyticsLessons } from "@/lib/businessAnalyticsLessons";
 import { loadBusinessAnalyticsProgress } from "@/lib/businessAnalyticsProgress";
+import { getCareerSummary, loadCareerHubState } from "@/lib/careerHub";
 import { datasetLibrary } from "@/lib/datasetLibrary";
 import { loadDatasetLibraryProgress } from "@/lib/datasetLibraryProgress";
 import { daxLessons } from "@/lib/daxFormulas";
@@ -87,6 +88,9 @@ export type AnalyticsTotals = {
   interviewQuestions: number;
   interviewMockSessions: number;
   interviewAverageScore: number;
+  careerReadiness: number;
+  careerTasks: number;
+  careerApplications: number;
   dashboardProjects: number;
   focusSessions: number;
 };
@@ -667,6 +671,7 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
   const completedPractice = getCompletedPracticeCount();
   const practiceSummary = getPracticeSummary(loadPracticeLabState());
   const interviewSummary = getInterviewSummary(loadInterviewHubState());
+  const careerSummary = getCareerSummary(loadCareerHubState());
   const focusSessions = loadFocusSessions();
   const achievementAnalytics = getAchievementAnalytics();
   const weeklyActivity = loadWeeklyActivity(new Date(generatedAt));
@@ -698,6 +703,9 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
       interviewQuestions: interviewSummary.learned,
       interviewMockSessions: interviewSummary.sessions,
       interviewAverageScore: interviewSummary.averageScore,
+      careerReadiness: careerSummary.readiness,
+      careerTasks: careerSummary.completedTasks,
+      careerApplications: careerSummary.applications,
       dashboardProjects: dashboardProjectsCompleted,
       focusSessions,
     },

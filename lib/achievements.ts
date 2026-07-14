@@ -122,6 +122,24 @@ export const achievements: Achievement[] = [
     description: "Complete every resume and portfolio review check.",
     reward: 75,
   },
+  {
+    id: "career_starter",
+    title: "🌱 Career Starter",
+    description: "Complete your first Career Hub task.",
+    reward: 25,
+  },
+  {
+    id: "career_tracker",
+    title: "📬 Opportunity Tracker",
+    description: "Track your first internship or job application.",
+    reward: 25,
+  },
+  {
+    id: "career_ready",
+    title: "🚀 Career Ready",
+    description: "Complete the full Career Hub readiness checklist.",
+    reward: 100,
+  },
 ];
 
 export function getAchievement(id: string) {

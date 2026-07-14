@@ -13,6 +13,10 @@ import {
   INTERVIEW_HUB_EVENT,
   INTERVIEW_HUB_STORAGE_KEY,
 } from "@/lib/interviewHub";
+import {
+  CAREER_HUB_EVENT,
+  CAREER_HUB_STORAGE_KEY,
+} from "@/lib/careerHub";
 import { POWER_BI_PROGRESS_EVENT } from "@/lib/powerBIProgress";
 import {
   PRACTICE_LAB_EVENT,
@@ -33,6 +37,7 @@ const progressEvents = [
   DASHBOARD_PRACTICE_EVENT,
   PRACTICE_LAB_EVENT,
   INTERVIEW_HUB_EVENT,
+  CAREER_HUB_EVENT,
   ACHIEVEMENTS_UPDATED_EVENT,
   USER_PREFERENCES_EVENT,
 ] as const;
@@ -50,6 +55,7 @@ const trackedStorageKeys = new Set([
   DASHBOARD_PRACTICE_STORAGE_KEY,
   PRACTICE_LAB_STORAGE_KEY,
   INTERVIEW_HUB_STORAGE_KEY,
+  CAREER_HUB_STORAGE_KEY,
   "databloom-unlocked-achievements",
   "databloom-daily-tasks",
   "databloom-daily-date",
