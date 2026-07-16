@@ -4,9 +4,11 @@ import { useEffect, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import {
+  applyUserTheme,
   hasCompletedOnboarding,
   USER_PREFERENCES_EVENT,
 } from "@/lib/userPreferences";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 function subscribeToOnboarding(callback: () => void) {
   window.addEventListener(USER_PREFERENCES_EVENT, callback);
@@ -24,12 +26,17 @@ export default function OnboardingGuard({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const preferences = useUserPreferences();
   const completed = useSyncExternalStore(
     subscribeToOnboarding,
     hasCompletedOnboarding,
     () => false,
   );
   const isOnboarding = pathname === "/onboarding";
+
+  useEffect(() => {
+    applyUserTheme(preferences.theme);
+  }, [preferences.theme]);
 
   useEffect(() => {
     if (!completed && !isOnboarding) {

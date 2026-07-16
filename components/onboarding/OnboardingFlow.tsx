@@ -11,6 +11,7 @@ import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
 
 import {
   careerGoals,
+  applyUserTheme,
   buddyPresentation,
   dailyGoals,
   defaultUserPreferences,
@@ -18,6 +19,7 @@ import {
   studyBuddies,
   studyStyles,
   themes,
+  type UserTheme,
   type UserPreferences,
 } from "@/lib/userPreferences";
 import {
@@ -77,6 +79,7 @@ export default function OnboardingFlow() {
     value: OnboardingPreferences[K],
   ) {
     setPreferences((current) => ({ ...current, [key]: value }));
+    if (key === "theme") applyUserTheme(value as UserTheme);
     playClickSound();
   }
 

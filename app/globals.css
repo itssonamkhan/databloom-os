@@ -19,6 +19,156 @@
   }
 }
 
+html[data-databloom-theme="Cloud"] {
+  --databloom-page-start: #eff6ff;
+  --databloom-page-middle: #f8fafc;
+  --databloom-page-end: #eef2ff;
+  --databloom-sidebar-start: #dbeafe;
+  --databloom-sidebar-middle: #f0f9ff;
+  --databloom-sidebar-end: #e0e7ff;
+  --databloom-surface: rgb(239 246 255 / 0.82);
+  --databloom-navbar: rgb(248 250 252 / 0.9);
+  --databloom-accent: #2563eb;
+  --databloom-accent-strong: #1d4ed8;
+  --databloom-accent-soft: #dbeafe;
+  --databloom-border: #bfdbfe;
+}
+
+html[data-databloom-theme="Night"] {
+  --databloom-page-start: #e0e7ff;
+  --databloom-page-middle: #ede9fe;
+  --databloom-page-end: #dbeafe;
+  --databloom-sidebar-start: #c7d2fe;
+  --databloom-sidebar-middle: #ddd6fe;
+  --databloom-sidebar-end: #bfdbfe;
+  --databloom-surface: rgb(238 242 255 / 0.84);
+  --databloom-navbar: rgb(238 242 255 / 0.92);
+  --databloom-accent: #4f46e5;
+  --databloom-accent-strong: #3730a3;
+  --databloom-accent-soft: #e0e7ff;
+  --databloom-border: #c7d2fe;
+}
+
+html[data-databloom-theme="Coffee House"] {
+  --databloom-page-start: #fffbeb;
+  --databloom-page-middle: #fff7ed;
+  --databloom-page-end: #f5f5f4;
+  --databloom-sidebar-start: #fde68a;
+  --databloom-sidebar-middle: #ffedd5;
+  --databloom-sidebar-end: #e7e5e4;
+  --databloom-surface: rgb(255 251 235 / 0.84);
+  --databloom-navbar: rgb(255 251 235 / 0.92);
+  --databloom-accent: #b45309;
+  --databloom-accent-strong: #92400e;
+  --databloom-accent-soft: #fef3c7;
+  --databloom-border: #fcd34d;
+}
+
+html[data-databloom-theme="Kawaii"] {
+  --databloom-page-start: #fdf2f8;
+  --databloom-page-middle: #fefce8;
+  --databloom-page-end: #ecfeff;
+  --databloom-sidebar-start: #fbcfe8;
+  --databloom-sidebar-middle: #fef9c3;
+  --databloom-sidebar-end: #cffafe;
+  --databloom-surface: rgb(255 247 252 / 0.84);
+  --databloom-navbar: rgb(255 247 252 / 0.92);
+  --databloom-accent: #c026d3;
+  --databloom-accent-strong: #a21caf;
+  --databloom-accent-soft: #fae8ff;
+  --databloom-border: #f0abfc;
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"]) body,
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  main[class*="from-pink-50"][class*="via-purple-50"],
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  [class*="from-rose-50"][class*="via-purple-50"],
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  main[class*="from-pink-100"][class*="via-purple-100"] {
+  background-color: var(--databloom-page-middle);
+  background-image: linear-gradient(
+    to bottom right,
+    var(--databloom-page-start),
+    var(--databloom-page-middle),
+    var(--databloom-page-end)
+  );
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  aside[class*="from-purple-100"][class*="via-pink-100"] {
+  background-color: var(--databloom-sidebar-middle);
+  background-image: linear-gradient(
+    to bottom,
+    var(--databloom-sidebar-start),
+    var(--databloom-sidebar-middle),
+    var(--databloom-sidebar-end)
+  );
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  nav[class*="bg-white/80"] {
+  background-color: var(--databloom-navbar);
+  border-color: var(--databloom-border);
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(section, article, div)[class*="bg-white/"],
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(section, article, div)[class~="bg-white"] {
+  background-color: var(--databloom-surface);
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(section, article, div)[class*="bg-gradient"][class*="from-purple-100"],
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(section, article, div)[class*="bg-gradient"][class*="from-pink-100"] {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--databloom-accent-soft),
+    var(--databloom-surface),
+    var(--databloom-page-end)
+  );
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where([class~="text-purple-500"], [class~="text-purple-600"], [class~="text-purple-700"], [class~="text-purple-800"], [class~="text-purple-900"], [class~="text-purple-950"]) {
+  color: var(--databloom-accent-strong);
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where([class~="border-purple-100"], [class~="border-purple-200"], [class~="border-purple-300"], [class~="border-purple-400"], [class~="border-purple-500"]) {
+  border-color: var(--databloom-border);
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(button, a)[class~="bg-purple-500"],
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(button, a)[class~="bg-purple-600"],
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(button, a)[class~="bg-purple-700"] {
+  background-color: var(--databloom-accent);
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(button, a)[class*="bg-gradient"][class*="from-purple-"] {
+  background-image: linear-gradient(
+    to right,
+    var(--databloom-accent),
+    var(--databloom-accent-strong)
+  );
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(button, a)[class*="hover:bg-purple-"]:hover {
+  background-color: var(--databloom-accent-strong);
+}
+
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where([class~="bg-purple-50"], [class~="bg-purple-100"], [class~="bg-purple-200"]) {
+  background-color: var(--databloom-accent-soft);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

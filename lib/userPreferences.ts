@@ -19,6 +19,8 @@ export type StudyStyle = (typeof studyStyles)[number];
 export type DailyGoal = (typeof dailyGoals)[number];
 export type UserTheme = (typeof themes)[number];
 
+export const DATABLOOM_THEME_ATTRIBUTE = "data-databloom-theme";
+
 export type UserPreferences = {
   userName: string;
   studyBuddy: StudyBuddy;
@@ -64,6 +66,16 @@ function validOption<T extends string>(
   return value && options.includes(value as T) ? (value as T) : fallback;
 }
 
+function validTheme(value: string | null) {
+  if (value === "Clouds") return "Cloud";
+  return validOption(value, themes, defaultUserPreferences.theme);
+}
+
+export function applyUserTheme(theme: UserTheme) {
+  if (typeof document === "undefined") return;
+  document.documentElement.setAttribute(DATABLOOM_THEME_ATTRIBUTE, theme);
+}
+
 export function loadUserPreferences(): UserPreferences {
   if (!canUseStorage()) return { ...defaultUserPreferences };
 
@@ -97,11 +109,7 @@ export function loadUserPreferences(): UserPreferences {
         dailyGoals,
         defaultUserPreferences.dailyGoal,
       ),
-      theme: validOption(
-        window.localStorage.getItem(keys.theme),
-        themes,
-        defaultUserPreferences.theme,
-      ),
+      theme: validTheme(window.localStorage.getItem(keys.theme)),
       hasCompletedOnboarding:
         completionValue === "true" || (completionValue === null && Boolean(userName)),
     };
@@ -112,6 +120,7 @@ export function loadUserPreferences(): UserPreferences {
 
 function dispatchPreferencesUpdate(preferences: UserPreferences) {
   if (typeof window === "undefined") return;
+  applyUserTheme(preferences.theme);
   window.dispatchEvent(
     new CustomEvent(USER_PREFERENCES_EVENT, { detail: preferences }),
   );
@@ -165,6 +174,7 @@ export function resetOnboarding() {
   try {
     Object.values(keys).forEach((key) => window.localStorage.removeItem(key));
     window.localStorage.removeItem("buddyName");
+    applyUserTheme(defaultUserPreferences.theme);
     dispatchPreferencesUpdate({ ...defaultUserPreferences });
     return true;
   } catch {

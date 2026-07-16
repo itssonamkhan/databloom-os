@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import {
+  applyUserTheme,
   careerGoals,
   dailyGoals,
   loadUserPreferences,
@@ -213,6 +214,8 @@ export default function PersonalizationSettings() {
       ...current,
       ...updates,
     }));
+
+    if (updates.theme) applyUserTheme(updates.theme);
 
     setStatus("idle");
   }
