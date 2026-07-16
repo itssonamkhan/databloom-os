@@ -30,6 +30,7 @@ import {
   playNotificationSound,
   playXPSound,
 } from "@/lib/sounds";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 type NotesStatus = "saved" | "saving" | "error";
 
@@ -84,6 +85,7 @@ export default function TableauLessonDetail({ lesson }: { lesson: TableauLesson 
     if (!result.newlyCompleted) return;
 
     addXP(lesson.xpReward);
+    registerStudyActivity({ kind: "lesson", source: `tableau:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     playXPSound();
     setShowCompletion(true);
   }

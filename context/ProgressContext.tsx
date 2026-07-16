@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -10,6 +11,11 @@ import {
 import { getCurrentLevel } from "@/lib/levels";
 import { loadXP, saveXP } from "@/lib/storage";
 import { checkAchievements } from "@/lib/checkAchievements";
+import { loadStreak } from "@/lib/streak";
+import {
+  ACHIEVEMENT_REWARD_EVENT,
+  type AchievementRewardEventDetail,
+} from "@/lib/unlockedAchievements";
 
 
 type ProgressContextType = {
@@ -94,7 +100,7 @@ export function ProgressProvider({
 
 
 
-  function addXP(amount:number){
+  const addXP = useCallback((amount:number) => {
 
 
     setXP((currentXP)=>{
@@ -134,7 +140,7 @@ export function ProgressProvider({
       // Automatic achievement check
       checkAchievements(
         newXP,
-        0
+        loadStreak().current
       );
 
 
@@ -143,9 +149,30 @@ export function ProgressProvider({
 
 
     });
+  }, []);
 
+  useEffect(() => {
+    function handleAchievementReward(event: Event) {
+      const detail = (event as CustomEvent<AchievementRewardEventDetail>).detail;
+      if (!detail || !Number.isFinite(detail.xp) || detail.xp <= 0) return;
 
-  }
+      window.queueMicrotask(() => addXP(detail.xp));
+    }
+
+    window.addEventListener(ACHIEVEMENT_REWARD_EVENT, handleAchievementReward);
+    const reconcileTimer = window.setTimeout(() => {
+      void import("@/lib/achievementReconciliation").then(
+        ({ reconcileCoreAchievements }) => reconcileCoreAchievements(),
+      );
+    }, 0);
+    return () => {
+      window.clearTimeout(reconcileTimer);
+      window.removeEventListener(
+        ACHIEVEMENT_REWARD_EVENT,
+        handleAchievementReward,
+      );
+    };
+  }, [addXP]);
 
 
 

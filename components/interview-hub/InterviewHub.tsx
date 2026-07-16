@@ -58,8 +58,7 @@ import {
   playSuccessSound,
   playXPSound,
 } from "@/lib/sounds";
-import { incrementStats } from "@/lib/stats";
-import { registerStudyDay } from "@/lib/streak";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 type View = "home" | "question" | "mock" | "complete";
 
@@ -224,8 +223,7 @@ export default function InterviewHub() {
     if (!result.saved) return;
     if (result.newlyRewarded) {
       addXP(result.xpAward);
-      incrementStats(1, 1, result.xpAward, 0);
-      registerStudyDay();
+      registerStudyActivity({ kind: "lesson", source: `interview-question:${question.id}`, minutes: 1, xp: result.xpAward });
       playXPSound();
     } else {
       playSuccessSound();
@@ -251,13 +249,12 @@ export default function InterviewHub() {
   function finishMock() {
     const result = completeMockInterview(elapsedSeconds);
     if (!result.completed || !result.entry) return;
-    incrementStats(
-      0,
-      Math.max(1, Math.round(elapsedSeconds / 60)),
-      result.entry.xpEarned,
-      0,
-    );
-    registerStudyDay();
+    registerStudyActivity({
+      kind: "practice",
+      source: `mock-interview:${result.entry.id}`,
+      minutes: Math.max(1, Math.round(elapsedSeconds / 60)),
+      xp: result.entry.xpEarned,
+    });
     playSuccessSound();
     setCompletion(result.entry);
     sync();

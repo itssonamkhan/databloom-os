@@ -32,8 +32,7 @@ import {
   playNotificationSound,
   playXPSound,
 } from "@/lib/sounds";
-import { incrementStats } from "@/lib/stats";
-import { registerStudyDay } from "@/lib/streak";
+import { registerStudyActivity } from "@/lib/studyActivity";
 import { unlockAchievement } from "@/lib/unlockedAchievements";
 
 type NotesStatus = "saved" | "saving" | "error";
@@ -97,8 +96,7 @@ export default function StatisticsLessonDetail({
     if (!result.newlyCompleted) return;
 
     addXP(lesson.xpReward);
-    incrementStats(1, 15, lesson.xpReward, 0);
-    registerStudyDay();
+    registerStudyActivity({ kind: "lesson", source: `statistics:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     unlockAchievement("statistics_starter");
     if (result.state.completedLessonIds.length >= 10) {
       unlockAchievement("statistics_practitioner");

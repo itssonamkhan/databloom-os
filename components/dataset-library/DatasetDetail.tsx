@@ -31,6 +31,7 @@ import {
   playNotificationSound,
   playXPSound,
 } from "@/lib/sounds";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 type NotesStatus = "saved" | "saving" | "error";
 
@@ -84,6 +85,7 @@ export default function DatasetDetail({ dataset }: { dataset: DatasetLibraryItem
     setCompleted(result.state.completedLessonIds.includes(dataset.id));
     if (!result.newlyCompleted) return;
     addXP(dataset.xpReward);
+    registerStudyActivity({ kind: "lesson", source: `dataset:${dataset.id}`, minutes: 15, xp: dataset.xpReward });
     playXPSound();
     setShowCompletion(true);
   }

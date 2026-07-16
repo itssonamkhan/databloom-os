@@ -26,8 +26,7 @@ import {
   playSuccessSound,
   playXPSound,
 } from "@/lib/sounds";
-import { incrementStats } from "@/lib/stats";
-import { registerStudyDay } from "@/lib/streak";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 const columns = [
   "Campaign",
@@ -110,8 +109,7 @@ export default function StatisticsPractice({
 
     if (result.newlyCompleted) {
       addXP(reward);
-      incrementStats(0, 10, reward, 0);
-      registerStudyDay();
+      registerStudyActivity({ kind: "practice", source: `statistics-practice:${lesson.id}`, minutes: 10, xp: reward });
       playXPSound();
     }
 

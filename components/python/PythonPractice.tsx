@@ -26,6 +26,7 @@ import {
   playSuccessSound,
   playXPSound,
 } from "@/lib/sounds";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 const columns = [
   "OrderID",
@@ -109,6 +110,7 @@ export default function PythonPractice({
 
     if (result.newlyCompleted) {
       addXP(reward);
+      registerStudyActivity({ kind: "practice", source: `python-practice:${lesson.id}`, minutes: 10, xp: reward });
       playXPSound();
     }
 

@@ -7,8 +7,10 @@ import {
 } from "@/lib/achievements";
 
 import {
+  ACHIEVEMENTS_UPDATED_EVENT,
   loadUnlockedAchievements,
 } from "@/lib/unlockedAchievements";
+import AppLayout from "@/components/layout/AppLayout";
 
 
 export default function AchievementsPage() {
@@ -20,25 +22,17 @@ export default function AchievementsPage() {
 
 
   useEffect(()=>{
-
-    setUnlocked(
-      loadUnlockedAchievements()
-    );
-
+    const sync = () => setUnlocked(loadUnlockedAchievements());
+    sync();
+    window.addEventListener(ACHIEVEMENTS_UPDATED_EVENT, sync);
+    return () => window.removeEventListener(ACHIEVEMENTS_UPDATED_EVENT, sync);
   },[]);
 
 
 
   return (
 
-    <main className="
-    min-h-screen
-    bg-gradient-to-br
-    from-pink-50
-    via-purple-50
-    to-blue-50
-    p-10
-    ">
+    <AppLayout>
 
 
       <div className="
@@ -189,7 +183,7 @@ export default function AchievementsPage() {
       </div>
 
 
-    </main>
+    </AppLayout>
 
   );
 

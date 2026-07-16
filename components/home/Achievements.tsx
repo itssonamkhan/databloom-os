@@ -7,6 +7,7 @@ import {
 } from "@/lib/achievements";
 
 import {
+  ACHIEVEMENTS_UPDATED_EVENT,
   loadUnlockedAchievements,
 } from "@/lib/unlockedAchievements";
 
@@ -20,11 +21,10 @@ export default function Achievements() {
 
 
   useEffect(()=>{
-
-    setUnlocked(
-      loadUnlockedAchievements()
-    );
-
+    const sync = () => setUnlocked(loadUnlockedAchievements());
+    sync();
+    window.addEventListener(ACHIEVEMENTS_UPDATED_EVENT, sync);
+    return () => window.removeEventListener(ACHIEVEMENTS_UPDATED_EVENT, sync);
   },[]);
 
 

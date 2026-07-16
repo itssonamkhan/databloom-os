@@ -1,10 +1,9 @@
-import {
-  loadUnlockedAchievements,
-  saveUnlockedAchievements,
-} from "@/lib/unlockedAchievements";
+import { unlockAchievement } from "@/lib/unlockedAchievements";
 
 
 const STREAK_KEY = "databloom-streak";
+
+export const STREAK_UPDATED_EVENT = "databloom:streak-updated";
 
 
 export type StreakData = {
@@ -107,6 +106,10 @@ export function saveStreak(
     JSON.stringify(data)
   );
 
+  window.dispatchEvent(
+    new CustomEvent(STREAK_UPDATED_EVENT, { detail: data })
+  );
+
 }
 
 
@@ -116,43 +119,21 @@ export function saveStreak(
 function checkStreakAchievements(
   streak:number
 ){
-
-  const unlocked =
-    loadUnlockedAchievements();
-
-
-
-  const updated = [
-    ...unlocked
-  ];
-
-
-
   if(
-    streak >= 7 &&
-    !updated.includes("streak_7")
+    streak >= 7
   ){
-
-    updated.push("streak_7");
+    unlockAchievement("streak_7");
 
   }
 
 
 
   if(
-    streak >= 30 &&
-    !updated.includes("streak_30")
+    streak >= 30
   ){
-
-    updated.push("streak_30");
+    unlockAchievement("streak_30");
 
   }
-
-
-
-  saveUnlockedAchievements(
-    updated
-  );
 
 }
 

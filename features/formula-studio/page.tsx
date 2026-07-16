@@ -7,16 +7,16 @@ import AppLayout from "@/components/layout/AppLayout";
 import { formulas } from "@/lib/formulas";
 
 import {
-  loadFavorites,
+  getFavorites as loadFavorites,
   toggleFavorite,
-  loadLearned,
-  markLearned,
-} from "@/lib/formulaProgress";
+} from "@/lib/favorites";
+import {
+  getLearnedFormulas as loadLearned,
+  markFormulaLearned as markLearned,
+} from "@/lib/learnedFormulas";
 
 
 export default function FormulaStudio() {
-
-    console.log("FORMULA COUNT:", formulas.length);
   
     const [search, setSearch] = useState("");
 
@@ -49,9 +49,6 @@ export default function FormulaStudio() {
 
   );
 
-
-
-  console.log(formulas.length);
   return (
 
     <AppLayout>

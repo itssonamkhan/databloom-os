@@ -28,6 +28,7 @@ import {
   playSuccessSound,
   playXPSound,
 } from "@/lib/sounds";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 type Feedback = {
   tone: "correct" | "incorrect" | "warning";
@@ -88,6 +89,7 @@ export default function TableauPractice({
     playSuccessSound();
     if (result.newlyCompleted) {
       addXP(reward);
+      registerStudyActivity({ kind: "practice", source: `tableau-practice:${lesson.id}`, minutes: 10, xp: reward });
       playXPSound();
     }
     setFeedback({

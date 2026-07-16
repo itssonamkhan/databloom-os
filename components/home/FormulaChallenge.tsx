@@ -13,6 +13,8 @@ import {
   playSuccessSound,
   playXPSound,
 } from "@/lib/sounds";
+import { registerStudyActivity } from "@/lib/studyActivity";
+import { unlockAchievement } from "@/lib/unlockedAchievements";
 
 export default function FormulaChallenge() {
   const { addXP } = useProgress();
@@ -28,6 +30,13 @@ export default function FormulaChallenge() {
 
     if (!completed && completeTodayFormulaChallenge()) {
       addXP(challenge.reward);
+      registerStudyActivity({
+        kind: "practice",
+        source: `formula-challenge:${challenge.title}`,
+        minutes: 5,
+        xp: challenge.reward,
+      });
+      unlockAchievement("challenge_master");
 
       playXPSound();
 

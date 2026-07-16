@@ -15,6 +15,7 @@ import {
 
 import { playClickSound } from "@/lib/sounds";
 import { useProgress } from "@/context/ProgressContext";
+import { loadStreak, STREAK_UPDATED_EVENT } from "@/lib/streak";
 
 type SearchItem = {
   title: string;
@@ -289,47 +290,14 @@ export default function Navbar() {
   const notificationsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    try {
-      const possibleKeys = [
-        "databloom_streak",
-        "databloom-streak",
-        "currentStreak",
-        "streak",
-      ];
-
-      for (const key of possibleKeys) {
-        const stored = localStorage.getItem(key);
-
-        if (!stored) continue;
-
-        const parsed = JSON.parse(stored);
-
-        if (typeof parsed === "number") {
-          setStreak(parsed);
-          return;
-        }
-
-        if (
-          parsed &&
-          typeof parsed === "object" &&
-          typeof parsed.currentStreak === "number"
-        ) {
-          setStreak(parsed.currentStreak);
-          return;
-        }
-
-        if (
-          parsed &&
-          typeof parsed === "object" &&
-          typeof parsed.streak === "number"
-        ) {
-          setStreak(parsed.streak);
-          return;
-        }
-      }
-    } catch {
-      setStreak(0);
-    }
+    const sync = () => setStreak(loadStreak().current);
+    sync();
+    window.addEventListener(STREAK_UPDATED_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(STREAK_UPDATED_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
 
   useEffect(() => {

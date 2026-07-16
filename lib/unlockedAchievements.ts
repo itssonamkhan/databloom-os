@@ -1,35 +1,39 @@
+import { getAchievement } from "@/lib/achievements";
+
 const UNLOCKED_KEY = "databloom-unlocked-achievements";
+const REWARDED_KEY = "databloom-rewarded-achievements";
 
 export const ACHIEVEMENTS_UPDATED_EVENT =
   "databloom:achievements-updated";
+export const ACHIEVEMENT_REWARD_EVENT = "databloom:achievement-reward";
+
+export type AchievementRewardEventDetail = {
+  id: string;
+  xp: number;
+};
+
+function loadStringArray(key: string): string[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const saved = window.localStorage.getItem(key);
+    if (!saved) return [];
+    const parsed: unknown = JSON.parse(saved);
+    return Array.isArray(parsed)
+      ? Array.from(new Set(parsed.filter((item): item is string => typeof item === "string")))
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 
 export function loadUnlockedAchievements(): string[] {
+  return loadStringArray(UNLOCKED_KEY);
+}
 
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-
-  const saved =
-    localStorage.getItem(UNLOCKED_KEY);
-
-
-  if (!saved) {
-    return [];
-  }
-
-
-  try {
-
-    return JSON.parse(saved);
-
-  } catch {
-
-    return [];
-
-  }
-
+export function loadRewardedAchievements(): string[] {
+  return loadStringArray(REWARDED_KEY);
 }
 
 
@@ -61,14 +65,31 @@ export function unlockAchievement(id:string){
   const unlocked =
     loadUnlockedAchievements();
 
-  if(unlocked.includes(id))
-    return false;
+  const newlyUnlocked = !unlocked.includes(id);
 
-  saveUnlockedAchievements([
-    ...unlocked,
-    id,
-  ]);
+  if (newlyUnlocked) {
+    saveUnlockedAchievements([...unlocked, id]);
+  }
 
-  return true;
+  const achievement = getAchievement(id);
+  const rewarded = loadRewardedAchievements();
+
+  if (achievement && !rewarded.includes(id)) {
+    try {
+      window.localStorage.setItem(
+        REWARDED_KEY,
+        JSON.stringify([...rewarded, id]),
+      );
+      window.dispatchEvent(
+        new CustomEvent<AchievementRewardEventDetail>(ACHIEVEMENT_REWARD_EVENT, {
+          detail: { id, xp: achievement.reward },
+        }),
+      );
+    } catch {
+      // The achievement remains unlocked even if its reward cannot be persisted.
+    }
+  }
+
+  return newlyUnlocked;
 
 }

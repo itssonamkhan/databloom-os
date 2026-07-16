@@ -12,6 +12,7 @@ import {
 } from "@/lib/mochi";
 import { askMochi, type MochiAnswer } from "@/lib/mochiBrain";
 import { playClickSound } from "@/lib/sounds";
+import { unlockAchievement } from "@/lib/unlockedAchievements";
 
 export default function MochiPage() {
   const [mochi, setMochi] = useState(() => loadMochiData());
@@ -23,7 +24,9 @@ export default function MochiPage() {
 
     playClickSound();
     setAnswer(askMochi(question));
-    setMochi(addMochiHeart(1));
+    const nextMochi = addMochiHeart(1);
+    setMochi(nextMochi);
+    if (nextMochi.interactions >= 1) unlockAchievement("mochi_friend");
     setQuestion("");
   }
 

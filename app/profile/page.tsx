@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import PersonalizationSettings from "@/components/profile/PersonalizationSettings";
+import AppLayout from "@/components/layout/AppLayout";
 import { useProgress } from "@/context/ProgressContext";
 import { getFavorites } from "@/lib/favorites";
 import { formulas, type Formula } from "@/lib/formulas";
@@ -49,6 +50,14 @@ import {
   loadFlashcardsState,
 } from "@/lib/flashcards";
 import { getCertificationSummary } from "@/lib/certificationHub";
+import { loadAnalyticsSnapshot, type StudioProgress } from "@/lib/analytics";
+import { ANALYTICS_UPDATED_EVENT } from "@/lib/analyticsHistory";
+import {
+  getPlannerSummary,
+  loadPlannerState,
+  PLANNER_EVENT,
+  type PlannerSummary,
+} from "@/lib/planner";
 
 export default function ProfilePage() {
   const { xp, currentLevelName } = useProgress();
@@ -89,6 +98,10 @@ export default function ProfilePage() {
   const [certificationSummary, setCertificationSummary] = useState(() =>
     getCertificationSummary(loadCareerHubState()),
   );
+  const [studioProgress, setStudioProgress] = useState<StudioProgress[]>([]);
+  const [plannerSummary, setPlannerSummary] = useState<PlannerSummary>(() =>
+    getPlannerSummary(loadPlannerState()),
+  );
 
   useEffect(() => {
     function loadProfileData() {
@@ -102,6 +115,8 @@ export default function ProfilePage() {
       setNotesSummary(getSmartNotesSummary(loadSmartNotesState()));
       setFlashcardsSummary(getFlashcardsSummary(loadFlashcardsState()));
       setCertificationSummary(getCertificationSummary(loadCareerHubState()));
+      setStudioProgress(loadAnalyticsSnapshot().studioProgress);
+      setPlannerSummary(getPlannerSummary(loadPlannerState()));
 
       const favoriteIds = getFavorites();
 
@@ -147,6 +162,8 @@ export default function ProfilePage() {
       FLASHCARDS_EVENT,
       loadProfileData
     );
+    window.addEventListener(ANALYTICS_UPDATED_EVENT, loadProfileData);
+    window.addEventListener(PLANNER_EVENT, loadProfileData);
 
     return () => {
       window.removeEventListener(
@@ -178,6 +195,8 @@ export default function ProfilePage() {
         FLASHCARDS_EVENT,
         loadProfileData
       );
+      window.removeEventListener(ANALYTICS_UPDATED_EVENT, loadProfileData);
+      window.removeEventListener(PLANNER_EVENT, loadProfileData);
     };
   }, []);
 
@@ -203,7 +222,8 @@ export default function ProfilePage() {
     streak?.current ?? 0;
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50 to-sky-50 px-4 py-8 sm:px-6 lg:px-10">
+    <AppLayout>
+    <div className="relative min-h-screen overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-purple-50 to-sky-50 px-4 py-8 sm:px-6 lg:px-10">
       <BackgroundDecorations />
 
       <div className="relative z-10 mx-auto max-w-6xl space-y-7">
@@ -305,7 +325,7 @@ export default function ProfilePage() {
             description="A quick look at your learning journey so far."
           />
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-9">
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             <ProfileCard
               emoji="🌱"
               label="Current level"
@@ -345,65 +365,26 @@ export default function ProfilePage() {
               background="from-purple-50 to-blue-50"
             />
 
-            <ProfileCard
-              emoji="🧪"
-              label="Practice progress"
-              value={`${practiceSummary.averageAccuracy}% · ${practiceSummary.sessions} sessions`}
-              background="from-fuchsia-50 to-sky-50"
-            />
+          </div>
+        </section>
 
-            <ProfileCard
-              emoji="🎤"
-              label="Interview readiness"
-              value={`${interviewSummary.learned} learned · ${interviewSummary.sessions} mocks`}
-              background="from-violet-50 to-pink-50"
-            />
-
-            <ProfileCard
-              emoji="🌱"
-              label="Career readiness"
-              value={`${careerSummary.readiness}% · ${careerSummary.applications} applications`}
-              background="from-emerald-50 to-sky-50"
-            />
-
-            <Link
-              href="/smart-notes"
-              onClick={playClickSound}
-              className="block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700"
-            >
-              <ProfileCard
-                emoji="📝"
-                label="Smart Notes"
-                value={`${notesSummary.notesCreated} notes · ${notesSummary.collections} collections`}
-                background="from-violet-50 to-sky-50"
-              />
-            </Link>
-
-            <Link
-              href="/flashcards"
-              onClick={playClickSound}
-              className="block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700"
-            >
-              <ProfileCard
-                emoji="🧠"
-                label="Flashcards"
-                value={`${flashcardsSummary.uniqueCardsStudied} studied · ${flashcardsSummary.dueToday} due`}
-                background="from-pink-50 to-purple-50"
-              />
-            </Link>
-
-            <Link
-              href="/certification-hub"
-              onClick={playClickSound}
-              className="block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700"
-            >
-              <ProfileCard
-                emoji="🏅"
-                label="Certification readiness"
-                value={`${certificationSummary.readinessProgress}% · ${certificationSummary.tracked} tracked`}
-                background="from-amber-50 to-purple-50"
-              />
-            </Link>
+        <section>
+          <SectionHeading
+            eyebrow="Learning systems"
+            title="Progress across DataBloom"
+            description="Every card reads the existing source of truth and opens the module it represents."
+          />
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {studioProgress.map((studio) => (
+              <ProgressLink key={studio.id} href={studio.href} emoji={studio.icon} label={studio.name} value={`${studio.completed} of ${studio.total} · ${studio.percentage}%`} background="from-purple-50 to-sky-50" />
+            ))}
+            <ProgressLink href="/practice-lab" emoji="🧪" label="Practice Lab" value={`${practiceSummary.averageAccuracy}% accuracy · ${practiceSummary.sessions} sessions`} background="from-fuchsia-50 to-sky-50" />
+            <ProgressLink href="/interview-hub" emoji="🎤" label="Interview Hub" value={`${interviewSummary.learned} learned · ${interviewSummary.sessions} mocks`} background="from-violet-50 to-pink-50" />
+            <ProgressLink href="/career-hub" emoji="🌱" label="Career Hub" value={`${careerSummary.readiness}% ready · ${careerSummary.applications} applications`} background="from-emerald-50 to-sky-50" />
+            <ProgressLink href="/smart-notes" emoji="📝" label="Smart Notes" value={`${notesSummary.notesCreated} notes · ${notesSummary.collections} collections`} background="from-violet-50 to-sky-50" />
+            <ProgressLink href="/flashcards" emoji="🧠" label="Flashcards" value={`${flashcardsSummary.uniqueCardsStudied} studied · ${flashcardsSummary.dueToday} due`} background="from-pink-50 to-purple-50" />
+            <ProgressLink href="/certification-hub" emoji="🏅" label="Certification Hub" value={`${certificationSummary.readinessProgress}% ready · ${certificationSummary.tracked} tracked`} background="from-amber-50 to-purple-50" />
+            <ProgressLink href="/planner" emoji="🗓️" label="Planner" value={`${plannerSummary.completed} of ${plannerSummary.total} complete · ${plannerSummary.progressPercentage}%`} background="from-blue-50 to-purple-50" />
           </div>
         </section>
 
@@ -621,7 +602,8 @@ export default function ProfilePage() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
+    </AppLayout>
   );
 }
 
@@ -735,6 +717,14 @@ function ProfileCard({
         </h3>
       </div>
     </article>
+  );
+}
+
+function ProgressLink({ href, emoji, label, value, background }: { href: string; emoji: string; label: string; value: string; background: string }) {
+  return (
+    <Link href={href} onClick={playClickSound} className="block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700">
+      <ProfileCard emoji={emoji} label={label} value={value} background={background} />
+    </Link>
   );
 }
 

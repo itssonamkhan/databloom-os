@@ -381,6 +381,27 @@ export default function AnalyticsPage() {
           >
             🏅 Open Certification Hub
           </Link>
+          <Link
+            href="/interview-hub"
+            onClick={playClickSound}
+            className="ml-3 mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 px-5 font-black text-violet-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100 hover:shadow-md"
+          >
+            🎤 Open Interview Hub
+          </Link>
+          <Link
+            href="/career-hub"
+            onClick={playClickSound}
+            className="ml-3 mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 px-5 font-black text-emerald-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-100 hover:shadow-md"
+          >
+            🌱 Open Career Hub
+          </Link>
+          <Link
+            href="/planner"
+            onClick={playClickSound}
+            className="ml-3 mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 px-5 font-black text-blue-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
+          >
+            🗓️ Open Planner
+          </Link>
         </section>
 
         <section aria-labelledby="skills-heading">
@@ -558,7 +579,11 @@ export default function AnalyticsPage() {
                   ? "Not tracked"
                   : `${productivity.plannerProgress}%`
               }
-              detail="Planner has no saved completion data yet"
+              detail={
+                productivity.plannerProgress === null
+                  ? "Create a Planner task to begin tracking"
+                  : "Calculated from real saved tasks"
+              }
               icon={<CalendarDays size={21} />}
               tone="purple"
             />

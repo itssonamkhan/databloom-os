@@ -83,3 +83,26 @@ export function saveTodayTasks(tasks: DailyTask[]) {
 
   localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
 }
+
+export function areTodayDailyGoalsComplete(): boolean {
+  if (typeof window === "undefined") return false;
+  if (window.localStorage.getItem(DATE_KEY) !== todayKey()) return false;
+
+  try {
+    const saved = window.localStorage.getItem(TASKS_KEY);
+    const tasks: unknown = saved ? JSON.parse(saved) : [];
+    return (
+      Array.isArray(tasks) &&
+      tasks.length > 0 &&
+      tasks.every(
+        (task) =>
+          Boolean(task) &&
+          typeof task === "object" &&
+          !Array.isArray(task) &&
+          (task as Partial<DailyTask>).done === true,
+      )
+    );
+  } catch {
+    return false;
+  }
+}

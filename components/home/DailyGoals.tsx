@@ -10,16 +10,10 @@ import {
 } from "@/lib/dailyTasks";
 
 import {
-  incrementStats,
-} from "@/lib/stats";
-
-import {
-  registerStudyDay,
-} from "@/lib/streak";
-
-import {
   addMochiHeart,
 } from "@/lib/mochi";
+import { registerStudyActivity } from "@/lib/studyActivity";
+import { unlockAchievement } from "@/lib/unlockedAchievements";
 
 import XPToast from "@/components/effects/XPToast";
 
@@ -107,18 +101,17 @@ export default function DailyGoals() {
 
 
 
-    // Stats update
-    incrementStats(
-      1,
-      30,
-      goal.xp,
-      1
-    );
+    registerStudyActivity({
+      kind: "task",
+      source: `daily-goal:${goal.text}`,
+      minutes: 30,
+      xp: goal.xp,
+      goals: 1,
+    });
 
-
-
-    // Streak update
-    registerStudyDay();
+    if (updatedGoals.every((item) => item.done)) {
+      unlockAchievement("focus_master");
+    }
 
 
 

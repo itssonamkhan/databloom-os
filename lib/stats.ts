@@ -8,6 +8,8 @@ export type DailyStats = {
 
 const STATS_KEY = "databloom-study-stats-v2";
 
+export const STUDY_STATS_UPDATED_EVENT = "databloom:study-stats-updated";
+
 
 function getTodayKey() {
 
@@ -137,6 +139,8 @@ export function saveTodayStats(
     STATS_KEY,
     JSON.stringify(data)
   );
+
+  window.dispatchEvent(new CustomEvent(STUDY_STATS_UPDATED_EVENT));
 
 
 }

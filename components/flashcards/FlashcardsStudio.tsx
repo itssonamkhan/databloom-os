@@ -56,8 +56,7 @@ import type {
   FlashcardDifficulty,
 } from "@/lib/flashcardData";
 import { playClickSound, playSuccessSound, playXPSound } from "@/lib/sounds";
-import { incrementStats } from "@/lib/stats";
-import { registerStudyDay } from "@/lib/streak";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 type View = "home" | "deck" | "study" | "complete" | "custom";
 
@@ -186,10 +185,9 @@ export default function FlashcardsStudio() {
     const cardId = session.cardIds[session.currentIndex];
     const result = rateFlashcard(cardId, rating);
     setState(result.state);
-    registerStudyDay();
     if (result.xpAward > 0) {
       addXP(result.xpAward);
-      incrementStats(0, 0, result.xpAward, 0);
+      registerStudyActivity({ kind: "study", source: `flashcard:${cardId}`, xp: result.xpAward });
       playXPSound();
     } else {
       playClickSound();
@@ -200,7 +198,11 @@ export default function FlashcardsStudio() {
       const completed = finishFlashcardSession();
       setState(completed.state);
       if (completed.entry) {
-        incrementStats(0, Math.max(1, Math.round(completed.entry.durationSeconds / 60)), 0, 0);
+        registerStudyActivity({
+          kind: "study",
+          source: `flashcard-session:${completed.entry.id}`,
+          minutes: Math.max(1, Math.round(completed.entry.durationSeconds / 60)),
+        });
         playSuccessSound();
         setLastEntry(completed.entry);
         setView("complete");

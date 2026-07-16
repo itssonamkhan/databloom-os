@@ -23,11 +23,11 @@ export default function PracticePage() {
               Hands-on dashboard skills
             </p>
             <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-              🧪 Practice Lab
+              🧪 Dashboard Project Practice
             </h1>
             <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-slate-700 sm:text-lg">
-              Work through realistic business data, check your analysis
-              instantly, and earn XP as you complete each task.
+              Work through the Sales, Finance, and HR dashboard projects,
+              check your analysis instantly, and earn XP for each new task.
             </p>
           </div>
         </header>

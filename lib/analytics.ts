@@ -32,6 +32,7 @@ import { loadUnlockedAchievements } from "@/lib/unlockedAchievements";
 import { getSmartNotesSummary, loadSmartNotesState } from "@/lib/smartNotes";
 import { getFlashcardsSummary, loadFlashcardsState } from "@/lib/flashcards";
 import { getCertificationSummary } from "@/lib/certificationHub";
+import { getPlannerSummary, loadPlannerState } from "@/lib/planner";
 import { loadUserPreferences } from "@/lib/userPreferences";
 import {
   loadAnalyticsHistory,
@@ -714,6 +715,7 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
   const notesSummary = getSmartNotesSummary(loadSmartNotesState());
   const flashcardsSummary = getFlashcardsSummary(loadFlashcardsState());
   const certificationSummary = getCertificationSummary(loadCareerHubState());
+  const plannerSummary = getPlannerSummary(loadPlannerState());
   const focusSessions = loadFocusSessions();
   const achievementAnalytics = getAchievementAnalytics();
   const weeklyActivity = loadWeeklyActivity(new Date(generatedAt));
@@ -770,7 +772,7 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
     productivity: {
       completedDailyGoals,
       totalDailyGoals,
-      plannerProgress: null,
+      plannerProgress: plannerSummary.total ? plannerSummary.progressPercentage : null,
       todayLessons: todayActivity?.lessons ?? 0,
       todayMinutes: todayActivity?.minutes ?? 0,
       todayGoals: Math.max(todayActivity?.goals ?? 0, completedDailyGoals),

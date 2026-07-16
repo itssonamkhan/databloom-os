@@ -373,7 +373,7 @@ function createDataset(tuple: DatasetTuple): DatasetLibraryItem {
         title: `Continue in ${recommendedStudio.name}`,
         href: recommendedStudio.href,
       },
-      { title: "Apply it in Practice Lab", href: "/practice" },
+      { title: "Apply it in Project Practice", href: "/practice" },
     ],
     xpReward:
       difficulty === "Beginner" ? 20 : difficulty === "Intermediate" ? 30 : 40,

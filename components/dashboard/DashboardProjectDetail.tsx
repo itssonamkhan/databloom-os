@@ -29,6 +29,8 @@ import {
   toggleFavoriteDashboard,
 } from "@/lib/dashboardProgress";
 import { playClickSound, playNotificationSound, playXPSound } from "@/lib/sounds";
+import { registerStudyActivity } from "@/lib/studyActivity";
+import { unlockAchievement } from "@/lib/unlockedAchievements";
 
 export default function DashboardProjectDetail({
   project,
@@ -88,6 +90,13 @@ export default function DashboardProjectDetail({
     if (!isFirstCompletion) return;
 
     addXP(project.xpReward);
+    registerStudyActivity({
+      kind: "lesson",
+      source: `dashboard:${project.id}`,
+      minutes: 30,
+      xp: project.xpReward,
+    });
+    unlockAchievement("dashboard_builder");
     playXPSound();
     setShowCompletion(true);
   }
@@ -120,7 +129,7 @@ export default function DashboardProjectDetail({
             <p className="mt-5 leading-8 text-gray-700">
               Work from the included business dataset, calculate useful KPIs, and
               turn the results into a clear visual story. Use the tutorial when you
-              need guidance, then test your conclusions in the Practice Lab.
+              need guidance, then test your conclusions in Dashboard Practice.
             </p>
 
             <dl className="mt-6 grid gap-4 sm:grid-cols-2">

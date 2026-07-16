@@ -26,6 +26,7 @@ import {
   playSuccessSound,
   playXPSound,
 } from "@/lib/sounds";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 const previewRows = [
   ["SO-1001", "Aisha Khan", "North", "Analytics Pro", "Software", "2", "1250", "2026-01-05"],
@@ -79,6 +80,7 @@ export default function SQLPractice({
     playSuccessSound();
     if (result.newlyCompleted) {
       addXP(practiceReward);
+      registerStudyActivity({ kind: "practice", source: `sql-practice:${lesson.id}`, minutes: 10, xp: practiceReward });
       playXPSound();
     }
     setFeedback({

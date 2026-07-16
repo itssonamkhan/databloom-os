@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { useState, use } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { formulas } from "@/lib/formulas";
-console.log("Practice route loaded");
 
 type Props = {
   params: Promise<{

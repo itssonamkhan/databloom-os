@@ -43,6 +43,8 @@ import {
   FLASHCARDS_EVENT,
   FLASHCARDS_STORAGE_KEY,
 } from "@/lib/flashcards";
+import { PLANNER_EVENT, PLANNER_STORAGE_KEY } from "@/lib/planner";
+import { STUDY_ACTIVITY_EVENT } from "@/lib/studyActivity";
 
 const progressEvents = [
   SQL_PROGRESS_EVENT,
@@ -61,6 +63,8 @@ const progressEvents = [
   CAREER_HUB_EVENT,
   SMART_NOTES_EVENT,
   FLASHCARDS_EVENT,
+  PLANNER_EVENT,
+  STUDY_ACTIVITY_EVENT,
   ACHIEVEMENTS_UPDATED_EVENT,
   USER_PREFERENCES_EVENT,
 ] as const;
@@ -85,6 +89,7 @@ const trackedStorageKeys = new Set([
   CAREER_HUB_STORAGE_KEY,
   SMART_NOTES_STORAGE_KEY,
   FLASHCARDS_STORAGE_KEY,
+  PLANNER_STORAGE_KEY,
   "databloom-unlocked-achievements",
   "databloom-daily-tasks",
   "databloom-daily-date",

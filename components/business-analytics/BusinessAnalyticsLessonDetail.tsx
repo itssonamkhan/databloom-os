@@ -11,6 +11,7 @@ import { useProgress } from "@/context/ProgressContext";
 import { getBusinessAnalyticsLesson, getNextBusinessAnalyticsLesson, type BusinessAnalyticsLesson } from "@/lib/businessAnalyticsLessons";
 import { BUSINESS_ANALYTICS_PROGRESS_EVENT, completeBusinessAnalyticsLesson, getBusinessAnalyticsNote, loadBusinessAnalyticsProgress, saveBusinessAnalyticsNote, toggleBusinessAnalyticsFavorite } from "@/lib/businessAnalyticsProgress";
 import { playClickSound, playNotificationSound, playXPSound } from "@/lib/sounds";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 type NotesStatus = "saved" | "saving" | "error";
 
@@ -61,6 +62,7 @@ export default function BusinessAnalyticsLessonDetail({ lesson }: { lesson: Busi
     setCompleted(result.state.completedLessonIds.includes(lesson.id));
     if (!result.newlyCompleted) return;
     addXP(lesson.xpReward);
+    registerStudyActivity({ kind: "lesson", source: `business-analytics:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     playXPSound();
     setShowCompletion(true);
   }

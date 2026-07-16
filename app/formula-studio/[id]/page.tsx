@@ -10,6 +10,8 @@ import { notFound } from "next/navigation";
 import { use, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { formulas } from "@/lib/formulas";
+import { registerStudyActivity } from "@/lib/studyActivity";
+import { unlockAchievement } from "@/lib/unlockedAchievements";
 
 type Props = {
   params: Promise<{
@@ -580,6 +582,15 @@ export default function FormulaDetails({
     markFormulaLearned(formula.id);
 
     addXP(20);
+
+    registerStudyActivity({
+      kind: "lesson",
+      source: `formula:${formula.id}`,
+      minutes: 10,
+      xp: 20,
+    });
+
+    unlockAchievement("first_formula");
 
     setLearned(true);
 

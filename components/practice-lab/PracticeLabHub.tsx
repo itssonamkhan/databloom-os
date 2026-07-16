@@ -61,8 +61,7 @@ import {
   playSuccessSound,
   playXPSound,
 } from "@/lib/sounds";
-import { incrementStats } from "@/lib/stats";
-import { registerStudyDay } from "@/lib/streak";
+import { registerStudyActivity } from "@/lib/studyActivity";
 import { unlockAchievement } from "@/lib/unlockedAchievements";
 
 type View = "home" | "session" | "complete";
@@ -341,8 +340,12 @@ export default function PracticeLabHub() {
   function finishSession() {
     const result = completePracticeSession(elapsedSeconds);
     if (!result.completed || !result.entry) return;
-    incrementStats(0, Math.max(1, Math.round(elapsedSeconds / 60)), result.entry.xpEarned, 0);
-    registerStudyDay();
+    registerStudyActivity({
+      kind: "practice",
+      source: `practice-lab-session:${result.entry.id}`,
+      minutes: Math.max(1, Math.round(elapsedSeconds / 60)),
+      xp: result.entry.xpEarned,
+    });
     updatePracticeAchievements(result.state, result.entry);
     playSuccessSound();
     setCompletion(result.entry);

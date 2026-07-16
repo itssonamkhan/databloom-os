@@ -32,7 +32,7 @@ import {
   playSuccessSound,
   playXPSound,
 } from "@/lib/sounds";
-import { incrementStats } from "@/lib/stats";
+import { registerStudyActivity } from "@/lib/studyActivity";
 
 type Feedback = {
   tone: "correct" | "incorrect" | "warning";
@@ -164,7 +164,7 @@ export default function ProjectPractice({
 
     if (result.newlyRewarded) {
       addXP(task.xpReward);
-      incrementStats(0, 0, task.xpReward, 0);
+      registerStudyActivity({ kind: "practice", source: `dashboard-practice:${project.id}:${task.id}`, minutes: 10, xp: task.xpReward });
       playXPSound();
     }
 
@@ -188,7 +188,7 @@ export default function ProjectPractice({
           className="inline-flex items-center gap-2 rounded-xl px-2 py-2 font-semibold text-purple-800 transition hover:bg-white/80 hover:text-purple-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700"
         >
           <ArrowLeft aria-hidden="true" size={18} />
-          Back to Practice Lab
+          Back to Project Practice
         </Link>
 
         <header className="rounded-3xl border border-purple-200 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 p-7 shadow-lg sm:p-10">
@@ -196,7 +196,7 @@ export default function ProjectPractice({
             <div className="max-w-3xl">
               <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/85 px-4 py-2 text-sm font-bold text-purple-900 shadow-sm">
                 <FlaskConical aria-hidden="true" size={17} />
-                Practice Lab · {project.focus}
+                Dashboard Practice · {project.focus}
               </p>
               <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
                 <span aria-hidden="true">{project.icon}</span>{" "}
