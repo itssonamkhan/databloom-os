@@ -48,6 +48,7 @@ import {
   getFlashcardsSummary,
   loadFlashcardsState,
 } from "@/lib/flashcards";
+import { getCertificationSummary } from "@/lib/certificationHub";
 
 export default function ProfilePage() {
   const { xp, currentLevelName } = useProgress();
@@ -85,6 +86,9 @@ export default function ProfilePage() {
   const [flashcardsSummary, setFlashcardsSummary] = useState(() =>
     getFlashcardsSummary(loadFlashcardsState()),
   );
+  const [certificationSummary, setCertificationSummary] = useState(() =>
+    getCertificationSummary(loadCareerHubState()),
+  );
 
   useEffect(() => {
     function loadProfileData() {
@@ -97,6 +101,7 @@ export default function ProfilePage() {
       setCareerSummary(getCareerSummary(loadCareerHubState()));
       setNotesSummary(getSmartNotesSummary(loadSmartNotesState()));
       setFlashcardsSummary(getFlashcardsSummary(loadFlashcardsState()));
+      setCertificationSummary(getCertificationSummary(loadCareerHubState()));
 
       const favoriteIds = getFavorites();
 
@@ -384,6 +389,19 @@ export default function ProfilePage() {
                 label="Flashcards"
                 value={`${flashcardsSummary.uniqueCardsStudied} studied · ${flashcardsSummary.dueToday} due`}
                 background="from-pink-50 to-purple-50"
+              />
+            </Link>
+
+            <Link
+              href="/certification-hub"
+              onClick={playClickSound}
+              className="block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700"
+            >
+              <ProfileCard
+                emoji="🏅"
+                label="Certification readiness"
+                value={`${certificationSummary.readinessProgress}% · ${certificationSummary.tracked} tracked`}
+                background="from-amber-50 to-purple-50"
               />
             </Link>
           </div>

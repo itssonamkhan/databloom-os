@@ -31,6 +31,7 @@ import { loadXP } from "@/lib/storage";
 import { loadUnlockedAchievements } from "@/lib/unlockedAchievements";
 import { getSmartNotesSummary, loadSmartNotesState } from "@/lib/smartNotes";
 import { getFlashcardsSummary, loadFlashcardsState } from "@/lib/flashcards";
+import { getCertificationSummary } from "@/lib/certificationHub";
 import { loadUserPreferences } from "@/lib/userPreferences";
 import {
   loadAnalyticsHistory,
@@ -106,6 +107,11 @@ export type AnalyticsTotals = {
   flashcardAccuracy: number;
   flashcardStudyMinutes: number;
   flashcardXP: number;
+  certificationsPlanned: number;
+  certificationsInProgress: number;
+  certificationsCompleted: number;
+  certificationPreparationSteps: number;
+  certificationReadiness: number;
   dashboardProjects: number;
   focusSessions: number;
 };
@@ -707,6 +713,7 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
   const careerSummary = getCareerSummary(loadCareerHubState());
   const notesSummary = getSmartNotesSummary(loadSmartNotesState());
   const flashcardsSummary = getFlashcardsSummary(loadFlashcardsState());
+  const certificationSummary = getCertificationSummary(loadCareerHubState());
   const focusSessions = loadFocusSessions();
   const achievementAnalytics = getAchievementAnalytics();
   const weeklyActivity = loadWeeklyActivity(new Date(generatedAt));
@@ -751,6 +758,11 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
       flashcardAccuracy: flashcardsSummary.accuracy,
       flashcardStudyMinutes: flashcardsSummary.studyMinutes,
       flashcardXP: flashcardsSummary.xpEarned,
+      certificationsPlanned: certificationSummary.planned,
+      certificationsInProgress: certificationSummary.inProgress,
+      certificationsCompleted: certificationSummary.completed,
+      certificationPreparationSteps: certificationSummary.preparationStepsCompleted,
+      certificationReadiness: certificationSummary.readinessProgress,
       dashboardProjects: dashboardProjectsCompleted,
       focusSessions,
     },

@@ -171,6 +171,14 @@ export default function Home() {
               color="border-pink-200 hover:bg-pink-50"
             />
 
+            <FeatureCard
+              title="Certification Hub"
+              description="Compare certification paths, plan preparation, and track credential readiness"
+              icon="🏅"
+              href="/certification-hub"
+              color="border-amber-200 hover:bg-amber-50"
+            />
+
 
           </div>
 

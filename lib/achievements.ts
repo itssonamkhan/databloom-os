@@ -170,6 +170,24 @@ export const achievements: Achievement[] = [
     description: "Complete your first Flashcards Studio session.",
     reward: 20,
   },
+  {
+    id: "certification_starter",
+    title: "🏅 Credential Planner",
+    description: "Add your first certification to the tracker.",
+    reward: 20,
+  },
+  {
+    id: "certification_ready",
+    title: "🧭 Preparation Complete",
+    description: "Complete your first certification preparation roadmap.",
+    reward: 40,
+  },
+  {
+    id: "certification_completed",
+    title: "🎓 Certified Bloom",
+    description: "Mark your first certification as completed.",
+    reward: 50,
+  },
 ];
 
 export function getAchievement(id: string) {

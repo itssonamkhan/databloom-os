@@ -8,9 +8,11 @@ import {
   BookCheck,
   CalendarCheck2,
   CalendarDays,
+  CheckCircle2,
   Download,
   Flame,
   Gauge,
+  GraduationCap,
   LayoutDashboard,
   Layers3,
   NotebookPen,
@@ -308,6 +310,22 @@ export default function AnalyticsPage() {
               delay={0.218}
             />
             <AnalyticsStatCard
+              label="Certification readiness"
+              value={`${snapshot.totals.certificationReadiness}%`}
+              detail={`${snapshot.totals.certificationPreparationSteps} preparation steps complete`}
+              icon={<GraduationCap size={21} />}
+              tone="amber"
+              delay={0.219}
+            />
+            <AnalyticsStatCard
+              label="Certification tracker"
+              value={snapshot.totals.certificationsCompleted}
+              detail={`${snapshot.totals.certificationsPlanned} planned · ${snapshot.totals.certificationsInProgress} in progress`}
+              icon={<CheckCircle2 size={21} />}
+              tone="purple"
+              delay={0.22}
+            />
+            <AnalyticsStatCard
               label="Dashboard projects"
               value={snapshot.totals.dashboardProjects}
               detail="Completed portfolio projects"
@@ -355,6 +373,13 @@ export default function AnalyticsPage() {
             className="ml-3 mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-pink-200 bg-pink-50 px-5 font-black text-pink-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-pink-100 hover:shadow-md"
           >
             🧠 Open Flashcards
+          </Link>
+          <Link
+            href="/certification-hub"
+            onClick={playClickSound}
+            className="ml-3 mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 px-5 font-black text-amber-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-amber-100 hover:shadow-md"
+          >
+            🏅 Open Certification Hub
           </Link>
         </section>
 

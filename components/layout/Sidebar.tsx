@@ -12,6 +12,7 @@ import {
   Compass,
   Database,
   FlaskConical,
+  GraduationCap,
   Headphones,
   Home,
   LayoutDashboard,
@@ -58,6 +59,7 @@ const navigationGroups: Array<{ label: string; items: NavItem[] }> = [
       { text: "Career Hub", href: "/career-hub", icon: Compass },
       { text: "Smart Notes", href: "/smart-notes", icon: NotebookPen },
       { text: "Flashcards", href: "/flashcards", icon: Layers3 },
+      { text: "Certification Hub", href: "/certification-hub", icon: GraduationCap },
     ],
   },
   {

@@ -13,7 +13,14 @@ export const CAREER_HUB_EVENT = "databloom:career-hub-updated";
 
 export const internshipStatuses = ["Interested", "Applied", "Assessment", "Interview", "Offer", "Rejected", "Withdrawn"] as const;
 export const jobStatuses = ["Wishlist", "Applied", "Assessment", "Interviewing", "Offer", "Rejected"] as const;
-export const certificationStatuses = ["Planned", "In progress", "Completed"] as const;
+export const certificationStatuses = [
+  "Interested",
+  "Planned",
+  "In Progress",
+  "Exam Scheduled",
+  "Completed",
+  "Paused",
+] as const;
 
 export type ApplicationKind = "internship" | "job";
 export type ApplicationRecord = {
@@ -36,12 +43,15 @@ export type ApplicationRecord = {
 
 export type CertificationRecord = {
   id: string;
+  catalogId: string;
   name: string;
   provider: string;
   status: (typeof certificationStatuses)[number];
+  targetDate: string;
   startDate: string;
   completionDate: string;
   certificateLink: string;
+  credentialId: string;
   notes: string;
   createdAt: string;
   updatedAt: string;
@@ -53,6 +63,10 @@ export type CareerHubState = {
   rewardedIds: string[];
   applications: ApplicationRecord[];
   certifications: CertificationRecord[];
+  certificationFavoriteIds: string[];
+  certificationNotes: Record<string, string>;
+  certificationChecklist: Record<string, string[]>;
+  certificationRewardedMilestones: string[];
   favoriteCompanyIds: string[];
   companyNotes: Record<string, string>;
   lastSection: CareerSection;
@@ -65,6 +79,10 @@ function emptyState(): CareerHubState {
     rewardedIds: [],
     applications: [],
     certifications: [],
+    certificationFavoriteIds: [],
+    certificationNotes: {},
+    certificationChecklist: {},
+    certificationRewardedMilestones: [],
     favoriteCompanyIds: [],
     companyNotes: {},
     lastSection: "home",
@@ -105,14 +123,16 @@ function validApplication(value: unknown): ApplicationRecord | null {
 
 function validCertification(value: unknown): CertificationRecord | null {
   const item = record(value);
-  const status = certificationStatuses.includes(item.status as CertificationRecord["status"])
-    ? (item.status as CertificationRecord["status"])
+  const legacyStatus = item.status === "In progress" ? "In Progress" : item.status;
+  const status = certificationStatuses.includes(legacyStatus as CertificationRecord["status"])
+    ? (legacyStatus as CertificationRecord["status"])
     : "Planned";
   if (!text(item.id) || !text(item.name)) return null;
   return {
-    id: text(item.id), name: text(item.name), provider: text(item.provider), status,
+    id: text(item.id), catalogId: text(item.catalogId), name: text(item.name), provider: text(item.provider), status,
+    targetDate: text(item.targetDate),
     startDate: text(item.startDate), completionDate: text(item.completionDate),
-    certificateLink: text(item.certificateLink), notes: text(item.notes),
+    certificateLink: text(item.certificateLink), credentialId: text(item.credentialId), notes: text(item.notes),
     createdAt: text(item.createdAt), updatedAt: text(item.updatedAt),
   };
 }
@@ -124,6 +144,8 @@ export function loadCareerHubState(): CareerHubState {
     if (!stored) return emptyState();
     const value = record(JSON.parse(stored));
     const notes = record(value.companyNotes);
+    const certificationNotes = record(value.certificationNotes);
+    const certificationChecklist = record(value.certificationChecklist);
     const lastSection = careerSections.includes(value.lastSection as CareerSection)
       ? (value.lastSection as CareerSection)
       : "home";
@@ -137,6 +159,10 @@ export function loadCareerHubState(): CareerHubState {
       certifications: Array.isArray(value.certifications)
         ? value.certifications.map(validCertification).filter((item): item is CertificationRecord => Boolean(item))
         : [],
+      certificationFavoriteIds: strings(value.certificationFavoriteIds),
+      certificationNotes: Object.fromEntries(Object.entries(certificationNotes).filter((entry): entry is [string, string] => typeof entry[1] === "string")),
+      certificationChecklist: Object.fromEntries(Object.entries(certificationChecklist).map(([id, items]) => [id, strings(items)])),
+      certificationRewardedMilestones: strings(value.certificationRewardedMilestones),
       favoriteCompanyIds: strings(value.favoriteCompanyIds),
       companyNotes: Object.fromEntries(Object.entries(notes).filter((entry): entry is [string, string] => typeof entry[1] === "string")),
       lastSection,
@@ -228,8 +254,21 @@ export function saveCertification(input: CertificationInput, id?: string) {
   const certifications = existing
     ? state.certifications.map((current) => current.id === existing.id ? item : current)
     : [item, ...state.certifications];
-  const next = { ...state, certifications };
-  return { saved: saveCareerHubState(next, existing ? "certification-edited" : "certification-added"), item, state: next };
+  const milestones = [...state.certificationRewardedMilestones];
+  let xpAward = 0;
+  if (!existing && state.certifications.length === 0 && !milestones.includes("first-certification-added")) {
+    milestones.push("first-certification-added");
+    xpAward += 20;
+  }
+  if (item.status === "Completed" && !milestones.includes("first-certification-completed")) {
+    milestones.push("first-certification-completed");
+    xpAward += 50;
+  }
+  const next = { ...state, certifications, certificationRewardedMilestones: milestones };
+  const saved = saveCareerHubState(next, existing ? "certification-edited" : "certification-added");
+  if (saved && !existing) unlockAchievement("certification_starter");
+  if (saved && item.status === "Completed") unlockAchievement("certification_completed");
+  return { saved, item, state: saved ? next : state, xpAward: saved ? xpAward : 0 };
 }
 
 export function deleteCertification(id: string) {

@@ -19,7 +19,7 @@ import { playClickSound, playSuccessSound, playXPSound } from "@/lib/sounds";
 import { incrementStats } from "@/lib/stats";
 import { registerStudyDay } from "@/lib/streak";
 
-const emptyState: CareerHubState = { version: 1, completedIds: [], rewardedIds: [], applications: [], certifications: [], favoriteCompanyIds: [], companyNotes: {}, lastSection: "home" };
+const emptyState: CareerHubState = { version: 1, completedIds: [], rewardedIds: [], applications: [], certifications: [], certificationFavoriteIds: [], certificationNotes: {}, certificationChecklist: {}, certificationRewardedMilestones: [], favoriteCompanyIds: [], companyNotes: {}, lastSection: "home" };
 
 export default function CompanyPreparationPage({ company }: { company: Company }) {
   const { addXP } = useProgress();
