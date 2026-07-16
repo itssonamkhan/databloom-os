@@ -51,7 +51,8 @@ import {
 import { playClickSound, playSuccessSound, playXPSound } from "@/lib/sounds";
 import { incrementStats } from "@/lib/stats";
 import { registerStudyDay } from "@/lib/streak";
-import { loadUserPreferences, type UserPreferences } from "@/lib/userPreferences";
+import type { UserPreferences } from "@/lib/userPreferences";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 function emptyState(): CareerHubState {
   return { version: 1, completedIds: [], rewardedIds: [], applications: [], certifications: [], certificationFavoriteIds: [], certificationNotes: {}, certificationChecklist: {}, certificationRewardedMilestones: [], favoriteCompanyIds: [], companyNotes: {}, lastSection: "home" };
@@ -60,7 +61,7 @@ function emptyState(): CareerHubState {
 export default function CareerHub() {
   const { addXP } = useProgress();
   const [state, setState] = useState<CareerHubState>(emptyState);
-  const [preferences, setPreferences] = useState<UserPreferences>(() => loadUserPreferences());
+  const preferences = useUserPreferences();
   const [section, setSection] = useState<CareerSection>("home");
   const [roadmapId, setRoadmapId] = useState(careerRoadmaps[0].id);
   const [companyQuery, setCompanyQuery] = useState("");
@@ -72,7 +73,6 @@ export default function CareerHub() {
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       setState(loadCareerHubState());
-      setPreferences(loadUserPreferences());
     });
     window.addEventListener(CAREER_HUB_EVENT, sync);
     return () => {
@@ -161,7 +161,7 @@ function CareerHome({ preferences, state, summary, recommended, navigate }: {
   recommended: ReturnType<typeof getRecommendedCareerAction>;
   navigate: (section: CareerSection) => void;
 }) {
-  const name = preferences.userName || "Data learner";
+  const name = preferences.userName || "Learner";
   const continueSection = state.lastSection === "home" ? "roadmaps" : state.lastSection;
   return <div className="space-y-7">
     <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">

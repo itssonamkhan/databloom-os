@@ -6,6 +6,11 @@ import { useProgress } from "@/context/ProgressContext";
 import { useMochiAssistant } from "@/hooks/useMochiAssistant";
 import { getXPEncouragement, type MochiMood } from "@/lib/mochi";
 import { playClickSound } from "@/lib/sounds";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import {
+  getBuddyPresentation,
+  personalizeBuddyText,
+} from "@/lib/userPreferences";
 
 import MochiMascot from "./MochiMascot";
 import MoodSelector from "./MoodSelector";
@@ -44,6 +49,8 @@ export default function MochiAssistantCard({
 }: MochiAssistantCardProps) {
   const { xp } = useProgress();
   const { assistant, selectMood } = useMochiAssistant();
+  const preferences = useUserPreferences();
+  const buddy = getBuddyPresentation(preferences);
   const reduceMotion = useReducedMotion();
 
   const handleMood = (mood: MochiMood) => {
@@ -63,14 +70,18 @@ export default function MochiAssistantCard({
     >
       <div className={`flex ${compact ? "flex-col" : "flex-col lg:flex-row"} gap-5`}>
         <div className={`flex ${compact ? "items-center" : "items-center lg:w-[38%] lg:flex-col lg:items-start"} gap-4`}>
-          <MochiMascot compact={compact} />
+          <MochiMascot
+            compact={compact}
+            buddy={preferences.studyBuddy}
+            buddyName={buddy.name}
+          />
 
           <div className="min-w-0 flex-1">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-pink-600">
               Your daily study buddy
             </p>
             <h2 id="mochi-assistant-title" className={`${compact ? "text-xl" : "text-3xl"} mt-1 font-black text-purple-800`}>
-              Mochi AI 2.0
+              {buddy.name} AI
             </h2>
             <p className="mt-1 text-sm text-slate-600">Fresh blooms for {assistant.date}</p>
           </div>
@@ -80,7 +91,7 @@ export default function MochiAssistantCard({
           <div className="rounded-2xl border border-pink-200/70 bg-gradient-to-br from-pink-100 via-white to-purple-100 p-4 shadow-sm">
             <AnimatePresence mode="wait" initial={false}>
               <motion.p
-                key={`${assistant.mood ?? "daily"}-${assistant.encouragementIndex}`}
+                key={`${buddy.name}-${assistant.mood ?? "daily"}-${assistant.encouragementIndex}`}
                 initial={reduceMotion ? false : { opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={reduceMotion ? undefined : { opacity: 0, y: -5 }}
@@ -88,7 +99,7 @@ export default function MochiAssistantCard({
                 className="font-semibold leading-7 text-slate-800"
                 aria-live="polite"
               >
-                {assistant.message}
+                {personalizeBuddyText(assistant.message, preferences)}
               </motion.p>
             </AnimatePresence>
           </div>
@@ -102,27 +113,27 @@ export default function MochiAssistantCard({
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <DailyItem
           label="Daily Motivation"
-          text={assistant.dailyMotivation}
+          text={personalizeBuddyText(assistant.dailyMotivation, preferences)}
           tone="bg-pink-100/80"
         />
         <DailyItem
           label="Today's Mission"
-          text={`🎯 ${assistant.mission.title} · +${assistant.mission.reward} XP`}
+          text={`🎯 ${personalizeBuddyText(assistant.mission.title, preferences)} · +${assistant.mission.reward} XP`}
           tone="bg-amber-100/80"
         />
         <DailyItem
           label="Study Suggestion"
-          text={assistant.studySuggestion}
+          text={personalizeBuddyText(assistant.studySuggestion, preferences)}
           tone="bg-blue-100/80"
         />
         <DailyItem
           label="Gentle Reminder"
-          text={assistant.gentleReminder}
+          text={personalizeBuddyText(assistant.gentleReminder, preferences)}
           tone="bg-purple-100/80"
         />
         <DailyItem
           label="Study Tip"
-          text={assistant.studyTip}
+          text={personalizeBuddyText(assistant.studyTip, preferences)}
           tone="bg-emerald-100/80"
           wide
         />

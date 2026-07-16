@@ -31,6 +31,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { playClickSound } from "@/lib/sounds";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { getBuddyPresentation } from "@/lib/userPreferences";
 
 type NavItem = { text: string; href: string; icon: LucideIcon };
 
@@ -77,6 +79,8 @@ const navigationGroups: Array<{ label: string; items: NavItem[] }> = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const preferences = useUserPreferences();
+  const buddy = getBuddyPresentation(preferences);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   function handleNavigate() {
@@ -128,6 +132,7 @@ export default function Sidebar() {
               <div className="space-y-1.5">
                 {group.items.map((item) => {
                   const Icon = item.icon;
+                  const itemText = item.href === "/mochi" ? `${buddy.name} AI` : item.text;
                   return (
                     <Link
                       key={item.href}
@@ -137,7 +142,7 @@ export default function Sidebar() {
                       className={`flex min-h-11 w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition ${isActive(item.href) ? "bg-white text-purple-800 shadow-md" : "text-gray-700 hover:bg-white/70 hover:text-purple-700"}`}
                     >
                       <Icon size={19} aria-hidden="true" />
-                      <span className="font-semibold">{item.text}</span>
+                      <span className="font-semibold">{itemText}</span>
                     </Link>
                   );
                 })}

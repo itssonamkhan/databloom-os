@@ -10,9 +10,12 @@ import {
   ACHIEVEMENTS_UPDATED_EVENT,
   loadUnlockedAchievements,
 } from "@/lib/unlockedAchievements";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { personalizeBuddyText } from "@/lib/userPreferences";
 
 
 export default function Achievements() {
+  const preferences = useUserPreferences();
 
 
   const [unlocked, setUnlocked] =
@@ -114,7 +117,7 @@ export default function Achievements() {
                 text-gray-800
                 ">
 
-                  {item.title}
+                  {personalizeBuddyText(item.title, preferences)}
 
                 </h3>
 
@@ -147,7 +150,7 @@ export default function Achievements() {
               mt-2
               ">
 
-                {item.description}
+                {personalizeBuddyText(item.description, preferences)}
 
               </p>
 

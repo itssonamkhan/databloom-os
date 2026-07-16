@@ -11,6 +11,7 @@ import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
 
 import {
   careerGoals,
+  buddyPresentation,
   dailyGoals,
   defaultUserPreferences,
   saveUserPreferences,
@@ -20,6 +21,12 @@ import {
   type UserPreferences,
 } from "@/lib/userPreferences";
 import {
+  applyMochiMood,
+  loadMochiAssistantState,
+  MOCHI_MOODS,
+  type MochiMood,
+} from "@/lib/mochi";
+import {
   playClickSound,
   playSuccessSound,
 } from "@/lib/sounds";
@@ -28,14 +35,6 @@ type OnboardingPreferences = Omit<
   UserPreferences,
   "hasCompletedOnboarding"
 >;
-
-const buddyIcons: Record<OnboardingPreferences["studyBuddy"], string> = {
-  Mochi: "🐰",
-  Maple: "🦊",
-  Luna: "🐱",
-  Boba: "🐼",
-  Poppy: "🦦",
-};
 
 const styleIcons: Record<OnboardingPreferences["studyStyle"], string> = {
   Cozy: "☕",
@@ -60,9 +59,13 @@ export default function OnboardingFlow() {
   const reduceMotion = useReducedMotion();
   const [screen, setScreen] = useState(0);
   const [saveError, setSaveError] = useState(false);
+  const [mood, setMood] = useState<MochiMood | null>(
+    () => loadMochiAssistantState().mood,
+  );
   const [preferences, setPreferences] = useState<OnboardingPreferences>(() => ({
     userName: defaultUserPreferences.userName,
     studyBuddy: defaultUserPreferences.studyBuddy,
+    customBuddyName: defaultUserPreferences.customBuddyName,
     careerGoal: defaultUserPreferences.careerGoal,
     studyStyle: defaultUserPreferences.studyStyle,
     dailyGoal: defaultUserPreferences.dailyGoal,
@@ -97,6 +100,10 @@ export default function OnboardingFlow() {
     if (!saved) {
       setSaveError(true);
       return;
+    }
+
+    if (mood) {
+      applyMochiMood(loadMochiAssistantState(), mood);
     }
 
     playSuccessSound();
@@ -205,7 +212,7 @@ export default function OnboardingFlow() {
               {screen === 1 && (
                 <StepLayout
                   icon="🐰"
-                  title="What should Mochi call you?"
+                  title="What should your study buddy call you?"
                   subtitle="Choose the name that will make DataBloom feel like your own cozy corner."
                 >
                   <label className="mx-auto mt-7 block max-w-xl">
@@ -234,9 +241,26 @@ export default function OnboardingFlow() {
                 <StepLayout icon="💞" title="Choose your study buddy" subtitle="Pick the little companion who will cheer for every lesson and streak.">
                   <OptionGrid>
                     {studyBuddies.map((buddy) => (
-                      <OptionButton key={buddy} icon={buddyIcons[buddy]} label={buddy} selected={preferences.studyBuddy === buddy} onClick={() => updatePreference("studyBuddy", buddy)} />
+                      <OptionButton key={buddy} icon={buddyPresentation[buddy].emoji} label={buddy} selected={preferences.studyBuddy === buddy} onClick={() => updatePreference("studyBuddy", buddy)} />
                     ))}
                   </OptionGrid>
+                  <label className="mx-auto mt-5 block max-w-xl">
+                    <span className="mb-2 block text-sm font-bold text-slate-700">
+                      Custom buddy name <span className="font-medium text-slate-500">(optional)</span>
+                    </span>
+                    <input
+                      value={preferences.customBuddyName}
+                      onChange={(event) =>
+                        setPreferences((current) => ({
+                          ...current,
+                          customBuddyName: event.target.value,
+                        }))
+                      }
+                      maxLength={30}
+                      placeholder={`Keep ${preferences.studyBuddy} or choose a nickname`}
+                      className="min-h-12 w-full rounded-2xl border-2 border-purple-200 bg-white/90 px-4 text-slate-950 outline-none placeholder:text-slate-400 focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
+                    />
+                  </label>
                 </StepLayout>
               )}
 
@@ -272,6 +296,29 @@ export default function OnboardingFlow() {
 
               {screen === 6 && (
                 <StepLayout icon="🎨" title="Choose your theme" subtitle="Pick the mood you want DataBloom to remember for you.">
+                  <div className="mx-auto mt-7 max-w-3xl rounded-2xl border border-white/90 bg-white/70 p-4">
+                    <p className="text-center text-sm font-bold text-slate-700">How are you feeling today?</p>
+                    <div className="mt-3 flex flex-wrap justify-center gap-2" aria-label="Choose your mood">
+                      {MOCHI_MOODS.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          aria-pressed={mood === option.id}
+                          onClick={() => {
+                            setMood(option.id);
+                            playClickSound();
+                          }}
+                          className={`rounded-full border px-4 py-2 text-sm font-bold transition ${
+                            mood === option.id
+                              ? "border-purple-500 bg-purple-600 text-white"
+                              : "border-purple-100 bg-white text-slate-700 hover:bg-purple-50"
+                          }`}
+                        >
+                          {option.emoji} {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <OptionGrid>
                     {themes.map((theme) => (
                       <OptionButton key={theme} icon={themeIcons[theme]} label={theme} selected={preferences.theme === theme} onClick={() => updatePreference("theme", theme)} />

@@ -11,9 +11,12 @@ import {
   loadUnlockedAchievements,
 } from "@/lib/unlockedAchievements";
 import AppLayout from "@/components/layout/AppLayout";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { personalizeBuddyText } from "@/lib/userPreferences";
 
 
 export default function AchievementsPage() {
+  const preferences = useUserPreferences();
 
 
   const [unlocked,setUnlocked] =
@@ -124,7 +127,7 @@ export default function AchievementsPage() {
                   text-gray-800
                   ">
 
-                    {item.title}
+                    {personalizeBuddyText(item.title, preferences)}
 
                   </h2>
 
@@ -151,7 +154,7 @@ export default function AchievementsPage() {
                 text-gray-600
                 ">
 
-                  {item.description}
+                  {personalizeBuddyText(item.description, preferences)}
 
                 </p>
 

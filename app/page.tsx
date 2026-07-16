@@ -35,7 +35,7 @@ const journeySections: Array<{
       { title: "Formula Studio", description: "Explore a growing library of practical Excel formulas", icon: "📚", href: "/formula-studio", color: "border-purple-200 hover:bg-purple-50" },
       { title: "Statistics Studio", description: "Master probability, inference, regression, and experiments", icon: "📐", href: "/statistics-studio", color: "border-rose-200 hover:bg-rose-50" },
       { title: "SQL Studio", description: "Master queries, joins, databases, and practical SQL analysis", icon: "🗄️", href: "/sql-studio", color: "border-sky-200 hover:bg-sky-50" },
-      { title: "Mochi AI", description: "Ask your study companion for a gentle explanation when you get stuck", icon: "🐰", href: "/mochi", color: "border-pink-200 hover:bg-pink-50" },
+      { title: "AI Study Buddy", description: "Ask your selected study companion for a gentle explanation when you get stuck", icon: "✨", href: "/mochi", color: "border-pink-200 hover:bg-pink-50" },
     ],
   },
   {

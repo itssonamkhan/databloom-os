@@ -31,6 +31,8 @@ import {
   playClickSound,
   playSuccessSound,
 } from "@/lib/sounds";
+import { useMochiAssistant } from "@/hooks/useMochiAssistant";
+import MoodSelector from "@/components/mochi/MoodSelector";
 
 type SaveStatus = "idle" | "saved" | "error";
 
@@ -164,6 +166,7 @@ const themeDetails: Record<
 
 export default function PersonalizationSettings() {
   const router = useRouter();
+  const { assistant, selectMood } = useMochiAssistant();
 
   const [preferences, setPreferences] =
     useState<UserPreferences>(() =>
@@ -272,11 +275,11 @@ export default function PersonalizationSettings() {
                 size={16}
                 aria-hidden="true"
               />
-              Personalization journal
+              Study preferences
             </p>
 
             <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">
-              Create your cozy study space
+              Edit your cozy study space
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
@@ -387,6 +390,25 @@ export default function PersonalizationSettings() {
                 );
               })}
             </div>
+
+            <label className="mt-5 block max-w-xl">
+              <span className="mb-2 block text-sm font-bold text-slate-700">
+                Custom buddy name <span className="font-medium text-slate-500">(optional)</span>
+              </span>
+              <input
+                value={preferences.customBuddyName}
+                onChange={(event) => {
+                  setPreferences((current) => ({
+                    ...current,
+                    customBuddyName: event.target.value,
+                  }));
+                  setStatus("idle");
+                }}
+                maxLength={30}
+                placeholder={`Keep ${preferences.studyBuddy} or choose a nickname`}
+                className="min-h-14 w-full rounded-2xl border border-purple-200 bg-white/90 px-4 text-base font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-purple-400 focus:ring-4 focus:ring-purple-100"
+              />
+            </label>
           </SettingSection>
 
           <SettingSection
@@ -437,6 +459,14 @@ export default function PersonalizationSettings() {
                 );
               })}
             </div>
+          </SettingSection>
+
+          <SettingSection
+            eyebrow="Today’s check-in"
+            title="How are you feeling?"
+            description="Your saved mood appears on Home and adjusts the study suggestion from your buddy."
+          >
+            <MoodSelector mood={assistant.mood} onSelect={selectMood} />
           </SettingSection>
 
           <SettingSection

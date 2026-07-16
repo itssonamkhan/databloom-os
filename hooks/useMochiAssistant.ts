@@ -9,6 +9,7 @@ import {
   MOCHI_ASSISTANT_UPDATED_EVENT,
   type MochiMood,
 } from "@/lib/mochi";
+import { USER_PREFERENCES_EVENT } from "@/lib/userPreferences";
 
 export function useMochiAssistant() {
   const [assistant, setAssistant] = useState(() => loadMochiAssistantState());
@@ -18,11 +19,13 @@ export function useMochiAssistant() {
 
     const timer = window.setInterval(syncFromStorage, 60_000);
     window.addEventListener(MOCHI_ASSISTANT_UPDATED_EVENT, syncFromStorage);
+    window.addEventListener(USER_PREFERENCES_EVENT, syncFromStorage);
     window.addEventListener("storage", syncFromStorage);
 
     return () => {
       window.clearInterval(timer);
       window.removeEventListener(MOCHI_ASSISTANT_UPDATED_EVENT, syncFromStorage);
+      window.removeEventListener(USER_PREFERENCES_EVENT, syncFromStorage);
       window.removeEventListener("storage", syncFromStorage);
     };
   }, []);

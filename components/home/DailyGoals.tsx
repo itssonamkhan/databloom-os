@@ -14,6 +14,8 @@ import {
 } from "@/lib/mochi";
 import { registerStudyActivity } from "@/lib/studyActivity";
 import { unlockAchievement } from "@/lib/unlockedAchievements";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { personalizeBuddyText } from "@/lib/userPreferences";
 
 import XPToast from "@/components/effects/XPToast";
 
@@ -25,6 +27,7 @@ import {
 
 
 export default function DailyGoals() {
+  const preferences = useUserPreferences();
 
 
   const {
@@ -256,7 +259,7 @@ export default function DailyGoals() {
 
                 {" "}
 
-                {goal.text}
+                {personalizeBuddyText(goal.text, preferences)}
 
 
 

@@ -58,9 +58,14 @@ import {
   PLANNER_EVENT,
   type PlannerSummary,
 } from "@/lib/planner";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { getBuddyPresentation } from "@/lib/userPreferences";
 
 export default function ProfilePage() {
   const { xp, currentLevelName } = useProgress();
+  const preferences = useUserPreferences();
+  const buddy = getBuddyPresentation(preferences);
+  const userName = preferences.userName || "Learner";
 
   const [streak, setStreak] =
     useState<StreakData | null>(null);
@@ -241,7 +246,7 @@ export default function ProfilePage() {
           <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
               <div className="relative grid size-24 shrink-0 place-items-center rounded-[2rem] border-4 border-white bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 text-5xl shadow-[0_16px_35px_rgba(147,51,234,0.20)]">
-                🐰
+                {buddy.emoji}
 
                 <span
                   aria-hidden="true"
@@ -264,7 +269,7 @@ export default function ProfilePage() {
                 </p>
 
                 <h1 className="mt-2 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
-                  Your cozy learning space
+                  {userName}&apos;s cozy learning space
                 </h1>
 
                 <p className="mt-3 max-w-xl text-base leading-7 text-slate-600">
@@ -295,11 +300,11 @@ export default function ProfilePage() {
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3 px-2 pt-2">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.2em] text-purple-500">
-                Personalization
+                Study preferences
               </p>
 
               <h2 className="mt-1 text-2xl font-black text-slate-900">
-                Make DataBloom feel like home
+                Edit personalization
               </h2>
 
               <p className="mt-1 text-sm text-slate-600">
@@ -352,8 +357,8 @@ export default function ProfilePage() {
             />
 
             <ProfileCard
-              emoji="🐰"
-              label="Mochi friendship"
+              emoji={buddy.emoji}
+              label={`${buddy.name} friendship`}
               value={mochiFriendship}
               background="from-pink-50 to-purple-50"
             />
@@ -445,7 +450,7 @@ export default function ProfilePage() {
             </span>
 
             <p className="text-xs font-black uppercase tracking-[0.2em] text-purple-500">
-              Mochi note
+              {buddy.name} note
             </p>
 
             <h2 className="mt-2 max-w-sm text-2xl font-black text-slate-900">
@@ -465,7 +470,7 @@ export default function ProfilePage() {
               href="/mochi"
               className="mt-6 inline-flex rounded-2xl bg-purple-600 px-5 py-3 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-purple-700"
             >
-              Visit Mochi AI →
+              Visit {buddy.name} AI →
             </Link>
           </div>
         </section>

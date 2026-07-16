@@ -1,4 +1,8 @@
 import { levels } from "@/lib/levels";
+import {
+  loadUserPreferences,
+  type CareerGoal,
+} from "@/lib/userPreferences";
 
 export type MochiLevel = {
   level: number;
@@ -178,15 +182,28 @@ const MISSIONS: MochiMission[] = [
   },
 ];
 
-const STUDY_SUGGESTIONS = [
-  "📚 Pair one short lesson with its practice task while the idea is fresh.",
-  "🧮 Revisit a saved formula, then explain it in your own words.",
-  "🗃️ Try one SQL query and predict the result before running it.",
-  "📊 Open Power BI and focus on one visual or one DAX measure.",
-  "🐍 Practice one small Pandas transformation with a simple dataset.",
-  "📐 Choose a statistics concept and connect it to a real business question.",
-  "🎨 Study one dashboard and ask what story its layout tells first.",
-];
+const GOAL_MISSION_IDS: Record<CareerGoal, readonly string[]> = {
+  "Data Analyst": ["sql-lesson", "formula-review", "statistics-practice", "dashboard-practice"],
+  "Business Analyst": ["formula-review", "dashboard-practice", "analytics-checkin"],
+  "Power BI Developer": ["power-bi-lesson", "dashboard-practice", "formula-review"],
+  "Excel Expert": ["formula-review", "dashboard-practice", "statistics-practice"],
+  "Data Scientist": ["python-lesson", "statistics-practice", "sql-lesson"],
+};
+
+const GOAL_STUDY_SUGGESTIONS: Record<CareerGoal, string> = {
+  "Data Analyst": "🗃️ Build your core analyst path with one SQL, spreadsheet, or dashboard task.",
+  "Business Analyst": "💼 Connect one business question to a metric, formula, or dashboard today.",
+  "Power BI Developer": "📊 Focus on one Power Query, DAX, or dashboard-design concept.",
+  "Excel Expert": "🧮 Review one useful formula and practise it with a small business example.",
+  "Data Scientist": "🐍 Pair one Python or statistics concept with a small dataset.",
+};
+
+const MOOD_STUDY_SUGGESTIONS: Record<MochiMood, string> = {
+  happy: "😊 Use that bright energy for a short lesson followed by one practice question.",
+  tired: "😴 Keep it gentle with five minutes of notes, formulas, or flashcard review.",
+  stressed: "🌿 Choose one familiar topic and take a single small step—no big session needed.",
+  motivated: "🔥 Channel the momentum into Practice Lab or one focused Studio lesson.",
+};
 
 const GENTLE_REMINDERS = [
   "💧 Keep water nearby and relax your shoulders before you begin.",
@@ -280,19 +297,34 @@ function createAssistantState(
   previousEncouragementIndex = -1,
 ): MochiAssistantState {
   const encouragementIndex = randomEncouragementIndex(previousEncouragementIndex);
+  const careerGoal = loadUserPreferences().careerGoal;
   return {
     version: 2,
     date,
     mood: null,
     message: MOCHI_ENCOURAGEMENTS[encouragementIndex],
     dailyMotivation: dailyPick(DAILY_MOTIVATIONS, date, "motivation"),
-    mission: dailyPick(MISSIONS, date, "mission"),
-    studySuggestion: dailyPick(STUDY_SUGGESTIONS, date, "suggestion"),
+    mission: getGoalMission(careerGoal, date),
+    studySuggestion: GOAL_STUDY_SUGGESTIONS[careerGoal],
     gentleReminder: dailyPick(GENTLE_REMINDERS, date, "reminder"),
     studyTip: dailyPick(STUDY_TIPS, date, "tip"),
     encouragementIndex,
     missionCompleted: false,
   };
+}
+
+function getGoalMission(careerGoal: CareerGoal, date: string) {
+  const preferredIds = GOAL_MISSION_IDS[careerGoal];
+  const preferredMissions = MISSIONS.filter((mission) => preferredIds.includes(mission.id));
+  return dailyPick(preferredMissions.length ? preferredMissions : MISSIONS, date, careerGoal);
+}
+
+export function getPersonalizedStudySuggestion(
+  mood: MochiMood | null,
+  fallback?: string,
+) {
+  if (mood) return MOOD_STUDY_SUGGESTIONS[mood];
+  return fallback ?? GOAL_STUDY_SUGGESTIONS[loadUserPreferences().careerGoal];
 }
 
 function isMood(value: unknown): value is MochiMood {
@@ -356,7 +388,27 @@ export function saveMochiAssistantState(state: MochiAssistantState) {
 export function loadMochiAssistantState() {
   const today = getLocalDateKey();
   const stored = readStoredAssistantState();
-  if (stored?.date === today) return stored;
+  if (stored?.date === today) {
+    const careerGoal = loadUserPreferences().careerGoal;
+    const next = {
+      ...stored,
+      mission: stored.missionCompleted
+        ? stored.mission
+        : getGoalMission(careerGoal, today),
+      studySuggestion: getPersonalizedStudySuggestion(
+        stored.mood,
+        GOAL_STUDY_SUGGESTIONS[careerGoal],
+      ),
+    };
+
+    if (
+      next.mission.id !== stored.mission.id ||
+      next.studySuggestion !== stored.studySuggestion
+    ) {
+      saveMochiAssistantState(next);
+    }
+    return next;
+  }
 
   const next = createAssistantState(today, stored?.encouragementIndex);
   saveMochiAssistantState(next);
@@ -386,6 +438,7 @@ export function applyMochiMood(
     mood,
     encouragementIndex,
     message: `${moodResponse} ${MOCHI_ENCOURAGEMENTS[encouragementIndex]}`,
+    studySuggestion: getPersonalizedStudySuggestion(mood),
   };
   saveMochiAssistantState(next);
   return next;

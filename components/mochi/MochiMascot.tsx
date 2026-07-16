@@ -1,18 +1,43 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import {
+  buddyPresentation,
+  type StudyBuddy,
+} from "@/lib/userPreferences";
 
 type MochiMascotProps = {
   compact?: boolean;
+  buddy?: StudyBuddy;
+  buddyName?: string;
 };
 
-export default function MochiMascot({ compact = false }: MochiMascotProps) {
+export default function MochiMascot({
+  compact = false,
+  buddy = "Mochi",
+  buddyName,
+}: MochiMascotProps) {
   const reduceMotion = useReducedMotion();
   const size = compact ? "h-24 w-24" : "h-32 w-32";
+  const visibleName = buddyName || buddy;
+
+  if (buddy !== "Mochi") {
+    return (
+      <motion.div
+        aria-label={`${visibleName}, your ${buddy} study buddy`}
+        className={`grid shrink-0 place-items-center rounded-[2rem] border-2 border-white/90 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 text-6xl shadow-[0_10px_30px_rgba(126,34,206,0.14)] ${size}`}
+        animate={reduceMotion ? undefined : { y: [0, -7, 0] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+        role="img"
+      >
+        <span aria-hidden="true">{buddyPresentation[buddy].emoji}</span>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
-      aria-label="Mochi the study bunny"
+      aria-label={`${visibleName} the study bunny`}
       className={`relative shrink-0 ${size}`}
       animate={reduceMotion ? undefined : { y: [0, -7, 0] }}
       transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}

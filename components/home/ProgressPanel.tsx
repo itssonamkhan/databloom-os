@@ -3,8 +3,10 @@
 import { useProgress } from "@/context/ProgressContext";
 import { getCurrentLevel, levels } from "@/lib/levels";
 import LevelUpModal from "@/components/effects/LevelUpModal";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 export default function ProgressPanel() {
+  const preferences = useUserPreferences();
   const {
     xp,
     levelUp,
@@ -42,7 +44,7 @@ export default function ProgressPanel() {
         </h2>
 
         <p className="mt-2 text-gray-600">
-          Your Data Analyst journey is blooming 🌸
+          Your {preferences.careerGoal} journey is blooming 🌸
         </p>
 
         <div className="mt-5">

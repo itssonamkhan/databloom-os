@@ -42,7 +42,7 @@ import {
 import { playClickSound, playSuccessSound, playXPSound } from "@/lib/sounds";
 import { incrementStats } from "@/lib/stats";
 import { registerStudyDay } from "@/lib/streak";
-import { loadUserPreferences } from "@/lib/userPreferences";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 const blankTrackerRecord: CertificationInput = {
   catalogId: "",
@@ -63,7 +63,8 @@ const focusClass = "focus-visible:outline-none focus-visible:ring-2 focus-visibl
 export default function CertificationHub() {
   const { addXP } = useProgress();
   const [state, setState] = useState<CareerHubState | null>(null);
-  const [userName, setUserName] = useState("Data learner");
+  const preferences = useUserPreferences();
+  const userName = preferences.userName || "Learner";
   const [query, setQuery] = useState("");
   const [provider, setProvider] = useState("All");
   const [skill, setSkill] = useState("All");
@@ -81,7 +82,6 @@ export default function CertificationHub() {
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       sync();
-      setUserName(loadUserPreferences().userName || "Data learner");
     });
     window.addEventListener(CERTIFICATION_HUB_EVENT, sync);
     return () => {

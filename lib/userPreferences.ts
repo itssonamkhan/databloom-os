@@ -22,6 +22,7 @@ export type UserTheme = (typeof themes)[number];
 export type UserPreferences = {
   userName: string;
   studyBuddy: StudyBuddy;
+  customBuddyName: string;
   careerGoal: CareerGoal;
   studyStyle: StudyStyle;
   dailyGoal: DailyGoal;
@@ -32,6 +33,7 @@ export type UserPreferences = {
 const keys = {
   userName: "userName",
   studyBuddy: "studyBuddy",
+  customBuddyName: "customBuddyName",
   careerGoal: "careerGoal",
   studyStyle: "studyStyle",
   dailyGoal: "dailyGoal",
@@ -42,6 +44,7 @@ const keys = {
 export const defaultUserPreferences: UserPreferences = {
   userName: "",
   studyBuddy: "Mochi",
+  customBuddyName: "",
   careerGoal: "Data Analyst",
   studyStyle: "Cozy",
   dailyGoal: "30",
@@ -65,13 +68,20 @@ export function loadUserPreferences(): UserPreferences {
   if (!canUseStorage()) return { ...defaultUserPreferences };
 
   try {
+    const userName = window.localStorage.getItem(keys.userName)?.trim() ?? "";
+    const completionValue = window.localStorage.getItem(keys.completed);
+
     return {
-      userName: window.localStorage.getItem(keys.userName)?.trim() ?? "",
+      userName,
       studyBuddy: validOption(
         window.localStorage.getItem(keys.studyBuddy),
         studyBuddies,
         defaultUserPreferences.studyBuddy,
       ),
+      customBuddyName:
+        window.localStorage.getItem(keys.customBuddyName)?.trim() ??
+        window.localStorage.getItem("buddyName")?.trim() ??
+        "",
       careerGoal: validOption(
         window.localStorage.getItem(keys.careerGoal),
         careerGoals,
@@ -93,7 +103,7 @@ export function loadUserPreferences(): UserPreferences {
         defaultUserPreferences.theme,
       ),
       hasCompletedOnboarding:
-        window.localStorage.getItem(keys.completed) === "true",
+        completionValue === "true" || (completionValue === null && Boolean(userName)),
     };
   } catch {
     return { ...defaultUserPreferences };
@@ -117,6 +127,7 @@ export function saveUserPreferences(
   const normalized: UserPreferences = {
     ...preferences,
     userName: preferences.userName.trim(),
+    customBuddyName: preferences.customBuddyName.trim(),
     hasCompletedOnboarding:
       preferences.hasCompletedOnboarding ?? true,
   };
@@ -126,6 +137,10 @@ export function saveUserPreferences(
   try {
     window.localStorage.setItem(keys.userName, normalized.userName);
     window.localStorage.setItem(keys.studyBuddy, normalized.studyBuddy);
+    window.localStorage.setItem(
+      keys.customBuddyName,
+      normalized.customBuddyName.trim(),
+    );
     window.localStorage.setItem(keys.careerGoal, normalized.careerGoal);
     window.localStorage.setItem(keys.studyStyle, normalized.studyStyle);
     window.localStorage.setItem(keys.dailyGoal, normalized.dailyGoal);
@@ -149,6 +164,7 @@ export function resetOnboarding() {
   if (!canUseStorage()) return false;
   try {
     Object.values(keys).forEach((key) => window.localStorage.removeItem(key));
+    window.localStorage.removeItem("buddyName");
     dispatchPreferencesUpdate({ ...defaultUserPreferences });
     return true;
   } catch {
@@ -162,3 +178,95 @@ export function getTimeGreeting(date = new Date()) {
   if (hour < 18) return "Good Afternoon";
   return "Good Evening";
 }
+
+export const buddyPresentation: Record<
+  StudyBuddy,
+  { emoji: string; description: string }
+> = {
+  Mochi: { emoji: "🐰", description: "your cheerful study bunny" },
+  Maple: { emoji: "🦊", description: "your thoughtful study fox" },
+  Luna: { emoji: "🐱", description: "your focused study cat" },
+  Boba: { emoji: "🐼", description: "your playful study panda" },
+  Poppy: { emoji: "🦦", description: "your curious study otter" },
+};
+
+export function getBuddyPresentation(
+  preferences: UserPreferences = loadUserPreferences(),
+) {
+  const selected = buddyPresentation[preferences.studyBuddy];
+  return {
+    ...selected,
+    speciesName: preferences.studyBuddy,
+    name: preferences.customBuddyName.trim() || preferences.studyBuddy,
+  };
+}
+
+export function personalizeBuddyText(
+  text: string,
+  preferences: UserPreferences = loadUserPreferences(),
+) {
+  return text.replaceAll("Mochi", getBuddyPresentation(preferences).name);
+}
+
+export const careerGoalStudyOrder: Record<CareerGoal, readonly string[]> = {
+  "Data Analyst": [
+    "excel",
+    "statistics",
+    "sql",
+    "power-query",
+    "power-bi",
+    "tableau",
+    "dashboards",
+    "python",
+    "business-analytics",
+    "datasets",
+  ],
+  "Business Analyst": [
+    "business-analytics",
+    "excel",
+    "sql",
+    "power-bi",
+    "dashboards",
+    "datasets",
+    "statistics",
+    "power-query",
+    "tableau",
+    "python",
+  ],
+  "Power BI Developer": [
+    "power-query",
+    "power-bi",
+    "dashboards",
+    "excel",
+    "sql",
+    "datasets",
+    "business-analytics",
+    "statistics",
+    "tableau",
+    "python",
+  ],
+  "Excel Expert": [
+    "excel",
+    "statistics",
+    "business-analytics",
+    "datasets",
+    "power-query",
+    "power-bi",
+    "dashboards",
+    "sql",
+    "tableau",
+    "python",
+  ],
+  "Data Scientist": [
+    "statistics",
+    "python",
+    "sql",
+    "datasets",
+    "excel",
+    "business-analytics",
+    "power-query",
+    "power-bi",
+    "tableau",
+    "dashboards",
+  ],
+};

@@ -29,7 +29,7 @@ export const dailyTasks: Omit<DailyTask, "done">[] = [
     xp: 20,
   },
   {
-    text: "🐰 Ask Mochi one learning question",
+    text: "✨ Ask your AI buddy one learning question",
     xp: 20,
   },
   {

@@ -734,7 +734,7 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
 
   return {
     generatedAt,
-    userName: preferences.userName || "Data learner",
+    userName: preferences.userName || "Learner",
     xp,
     ...levelProgress,
     streak,

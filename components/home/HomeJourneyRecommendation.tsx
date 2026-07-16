@@ -8,27 +8,17 @@ import type { StudioProgress } from "@/lib/analytics";
 import { loadAnalyticsSnapshot } from "@/lib/analytics";
 import { ANALYTICS_UPDATED_EVENT } from "@/lib/analyticsHistory";
 import { playClickSound } from "@/lib/sounds";
-
-const journeyOrder: StudioProgress["id"][] = [
-  "excel",
-  "statistics",
-  "sql",
-  "power-query",
-  "power-bi",
-  "tableau",
-  "dashboards",
-  "python",
-  "business-analytics",
-  "datasets",
-];
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { careerGoalStudyOrder } from "@/lib/userPreferences";
 
 export default function HomeJourneyRecommendation() {
+  const preferences = useUserPreferences();
   const [recommendation, setRecommendation] = useState<StudioProgress | null>(null);
 
   useEffect(() => {
     const sync = () => {
       const snapshot = loadAnalyticsSnapshot();
-      const ordered = journeyOrder
+      const ordered = careerGoalStudyOrder[preferences.careerGoal]
         .map((id) => snapshot.studioProgress.find((studio) => studio.id === id))
         .filter((studio): studio is StudioProgress => Boolean(studio));
       setRecommendation(ordered.find((studio) => studio.percentage < 100) ?? ordered.at(-1) ?? null);
@@ -40,7 +30,7 @@ export default function HomeJourneyRecommendation() {
       window.removeEventListener(ANALYTICS_UPDATED_EVENT, sync);
       window.removeEventListener("storage", sync);
     };
-  }, []);
+  }, [preferences.careerGoal]);
 
   if (!recommendation) return null;
 
@@ -55,6 +45,7 @@ export default function HomeJourneyRecommendation() {
         <span>
           <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-purple-700"><Sparkles size={15} /> Continue your journey</span>
           <span className="mt-1 block text-xl font-black text-slate-950">{recommendation.name}</span>
+          <span className="mt-1 block text-sm font-bold text-purple-700">Prioritized for your {preferences.careerGoal} goal</span>
           <span className="mt-1 block text-sm font-semibold text-slate-600">{recommendation.completed} of {recommendation.total} completed · {recommendation.percentage}% saved progress</span>
         </span>
       </span>

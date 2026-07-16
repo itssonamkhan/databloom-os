@@ -5,6 +5,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import type { StudyStyle } from "@/lib/userPreferences";
 
 type SpotifyMood = {
   id: string;
@@ -58,7 +60,16 @@ const FAVORITES_KEY =
 const FOCUS_STATS_KEY =
   "databloom-focus-sessions";
 
+const preferredMoodByStudyStyle: Record<StudyStyle, SpotifyMood["id"]> = {
+  Cozy: "deep-focus",
+  Rain: "lofi",
+  "Night Owl": "lofi",
+  Piano: "piano",
+  Spotify: "deep-focus",
+};
+
 export default function MusicWidget() {
+  const preferences = useUserPreferences();
   const [selectedMoodId, setSelectedMoodId] =
     useState(moods[0].id);
 
@@ -115,6 +126,10 @@ export default function MusicWidget() {
       setCompletedSessions(0);
     }
   }, []);
+
+  useEffect(() => {
+    setSelectedMoodId(preferredMoodByStudyStyle[preferences.studyStyle]);
+  }, [preferences.studyStyle]);
 
   useEffect(() => {
     if (!timerRunning) {
@@ -312,7 +327,7 @@ export default function MusicWidget() {
           </h2>
 
           <p className="mt-1 text-sm text-gray-700">
-            Real calming music powered by Spotify.
+            {preferences.studyStyle} preference · music powered by Spotify.
           </p>
         </div>
 

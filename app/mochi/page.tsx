@@ -13,11 +13,18 @@ import {
 import { askMochi, type MochiAnswer } from "@/lib/mochiBrain";
 import { playClickSound } from "@/lib/sounds";
 import { unlockAchievement } from "@/lib/unlockedAchievements";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import {
+  getBuddyPresentation,
+  personalizeBuddyText,
+} from "@/lib/userPreferences";
 
 export default function MochiPage() {
   const [mochi, setMochi] = useState(() => loadMochiData());
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<MochiAnswer | null>(null);
+  const preferences = useUserPreferences();
+  const buddy = getBuddyPresentation(preferences);
 
   function handleAsk() {
     if (!question.trim()) return;
@@ -35,8 +42,8 @@ export default function MochiPage() {
       <div className="space-y-6">
         <header className="rounded-3xl bg-gradient-to-br from-pink-100 to-purple-100 p-8 shadow-lg">
           <div className="flex flex-col items-center text-center">
-            <MochiMascot />
-            <h1 className="mt-3 text-4xl font-bold text-purple-700">Mochi AI</h1>
+            <MochiMascot buddy={preferences.studyBuddy} buddyName={buddy.name} />
+            <h1 className="mt-3 text-4xl font-bold text-purple-700">{buddy.name} AI</h1>
             <p className="mt-2 text-gray-600">
               Your cozy Excel &amp; Data Analytics teacher 🌸
             </p>
@@ -52,7 +59,7 @@ export default function MochiPage() {
         <MochiAssistantCard />
 
         <section className="rounded-3xl bg-white/70 p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-purple-700">Ask Mochi 🐰</h2>
+          <h2 className="text-2xl font-bold text-purple-700">Ask {buddy.name} {buddy.emoji}</h2>
           <textarea
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
@@ -70,23 +77,23 @@ export default function MochiPage() {
             onClick={handleAsk}
             className="mt-4 rounded-2xl bg-purple-600 px-6 py-3 font-bold text-white transition-colors hover:bg-purple-700"
           >
-            🐰 Ask Mochi
+            {buddy.emoji} Ask {buddy.name}
           </button>
         </section>
 
         {answer && (
           <section className="space-y-4 rounded-3xl bg-white/70 p-6 shadow-lg" aria-live="polite">
-            <h2 className="text-xl font-bold text-purple-700">🌸 Mochi says:</h2>
-            <p className="font-medium text-gray-800">{answer.answer}</p>
+            <h2 className="text-xl font-bold text-purple-700">🌸 {buddy.name} says:</h2>
+            <p className="font-medium text-gray-800">{personalizeBuddyText(answer.answer, preferences)}</p>
 
             <div className="rounded-2xl bg-pink-100 p-4">
               <strong>🧠 Remember:</strong>
-              <p className="mt-1 text-gray-800">{answer.memory}</p>
+              <p className="mt-1 text-gray-800">{personalizeBuddyText(answer.memory, preferences)}</p>
             </div>
 
             <div className="rounded-2xl bg-blue-100 p-4">
               <strong>📊 Example:</strong>
-              <p className="mt-1 text-gray-800">{answer.example}</p>
+              <p className="mt-1 text-gray-800">{personalizeBuddyText(answer.example, preferences)}</p>
             </div>
           </section>
         )}

@@ -6,6 +6,11 @@ import { useState } from "react";
 import XPToast from "@/components/effects/XPToast";
 import { useProgress } from "@/context/ProgressContext";
 import { useMochiAssistant } from "@/hooks/useMochiAssistant";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import {
+  getBuddyPresentation,
+  personalizeBuddyText,
+} from "@/lib/userPreferences";
 import {
   playClickSound,
   playSuccessSound,
@@ -15,6 +20,8 @@ import {
 export default function MochiMission() {
   const { addXP } = useProgress();
   const { assistant, completeMission } = useMochiAssistant();
+  const preferences = useUserPreferences();
+  const buddy = getBuddyPresentation(preferences);
   const [xpPopup, setXpPopup] = useState<number | null>(null);
 
   const { mission, missionCompleted } = assistant;
@@ -36,16 +43,16 @@ export default function MochiMission() {
 
       <div className="rounded-3xl border border-yellow-200/50 bg-white/40 p-6 shadow-lg backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <div className="text-5xl" aria-hidden="true">🐰</div>
+          <div className="text-5xl" aria-hidden="true">{buddy.emoji}</div>
           <div>
-            <h2 className="text-xl font-bold text-gray-800">Mochi Mission</h2>
-            <p className="text-gray-600">Daily challenge from Mochi 🌸</p>
+            <h2 className="text-xl font-bold text-gray-800">{buddy.name} Mission</h2>
+            <p className="text-gray-600">Daily challenge from {buddy.name} 🌸</p>
           </div>
         </div>
 
         <div className="mt-5 rounded-2xl bg-yellow-100 p-4">
-          <h3 className="font-bold text-gray-800">🎯 {mission.title}</h3>
-          <p className="mt-2 text-gray-600">{mission.description}</p>
+          <h3 className="font-bold text-gray-800">🎯 {personalizeBuddyText(mission.title, preferences)}</h3>
+          <p className="mt-2 text-gray-600">{personalizeBuddyText(mission.description, preferences)}</p>
           <p className="mt-2 font-semibold text-purple-700">
             Reward: +{mission.reward} XP ✨
           </p>

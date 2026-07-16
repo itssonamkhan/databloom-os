@@ -16,6 +16,8 @@ import {
 import { playClickSound } from "@/lib/sounds";
 import { useProgress } from "@/context/ProgressContext";
 import { loadStreak, STREAK_UPDATED_EVENT } from "@/lib/streak";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { getBuddyPresentation } from "@/lib/userPreferences";
 
 type SearchItem = {
   title: string;
@@ -280,6 +282,8 @@ const searchItems: SearchItem[] = [
 export default function Navbar() {
   const router = useRouter();
   const { xp } = useProgress();
+  const preferences = useUserPreferences();
+  const buddy = getBuddyPresentation(preferences);
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -340,16 +344,37 @@ export default function Navbar() {
     };
   }, []);
 
+  const personalizedSearchItems = useMemo(
+    () =>
+      searchItems.map((item) =>
+        item.href === "/mochi"
+          ? {
+              ...item,
+              title: `${buddy.name} AI`,
+              description: `Open ${buddy.name}, ${buddy.description}`,
+              icon: buddy.emoji,
+              keywords: [
+                ...item.keywords,
+                buddy.name,
+                buddy.speciesName,
+                "study buddy",
+              ],
+            }
+          : item,
+      ),
+    [buddy.description, buddy.emoji, buddy.name, buddy.speciesName],
+  );
+
   const filteredItems = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
     if (!normalizedQuery) {
-      return searchItems;
+      return personalizedSearchItems;
     }
 
     const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
 
-    return searchItems.filter((item) => {
+    return personalizedSearchItems.filter((item) => {
       const searchableText = [
         item.title,
         item.description,
@@ -360,7 +385,7 @@ export default function Navbar() {
 
       return queryTokens.every((token) => searchableText.includes(token));
     });
-  }, [query]);
+  }, [personalizedSearchItems, query]);
 
   function navigateTo(href: string) {
     playClickSound();
@@ -572,7 +597,7 @@ export default function Navbar() {
                 type="text"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search studios, practice, planner, Mochi..."
+                placeholder={`Search studios, practice, planner, ${buddy.name}...`}
                 className="min-w-0 flex-1 bg-transparent text-base font-semibold text-gray-900 outline-none placeholder:text-gray-400"
               />
 

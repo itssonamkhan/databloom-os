@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { playLevelUpSound } from "@/lib/sounds";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { getBuddyPresentation } from "@/lib/userPreferences";
 
 type LevelUpModalProps = {
   level: string;
@@ -12,6 +14,8 @@ export default function LevelUpModal({
   level,
   onClose,
 }: LevelUpModalProps) {
+  const preferences = useUserPreferences();
+  const buddy = getBuddyPresentation(preferences);
   useEffect(() => {
     playLevelUpSound();
 
@@ -29,7 +33,7 @@ export default function LevelUpModal({
       case "🌱 Little Data Sprout":
         return "🌱 You're growing stronger every single day!";
       case "🐰 Excel Bunny":
-        return "🥕 Mochi loves your Excel skills!";
+        return `${buddy.emoji} ${buddy.name} loves your Excel skills!`;
       case "🍓 Formula Fairy":
         return "✨ Your formulas are becoming magical!";
       case "🌷 Data Gardener":
@@ -45,7 +49,7 @@ export default function LevelUpModal({
       case "👑 DataBloom Master":
         return "👑 Welcome to the legendary DataBloom Masters!";
       default:
-        return "🐰 Mochi is so proud of you!";
+        return `${buddy.emoji} ${buddy.name} is so proud of you!`;
     }
   }
 
