@@ -21,6 +21,7 @@ const studioColors: Record<StudioProgress["id"], string> = {
   datasets: "#7c3aed",
   python: "#6366f1",
   statistics: "#ec4899",
+  tableau: "#2563eb",
   dashboards: "#8b5cf6",
 };
 

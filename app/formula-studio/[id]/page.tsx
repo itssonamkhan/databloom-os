@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  getLearnedFormulas,
   markFormulaLearned,
 } from "@/lib/learnedFormulas";
 import { useProgress } from "@/context/ProgressContext";
@@ -22,7 +23,9 @@ export default function FormulaDetails({
 
   const { id } = use(params);
   const { addXP } = useProgress();
-  const [learned, setLearned] = useState(false);
+  const [learned, setLearned] = useState(() =>
+    getLearnedFormulas().includes(id),
+  );
 
   const formula =
     formulas.find(
@@ -572,11 +575,11 @@ export default function FormulaDetails({
            <button
  onClick={() => {
 
-  if (!learned) {
-
-    addXP(20);
+  if (!getLearnedFormulas().includes(formula.id)) {
 
     markFormulaLearned(formula.id);
+
+    addXP(20);
 
     setLearned(true);
 

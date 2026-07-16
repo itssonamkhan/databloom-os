@@ -24,9 +24,12 @@ import { sqlLessons } from "@/lib/sqlLessons";
 import { loadSQLProgress } from "@/lib/sqlProgress";
 import { loadStatisticsProgress } from "@/lib/statisticsProgress";
 import { statisticsLessons } from "@/lib/statisticsLessons";
+import { loadTableauProgress } from "@/lib/tableauProgress";
+import { tableauLessons } from "@/lib/tableauLessons";
 import { loadStreak, type StreakData } from "@/lib/streak";
 import { loadXP } from "@/lib/storage";
 import { loadUnlockedAchievements } from "@/lib/unlockedAchievements";
+import { getSmartNotesSummary, loadSmartNotesState } from "@/lib/smartNotes";
 import { loadUserPreferences } from "@/lib/userPreferences";
 import {
   loadAnalyticsHistory,
@@ -47,6 +50,7 @@ export type StudioProgressId =
   | "datasets"
   | "python"
   | "statistics"
+  | "tableau"
   | "dashboards";
 
 export type StudioProgress = {
@@ -91,6 +95,11 @@ export type AnalyticsTotals = {
   careerReadiness: number;
   careerTasks: number;
   careerApplications: number;
+  notesCreated: number;
+  notesCompleted: number;
+  notesWritingMinutes: number;
+  noteCollections: number;
+  noteFavorites: number;
   dashboardProjects: number;
   focusSessions: number;
 };
@@ -333,6 +342,7 @@ function getStudioProgress(): StudioProgress[] {
   const datasets = loadDatasetLibraryProgress();
   const python = loadPythonProgress();
   const statistics = loadStatisticsProgress();
+  const tableau = loadTableauProgress();
 
   const definitions: Array<Omit<StudioProgress, "percentage">> = [
     {
@@ -437,6 +447,18 @@ function getStudioProgress(): StudioProgress[] {
       total: statisticsLessons.length,
     },
     {
+      id: "tableau",
+      name: "Tableau Studio",
+      icon: "🎨",
+      href: "/tableau-studio",
+      color: "#2563eb",
+      completed: countKnownIds(
+        tableau.completedLessonIds,
+        tableauLessons.map((lesson) => lesson.id),
+      ),
+      total: tableauLessons.length,
+    },
+    {
       id: "dashboards",
       name: "Dashboard Projects",
       icon: "🎨",
@@ -463,6 +485,7 @@ function getCompletedPracticeCount(): number {
   const businessAnalytics = loadBusinessAnalyticsProgress();
   const python = loadPythonProgress();
   const statistics = loadStatisticsProgress();
+  const tableau = loadTableauProgress();
   const dashboards = loadDashboardPracticeState();
   const dashboardTaskIds = practiceProjects.flatMap((project) =>
     project.tasks.map((task) => `${project.id}:${task.id}`),
@@ -493,6 +516,10 @@ function getCompletedPracticeCount(): number {
     countKnownIds(
       statistics.completedPracticeIds,
       statisticsLessons.map((lesson) => lesson.id),
+    ) +
+    countKnownIds(
+      tableau.completedPracticeIds,
+      tableauLessons.map((lesson) => lesson.id),
     ) +
     countKnownIds(dashboards.completedTaskIds, dashboardTaskIds) +
     countKnownIds(
@@ -672,6 +699,7 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
   const practiceSummary = getPracticeSummary(loadPracticeLabState());
   const interviewSummary = getInterviewSummary(loadInterviewHubState());
   const careerSummary = getCareerSummary(loadCareerHubState());
+  const notesSummary = getSmartNotesSummary(loadSmartNotesState());
   const focusSessions = loadFocusSessions();
   const achievementAnalytics = getAchievementAnalytics();
   const weeklyActivity = loadWeeklyActivity(new Date(generatedAt));
@@ -706,6 +734,11 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
       careerReadiness: careerSummary.readiness,
       careerTasks: careerSummary.completedTasks,
       careerApplications: careerSummary.applications,
+      notesCreated: notesSummary.notesCreated,
+      notesCompleted: notesSummary.notesCompleted,
+      notesWritingMinutes: notesSummary.writingMinutes,
+      noteCollections: notesSummary.collections,
+      noteFavorites: notesSummary.favorites,
       dashboardProjects: dashboardProjectsCompleted,
       focusSessions,
     },

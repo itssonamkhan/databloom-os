@@ -19,7 +19,7 @@ export default function Home() {
 
       <Sidebar />
 
-      <div className="flex-1 p-10">
+      <div className="min-w-0 flex-1 px-4 pb-6 pt-20 sm:px-6 lg:p-10">
 
         <Navbar />
 
@@ -56,6 +56,14 @@ export default function Home() {
               icon="📚"
               href="/formula-studio"
               color="border-purple-200 hover:bg-purple-50"
+            />
+
+            <FeatureCard
+              title="SQL Studio"
+              description="Master queries, joins, databases, and practical SQL analysis"
+              icon="🗄️"
+              href="/sql-studio"
+              color="border-sky-200 hover:bg-sky-50"
             />
 
 
@@ -145,6 +153,14 @@ export default function Home() {
               icon="🌱"
               href="/career-hub"
               color="border-emerald-200 hover:bg-emerald-50"
+            />
+
+            <FeatureCard
+              title="Smart Notes Studio"
+              description="Write, organize, and revisit searchable study notes"
+              icon="📝"
+              href="/smart-notes"
+              color="border-violet-200 hover:bg-violet-50"
             />
 
 

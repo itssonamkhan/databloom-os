@@ -12,6 +12,7 @@ import {
   Flame,
   Gauge,
   LayoutDashboard,
+  NotebookPen,
   RefreshCw,
   Sparkles,
   Target,
@@ -274,6 +275,22 @@ export default function AnalyticsPage() {
               delay={0.208}
             />
             <AnalyticsStatCard
+              label="Smart Notes"
+              value={snapshot.totals.notesCreated}
+              detail={`${snapshot.totals.notesCompleted} completed · ${snapshot.totals.noteFavorites} favorites`}
+              icon={<NotebookPen size={21} />}
+              tone="purple"
+              delay={0.209}
+            />
+            <AnalyticsStatCard
+              label="Notes writing time"
+              value={`${snapshot.totals.notesWritingMinutes} min`}
+              detail={`${snapshot.totals.noteCollections} study collections`}
+              icon={<TimerReset size={21} />}
+              tone="blue"
+              delay={0.21}
+            />
+            <AnalyticsStatCard
               label="Dashboard projects"
               value={snapshot.totals.dashboardProjects}
               detail="Completed portfolio projects"
@@ -307,6 +324,13 @@ export default function AnalyticsPage() {
             className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-fuchsia-200 bg-fuchsia-50 px-5 font-black text-fuchsia-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-fuchsia-100 hover:shadow-md"
           >
             🧩 Open Practice Lab
+          </Link>
+          <Link
+            href="/smart-notes"
+            onClick={playClickSound}
+            className="ml-3 mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 px-5 font-black text-violet-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100 hover:shadow-md"
+          >
+            📝 Open Smart Notes
           </Link>
         </section>
 

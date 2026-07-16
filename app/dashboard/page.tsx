@@ -15,7 +15,10 @@ import {
   toggleFavoriteDashboard,
 } from "@/lib/dashboardProgress";
 import { formulas } from "@/lib/formulas";
-import { getLearnedFormulas } from "@/lib/learnedFormulas";
+import {
+  FORMULA_PROGRESS_EVENT,
+  getLearnedFormulas,
+} from "@/lib/learnedFormulas";
 import { playClickSound } from "@/lib/sounds";
 import { sqlLessons } from "@/lib/sqlLessons";
 import {
@@ -67,6 +70,17 @@ import {
   getCareerSummary,
   loadCareerHubState,
 } from "@/lib/careerHub";
+import {
+  getSmartNotesSummary,
+  loadSmartNotesState,
+  SMART_NOTES_EVENT,
+} from "@/lib/smartNotes";
+import { tableauLessons } from "@/lib/tableauLessons";
+import {
+  calculateTableauProgress,
+  loadTableauProgress,
+  TABLEAU_PROGRESS_EVENT,
+} from "@/lib/tableauProgress";
 
 const categories = Array.from(
   new Set(dashboardProjects.map((project) => project.category)),
@@ -85,7 +99,7 @@ export default function DashboardPage() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() =>
     getFavoriteDashboards(),
   );
-  const [excelLearnedCount] = useState(() => {
+  const [excelLearnedCount, setExcelLearnedCount] = useState(() => {
     const learnedIds = new Set(getLearnedFormulas());
     return formulas.filter((formula) => learnedIds.has(formula.id)).length;
   });
@@ -108,6 +122,9 @@ export default function DashboardPage() {
     const completed = new Set(loadStatisticsProgress().completedLessonIds);
     return statisticsLessons.filter((lesson) => completed.has(lesson.id)).length;
   });
+  const [tableauCompletedCount, setTableauCompletedCount] = useState(
+    () => loadTableauProgress().completedLessonIds.length,
+  );
   const [businessAnalyticsCompletedCount, setBusinessAnalyticsCompletedCount] =
     useState(() => loadBusinessAnalyticsProgress().completedLessonIds.length);
   const [datasetCompletedCount, setDatasetCompletedCount] = useState(
@@ -121,6 +138,9 @@ export default function DashboardPage() {
   );
   const [careerSummary, setCareerSummary] = useState(() =>
     getCareerSummary(loadCareerHubState()),
+  );
+  const [notesSummary, setNotesSummary] = useState(() =>
+    getSmartNotesSummary(loadSmartNotesState()),
   );
   const excelProgress =
     formulas.length === 0
@@ -144,6 +164,10 @@ export default function DashboardPage() {
     statisticsCompletedCount,
     statisticsLessons.length,
   );
+  const tableauProgress = calculateTableauProgress(
+    tableauCompletedCount,
+    tableauLessons.length,
+  );
   const businessAnalyticsProgress = calculateBusinessAnalyticsProgress(
     businessAnalyticsCompletedCount,
     businessAnalyticsLessons.length,
@@ -152,6 +176,34 @@ export default function DashboardPage() {
     datasetCompletedCount,
     datasetLibrary.length,
   );
+
+  useEffect(() => {
+    const syncFormulaProgress = () => {
+      const learnedIds = new Set(getLearnedFormulas());
+      setExcelLearnedCount(
+        formulas.filter((formula) => learnedIds.has(formula.id)).length,
+      );
+    };
+    window.addEventListener(FORMULA_PROGRESS_EVENT, syncFormulaProgress);
+    return () =>
+      window.removeEventListener(FORMULA_PROGRESS_EVENT, syncFormulaProgress);
+  }, []);
+
+  useEffect(() => {
+    const syncTableauProgress = () =>
+      setTableauCompletedCount(loadTableauProgress().completedLessonIds.length);
+    window.addEventListener(TABLEAU_PROGRESS_EVENT, syncTableauProgress);
+    return () =>
+      window.removeEventListener(TABLEAU_PROGRESS_EVENT, syncTableauProgress);
+  }, []);
+
+  useEffect(() => {
+    const syncNotesProgress = () =>
+      setNotesSummary(getSmartNotesSummary(loadSmartNotesState()));
+    window.addEventListener(SMART_NOTES_EVENT, syncNotesProgress);
+    return () =>
+      window.removeEventListener(SMART_NOTES_EVENT, syncNotesProgress);
+  }, []);
 
   useEffect(() => {
     const syncCareerProgress = () =>
@@ -334,13 +386,14 @@ export default function DashboardPage() {
               Skill progress
             </h2>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-11">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-12">
             <SkillProgress title="📗 Excel" progress={excelProgress} />
             <SkillProgress title="🗄 SQL" progress={sqlProgress} />
             <SkillProgress title="📈 Power BI" progress={powerBIProgress} />
             <SkillProgress title="🧹 Power Query" progress={powerQueryProgress} />
             <SkillProgress title="🐍 Python" progress={pythonProgress} />
             <SkillProgress title="📐 Statistics" progress={statisticsProgress} />
+            <SkillProgress title="🎨 Tableau" progress={tableauProgress} />
             <SkillProgress
               title="💼 Business Analytics"
               progress={businessAnalyticsProgress}
@@ -358,10 +411,14 @@ export default function DashboardPage() {
               title="🌱 Career Hub"
               progress={careerSummary.readiness}
             />
+            <SkillProgress
+              title="📝 Smart Notes"
+              progress={notesSummary.progressPercentage}
+            />
           </div>
           <p className="mt-3 text-sm text-gray-700">
             Excel progress is based on {excelLearnedCount} of the {formulas.length}
-            {" "}Formula Studio lessons. SQL progress is based on {sqlCompletedCount} of the {sqlLessons.length} SQL Studio lessons. Power BI progress is based on {powerBICompletedCount} of {powerBITotal} Power BI and DAX lessons. Power Query progress is based on {powerQueryCompletedCount} of {powerQueryLessons.length} Power Query lessons. Python progress is based on {pythonCompletedCount} of {pythonLessons.length} Python Studio lessons. Statistics progress is based on {statisticsCompletedCount} of {statisticsLessons.length} Statistics Studio lessons. Business Analytics progress is based on {businessAnalyticsCompletedCount} of {businessAnalyticsLessons.length} Business Analytics lessons. Dataset progress is based on {datasetCompletedCount} of {datasetLibrary.length} practice datasets. Practice Lab progress is {practiceSummary.completedQuestions} completed challenges across {practiceSummary.sessions} saved sessions. Interview Hub progress is {interviewSummary.learned} learned questions across {interviewSummary.sessions} mock interviews. Career readiness is {careerSummary.readiness}% from the Career Checklist.
+            {" "}Formula Studio lessons. SQL progress is based on {sqlCompletedCount} of the {sqlLessons.length} SQL Studio lessons. Power BI progress is based on {powerBICompletedCount} of {powerBITotal} Power BI and DAX lessons. Power Query progress is based on {powerQueryCompletedCount} of {powerQueryLessons.length} Power Query lessons. Python progress is based on {pythonCompletedCount} of {pythonLessons.length} Python Studio lessons. Statistics progress is based on {statisticsCompletedCount} of {statisticsLessons.length} Statistics Studio lessons. Tableau progress is based on {tableauCompletedCount} of {tableauLessons.length} Tableau Studio lessons. Business Analytics progress is based on {businessAnalyticsCompletedCount} of {businessAnalyticsLessons.length} Business Analytics lessons. Dataset progress is based on {datasetCompletedCount} of {datasetLibrary.length} practice datasets. Practice Lab progress is {practiceSummary.completedQuestions} completed challenges across {practiceSummary.sessions} saved sessions. Interview Hub progress is {interviewSummary.learned} learned questions across {interviewSummary.sessions} mock interviews. Career readiness is {careerSummary.readiness}% from the Career Checklist. Smart Notes progress is {notesSummary.notesCompleted} of {notesSummary.notesCreated} notes completed.
           </p>
         </section>
 
@@ -453,11 +510,13 @@ export default function DashboardPage() {
             </Link>
             <Link href="/power-bi-studio" onClick={playClickSound} className="rounded-xl bg-amber-700 px-5 py-3 font-bold text-white transition hover:bg-amber-800">📊 Power BI Studio</Link>
             <Link href="/power-query-studio" onClick={playClickSound} className="rounded-xl bg-teal-700 px-5 py-3 font-bold text-white transition hover:bg-teal-800">🧹 Power Query Studio</Link>
+            <Link href="/tableau-studio" onClick={playClickSound} className="rounded-xl bg-blue-700 px-5 py-3 font-bold text-white transition hover:bg-blue-800">🎨 Tableau Studio</Link>
             <Link href="/business-analytics-studio" onClick={playClickSound} className="rounded-xl bg-indigo-700 px-5 py-3 font-bold text-white transition hover:bg-indigo-800">💼 Business Analytics Studio</Link>
             <Link href="/dataset-library" onClick={playClickSound} className="rounded-xl bg-violet-700 px-5 py-3 font-bold text-white transition hover:bg-violet-800">🗂 Dataset Library</Link>
             <Link href="/practice-lab" onClick={playClickSound} className="rounded-xl bg-fuchsia-700 px-5 py-3 font-bold text-white transition hover:bg-fuchsia-800">🧩 Continue Practice</Link>
             <Link href="/interview-hub" onClick={playClickSound} className="rounded-xl bg-violet-700 px-5 py-3 font-bold text-white transition hover:bg-violet-800">🎤 Interview Hub</Link>
             <Link href="/career-hub" onClick={playClickSound} className="rounded-xl bg-emerald-700 px-5 py-3 font-bold text-white transition hover:bg-emerald-800">🌱 Career Hub</Link>
+            <Link href="/smart-notes" onClick={playClickSound} className="rounded-xl bg-violet-700 px-5 py-3 font-bold text-white transition hover:bg-violet-800">📝 Continue Writing</Link>
             <Link
               href="/python-studio"
               onClick={playClickSound}

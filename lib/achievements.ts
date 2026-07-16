@@ -140,6 +140,24 @@ export const achievements: Achievement[] = [
     description: "Complete the full Career Hub readiness checklist.",
     reward: 100,
   },
+  {
+    id: "notes_starter",
+    title: "📝 First Page",
+    description: "Create your first Smart Notes Studio note.",
+    reward: 15,
+  },
+  {
+    id: "notes_finisher",
+    title: "✅ Note Complete",
+    description: "Complete your first study note.",
+    reward: 20,
+  },
+  {
+    id: "notes_collector",
+    title: "📚 Study Curator",
+    description: "Create your first study collection.",
+    reward: 15,
+  },
 ];
 
 export function getAchievement(id: string) {

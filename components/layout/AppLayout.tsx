@@ -9,16 +9,16 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <main className="flex min-h-screen min-w-0 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
 
       {/* Sidebar */}
-      <aside className="sticky top-0 h-screen">
+      <aside className="lg:sticky lg:top-0 lg:h-screen">
         <Sidebar />
       </aside>
 
 
       {/* Main Workspace */}
-      <div className="flex-1 px-8 py-6">
+      <div className="min-w-0 flex-1 px-4 pb-5 pt-20 sm:px-6 lg:px-8 lg:py-6">
 
         {/* Navbar */}
         <div className="mb-8">
@@ -29,12 +29,13 @@ export default function AppLayout({
         {/* App Content */}
         <section
           className="
-          max-w-7xl 
+          max-w-7xl
           mx-auto
           bg-white/40
           backdrop-blur-xl
           rounded-3xl
-          p-8
+          p-4
+          sm:p-8
           shadow-sm
           min-h-[calc(100vh-150px)]
           "

@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { useProgress } from "@/context/ProgressContext";
-import { getTodayFormulaChallenge } from "@/lib/formulaChallenges";
+import {
+  completeTodayFormulaChallenge,
+  getTodayFormulaChallenge,
+  isTodayFormulaChallengeCompleted,
+} from "@/lib/formulaChallenges";
 import XPToast from "@/components/effects/XPToast";
 import {
   playClickSound,
@@ -15,14 +19,14 @@ export default function FormulaChallenge() {
 
   const challenge = getTodayFormulaChallenge();
 
-  const [completed, setCompleted] = useState(false);
+  const [completed, setCompleted] = useState(isTodayFormulaChallengeCompleted);
 
   const [xpPopup, setXpPopup] = useState<number | null>(null);
 
   function completeChallenge() {
     playClickSound();
 
-    if (!completed) {
+    if (!completed && completeTodayFormulaChallenge()) {
       addXP(challenge.reward);
 
       playXPSound();

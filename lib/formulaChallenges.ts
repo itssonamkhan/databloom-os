@@ -43,6 +43,50 @@ export const formulaChallenges = [
 
 ];
 
+export const FORMULA_CHALLENGE_STORAGE_KEY =
+  "databloom-formula-challenge-completions-v1";
+
+function todayKey() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function loadCompletedChallengeDates() {
+  if (typeof window === "undefined") return [];
+  try {
+    const saved = window.localStorage.getItem(FORMULA_CHALLENGE_STORAGE_KEY);
+    const parsed: unknown = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+export function isTodayFormulaChallengeCompleted() {
+  return loadCompletedChallengeDates().includes(todayKey());
+}
+
+export function completeTodayFormulaChallenge() {
+  if (typeof window === "undefined") return false;
+  const dates = loadCompletedChallengeDates();
+  const today = todayKey();
+  if (dates.includes(today)) return false;
+  try {
+    window.localStorage.setItem(
+      FORMULA_CHALLENGE_STORAGE_KEY,
+      JSON.stringify([...dates, today].slice(-90)),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 
 
 export function getTodayFormulaChallenge(){

@@ -54,6 +54,11 @@ const studioPalette: Record<
     badge: "bg-fuchsia-100 text-fuchsia-800",
     border: "border-fuchsia-100",
   },
+  tableau: {
+    bar: "from-blue-500 to-cyan-400",
+    badge: "bg-blue-100 text-blue-800",
+    border: "border-blue-100",
+  },
   dashboards: {
     bar: "from-purple-500 to-violet-500",
     badge: "bg-purple-100 text-purple-800",

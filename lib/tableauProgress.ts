@@ -1,4 +1,4 @@
-const TABLEAU_PROGRESS_KEY = "databloom-tableau-progress-v1";
+export const TABLEAU_PROGRESS_STORAGE_KEY = "databloom-tableau-progress-v1";
 
 export const TABLEAU_PROGRESS_EVENT = "databloom:tableau-progress-updated";
 
@@ -53,7 +53,7 @@ function normalizeState(value: unknown): TableauProgressState {
 export function loadTableauProgress(): TableauProgressState {
   if (!canUseStorage()) return emptyState();
   try {
-    const saved = window.localStorage.getItem(TABLEAU_PROGRESS_KEY);
+    const saved = window.localStorage.getItem(TABLEAU_PROGRESS_STORAGE_KEY);
     return saved ? normalizeState(JSON.parse(saved)) : emptyState();
   } catch {
     return emptyState();
@@ -66,7 +66,7 @@ function saveTableauProgress(
 ) {
   if (!canUseStorage()) return false;
   try {
-    window.localStorage.setItem(TABLEAU_PROGRESS_KEY, JSON.stringify(state));
+    window.localStorage.setItem(TABLEAU_PROGRESS_STORAGE_KEY, JSON.stringify(state));
     window.dispatchEvent(
       new CustomEvent(TABLEAU_PROGRESS_EVENT, { detail: { lessonId, state } }),
     );

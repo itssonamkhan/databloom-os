@@ -1,5 +1,7 @@
 const STORAGE_KEY = "databloom-learned-formulas";
 
+export const FORMULA_PROGRESS_EVENT = "databloom:formula-progress-updated";
+
 
 export function getLearnedFormulas(): string[] {
 
@@ -38,6 +40,8 @@ export function markFormulaLearned(
       STORAGE_KEY,
       JSON.stringify(updated)
     );
+
+    window.dispatchEvent(new CustomEvent(FORMULA_PROGRESS_EVENT, { detail: { id } }));
 
 
     return updated;

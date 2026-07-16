@@ -114,6 +114,17 @@ const categoryMeta: Record<
   },
 };
 
+const categoryStudioRoutes: Record<PracticeCategory, string> = {
+  Excel: "/formula-studio",
+  SQL: "/sql-studio",
+  Python: "/python-studio",
+  Statistics: "/statistics-studio",
+  "Power BI": "/power-bi-studio",
+  Tableau: "/tableau-studio",
+  "Power Query": "/power-query-studio",
+  "Business Analytics": "/business-analytics-studio",
+};
+
 function emptyState(): PracticeLabState {
   return {
     version: 1,
@@ -605,6 +616,23 @@ export default function PracticeLabHub() {
                 </button>
               );
             })}
+          </div>
+        </section>
+
+        <section className="rounded-[2rem] border border-sky-100 bg-white/80 p-5 shadow-md sm:p-7">
+          <SectionHeading eyebrow="Review before practice" title="Open the matching learning Studio" description="Use the original lesson paths when a practice topic needs a refresher." />
+          <div className="mt-5 flex flex-wrap gap-3">
+            {practiceCategories.map((item) => (
+              <Link
+                key={item}
+                href={categoryStudioRoutes[item]}
+                onClick={playClickSound}
+                className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-black text-sky-900 transition hover:bg-sky-100"
+              >
+                <span aria-hidden="true">{categoryMeta[item].icon}</span>
+                {item} Studio
+              </Link>
+            ))}
           </div>
         </section>
 

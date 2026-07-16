@@ -18,6 +18,7 @@ import {
   CAREER_HUB_STORAGE_KEY,
 } from "@/lib/careerHub";
 import { POWER_BI_PROGRESS_EVENT } from "@/lib/powerBIProgress";
+import { POWER_QUERY_PROGRESS_EVENT } from "@/lib/powerQueryProgress";
 import {
   PRACTICE_LAB_EVENT,
   PRACTICE_LAB_STORAGE_KEY,
@@ -25,19 +26,36 @@ import {
 import { PYTHON_PROGRESS_EVENT } from "@/lib/pythonProgress";
 import { SQL_PROGRESS_EVENT } from "@/lib/sqlProgress";
 import { STATISTICS_PROGRESS_EVENT } from "@/lib/statisticsProgress";
+import { BUSINESS_ANALYTICS_PROGRESS_EVENT } from "@/lib/businessAnalyticsProgress";
+import { DATASET_LIBRARY_PROGRESS_EVENT } from "@/lib/datasetLibraryProgress";
+import {
+  TABLEAU_PROGRESS_EVENT,
+  TABLEAU_PROGRESS_STORAGE_KEY,
+} from "@/lib/tableauProgress";
+import { FORMULA_PROGRESS_EVENT } from "@/lib/learnedFormulas";
 import { ACHIEVEMENTS_UPDATED_EVENT } from "@/lib/unlockedAchievements";
 import { USER_PREFERENCES_EVENT } from "@/lib/userPreferences";
+import {
+  SMART_NOTES_EVENT,
+  SMART_NOTES_STORAGE_KEY,
+} from "@/lib/smartNotes";
 
 const progressEvents = [
   SQL_PROGRESS_EVENT,
+  FORMULA_PROGRESS_EVENT,
   POWER_BI_PROGRESS_EVENT,
+  POWER_QUERY_PROGRESS_EVENT,
   PYTHON_PROGRESS_EVENT,
   STATISTICS_PROGRESS_EVENT,
+  TABLEAU_PROGRESS_EVENT,
+  BUSINESS_ANALYTICS_PROGRESS_EVENT,
+  DATASET_LIBRARY_PROGRESS_EVENT,
   DASHBOARD_STORAGE_EVENT,
   DASHBOARD_PRACTICE_EVENT,
   PRACTICE_LAB_EVENT,
   INTERVIEW_HUB_EVENT,
   CAREER_HUB_EVENT,
+  SMART_NOTES_EVENT,
   ACHIEVEMENTS_UPDATED_EVENT,
   USER_PREFERENCES_EVENT,
 ] as const;
@@ -51,11 +69,16 @@ const trackedStorageKeys = new Set([
   "databloom-power-bi-progress-v1",
   "databloom-python-progress-v1",
   "databloom-statistics-progress-v1",
+  TABLEAU_PROGRESS_STORAGE_KEY,
+  "databloom-power-query-progress-v1",
+  "databloom-business-analytics-progress-v1",
+  "databloom-dataset-library-progress-v1",
   "dashboard_progress",
   DASHBOARD_PRACTICE_STORAGE_KEY,
   PRACTICE_LAB_STORAGE_KEY,
   INTERVIEW_HUB_STORAGE_KEY,
   CAREER_HUB_STORAGE_KEY,
+  SMART_NOTES_STORAGE_KEY,
   "databloom-unlocked-achievements",
   "databloom-daily-tasks",
   "databloom-daily-date",

@@ -30,7 +30,7 @@ const searchItems: SearchItem[] = [
     description: "Return to your DataBloom dashboard",
     href: "/",
     icon: "🏠",
-    keywords: ["home", "dashboard", "main"],
+    keywords: ["home", "main", "start"],
   },
   {
     title: "Formula Studio",
@@ -44,7 +44,7 @@ const searchItems: SearchItem[] = [
     description: "Learn SQL queries and database concepts",
     href: "/sql-studio",
     icon: "🗄️",
-    keywords: ["sql", "database", "queries"],
+    keywords: ["sql", "database", "queries", "joins"],
   },
   {
     title: "Power BI Studio",
@@ -114,7 +114,7 @@ const searchItems: SearchItem[] = [
     description: "Build practical analyst projects",
     href: "/dashboard",
     icon: "🎨",
-    keywords: ["projects", "dashboard", "sales", "finance", "hr"],
+    keywords: ["projects", "portfolio project", "dashboard", "sales", "finance", "hr"],
   },
   {
     title: "Practice Lab",
@@ -177,6 +177,24 @@ const searchItems: SearchItem[] = [
     ],
   },
   {
+    title: "Smart Notes Studio",
+    description: "Write, organize, search, and collect study notes",
+    href: "/smart-notes",
+    icon: "📝",
+    keywords: [
+      "smart notes",
+      "notes",
+      "note editor",
+      "markdown",
+      "lecture notes",
+      "cheat sheet",
+      "revision notes",
+      "study collections",
+      "meeting notes",
+      "interview notes",
+    ],
+  },
+  {
     title: "Planner",
     description: "Plan your daily learning goals",
     href: "/planner",
@@ -203,6 +221,13 @@ const searchItems: SearchItem[] = [
     href: "/achievements",
     icon: "🏆",
     keywords: ["achievements", "badges", "rewards"],
+  },
+  {
+    title: "Study Mode",
+    description: "Open study music and the focus timer",
+    href: "/#study-mode",
+    icon: "🎧",
+    keywords: ["music", "study music", "study mode", "focus timer", "spotify", "lofi", "lo-fi"],
   },
   {
     title: "Profile",
@@ -316,6 +341,8 @@ export default function Navbar() {
       return searchItems;
     }
 
+    const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
+
     return searchItems.filter((item) => {
       const searchableText = [
         item.title,
@@ -325,7 +352,7 @@ export default function Navbar() {
         .join(" ")
         .toLowerCase();
 
-      return searchableText.includes(normalizedQuery);
+      return queryTokens.every((token) => searchableText.includes(token));
     });
   }, [query]);
 
@@ -376,7 +403,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
+        <div className="flex min-w-0 w-full flex-1 flex-wrap items-center justify-between gap-1.5 sm:w-auto sm:justify-end sm:gap-3">
           <Link
             href="/"
             onClick={playClickSound}
@@ -393,11 +420,12 @@ export default function Navbar() {
               setSearchOpen(true);
               setNotificationsOpen(false);
             }}
-            className="hidden min-h-10 items-center gap-2 rounded-xl border border-purple-100 bg-white px-4 py-2 text-sm font-semibold text-gray-600 transition hover:-translate-y-0.5 hover:bg-purple-50 lg:inline-flex"
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-purple-100 bg-white px-3 py-2 text-sm font-semibold text-gray-600 transition hover:-translate-y-0.5 hover:bg-purple-50 lg:px-4"
+            aria-label="Open global search"
           >
             <Search className="size-4" />
-            Search
-            <span className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500">
+            <span className="hidden lg:inline">Search</span>
+            <span className="hidden rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500 lg:inline">
               ⌘K
             </span>
           </button>
@@ -423,7 +451,7 @@ export default function Navbar() {
           <Link
             href="/profile"
             onClick={playClickSound}
-            className="min-h-10 rounded-xl bg-yellow-50 px-3 py-2 text-sm font-black text-yellow-700 transition hover:-translate-y-0.5 hover:bg-yellow-100"
+            className="min-h-10 rounded-xl bg-yellow-50 px-2.5 py-2 text-xs font-black text-yellow-700 transition hover:-translate-y-0.5 hover:bg-yellow-100 sm:px-3 sm:text-sm"
           >
             ⭐ {xp} XP
           </Link>
@@ -512,7 +540,7 @@ export default function Navbar() {
           <Link
             href="/profile"
             onClick={playClickSound}
-            className="grid size-10 place-items-center rounded-xl bg-purple-600 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-700"
+            className="hidden size-10 place-items-center rounded-xl bg-purple-600 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-700 sm:grid"
             aria-label="Open profile"
           >
             <UserRound className="size-4" />

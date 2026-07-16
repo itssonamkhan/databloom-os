@@ -193,6 +193,11 @@ function CareerHome({ preferences, state, summary, recommended, navigate }: {
         <QuickButton icon="🐙" label="GitHub" onClick={() => navigate("github")} />
         <QuickLink icon="🎤" label="Interview Hub" href="/interview-hub" />
         <QuickLink icon="🧩" label="Practice Lab" href="/practice-lab" />
+        <QuickLink icon="📝" label="Smart Notes" href="/smart-notes" />
+        <QuickLink icon="📊" label="Dashboard Studio" href="/dashboard" />
+        <QuickLink icon="🗂️" label="Dataset Library" href="/dataset-library" />
+        <QuickLink icon="🗄️" label="SQL Studio" href="/sql-studio" />
+        <QuickLink icon="🐍" label="Python Studio" href="/python-studio" />
       </div>
     </section>
   </div>;

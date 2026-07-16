@@ -37,6 +37,12 @@ import {
   type StreakData,
 } from "@/lib/streak";
 import { loadUnlockedAchievements } from "@/lib/unlockedAchievements";
+import { playClickSound } from "@/lib/sounds";
+import {
+  getSmartNotesSummary,
+  loadSmartNotesState,
+  SMART_NOTES_EVENT,
+} from "@/lib/smartNotes";
 
 export default function ProfilePage() {
   const { xp, currentLevelName } = useProgress();
@@ -68,6 +74,9 @@ export default function ProfilePage() {
   const [careerSummary, setCareerSummary] = useState(() =>
     getCareerSummary(loadCareerHubState()),
   );
+  const [notesSummary, setNotesSummary] = useState(() =>
+    getSmartNotesSummary(loadSmartNotesState()),
+  );
 
   useEffect(() => {
     function loadProfileData() {
@@ -78,6 +87,7 @@ export default function ProfilePage() {
       setPracticeSummary(getPracticeSummary(loadPracticeLabState()));
       setInterviewSummary(getInterviewSummary(loadInterviewHubState()));
       setCareerSummary(getCareerSummary(loadCareerHubState()));
+      setNotesSummary(getSmartNotesSummary(loadSmartNotesState()));
 
       const favoriteIds = getFavorites();
 
@@ -115,6 +125,10 @@ export default function ProfilePage() {
       CAREER_HUB_EVENT,
       loadProfileData
     );
+    window.addEventListener(
+      SMART_NOTES_EVENT,
+      loadProfileData
+    );
 
     return () => {
       window.removeEventListener(
@@ -136,6 +150,10 @@ export default function ProfilePage() {
       );
       window.removeEventListener(
         CAREER_HUB_EVENT,
+        loadProfileData
+      );
+      window.removeEventListener(
+        SMART_NOTES_EVENT,
         loadProfileData
       );
     };
@@ -265,7 +283,7 @@ export default function ProfilePage() {
             description="A quick look at your learning journey so far."
           />
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-9">
             <ProfileCard
               emoji="🌱"
               label="Current level"
@@ -325,6 +343,19 @@ export default function ProfilePage() {
               value={`${careerSummary.readiness}% · ${careerSummary.applications} applications`}
               background="from-emerald-50 to-sky-50"
             />
+
+            <Link
+              href="/smart-notes"
+              onClick={playClickSound}
+              className="block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700"
+            >
+              <ProfileCard
+                emoji="📝"
+                label="Smart Notes"
+                value={`${notesSummary.notesCreated} notes · ${notesSummary.collections} collections`}
+                background="from-violet-50 to-sky-50"
+              />
+            </Link>
           </div>
         </section>
 
