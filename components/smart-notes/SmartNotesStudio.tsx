@@ -21,6 +21,7 @@ import {
   Table2,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import AppLayout from "@/components/layout/AppLayout";
@@ -165,6 +166,7 @@ export default function SmartNotesStudio() {
               <p className="mt-3 max-w-2xl text-base font-medium leading-7 text-slate-700 sm:text-lg">Capture lessons, ideas, projects, and interview prep in one searchable workspace.</p>
             </div>
             <div className="flex flex-wrap gap-3">
+              <Link href="/flashcards" onClick={playClickSound} className={`inline-flex min-h-12 items-center gap-2 rounded-2xl border border-pink-200 bg-pink-50 px-5 font-black text-pink-800 shadow-sm ${buttonFocus}`}>🧠 Flashcards</Link>
               {view !== "home" ? <button type="button" onClick={goHome} className={`inline-flex min-h-12 items-center gap-2 rounded-2xl bg-white/80 px-5 font-black text-purple-800 shadow-sm ${buttonFocus}`}><ArrowLeft size={18} /> Notes home</button> : null}
               <button type="button" onClick={() => setView("collections")} className={`inline-flex min-h-12 items-center gap-2 rounded-2xl border border-white bg-white/75 px-5 font-black text-emerald-800 shadow-sm ${buttonFocus}`}><BookOpen size={18} /> Collections</button>
               <button type="button" onClick={() => setShowTemplates(true)} className={`inline-flex min-h-12 items-center gap-2 rounded-2xl bg-purple-700 px-5 font-black text-white shadow-md transition hover:bg-purple-800 ${buttonFocus}`}><Plus size={18} /> Create note</button>

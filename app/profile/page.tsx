@@ -43,6 +43,11 @@ import {
   loadSmartNotesState,
   SMART_NOTES_EVENT,
 } from "@/lib/smartNotes";
+import {
+  FLASHCARDS_EVENT,
+  getFlashcardsSummary,
+  loadFlashcardsState,
+} from "@/lib/flashcards";
 
 export default function ProfilePage() {
   const { xp, currentLevelName } = useProgress();
@@ -77,6 +82,9 @@ export default function ProfilePage() {
   const [notesSummary, setNotesSummary] = useState(() =>
     getSmartNotesSummary(loadSmartNotesState()),
   );
+  const [flashcardsSummary, setFlashcardsSummary] = useState(() =>
+    getFlashcardsSummary(loadFlashcardsState()),
+  );
 
   useEffect(() => {
     function loadProfileData() {
@@ -88,6 +96,7 @@ export default function ProfilePage() {
       setInterviewSummary(getInterviewSummary(loadInterviewHubState()));
       setCareerSummary(getCareerSummary(loadCareerHubState()));
       setNotesSummary(getSmartNotesSummary(loadSmartNotesState()));
+      setFlashcardsSummary(getFlashcardsSummary(loadFlashcardsState()));
 
       const favoriteIds = getFavorites();
 
@@ -129,6 +138,10 @@ export default function ProfilePage() {
       SMART_NOTES_EVENT,
       loadProfileData
     );
+    window.addEventListener(
+      FLASHCARDS_EVENT,
+      loadProfileData
+    );
 
     return () => {
       window.removeEventListener(
@@ -154,6 +167,10 @@ export default function ProfilePage() {
       );
       window.removeEventListener(
         SMART_NOTES_EVENT,
+        loadProfileData
+      );
+      window.removeEventListener(
+        FLASHCARDS_EVENT,
         loadProfileData
       );
     };
@@ -354,6 +371,19 @@ export default function ProfilePage() {
                 label="Smart Notes"
                 value={`${notesSummary.notesCreated} notes · ${notesSummary.collections} collections`}
                 background="from-violet-50 to-sky-50"
+              />
+            </Link>
+
+            <Link
+              href="/flashcards"
+              onClick={playClickSound}
+              className="block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700"
+            >
+              <ProfileCard
+                emoji="🧠"
+                label="Flashcards"
+                value={`${flashcardsSummary.uniqueCardsStudied} studied · ${flashcardsSummary.dueToday} due`}
+                background="from-pink-50 to-purple-50"
               />
             </Link>
           </div>

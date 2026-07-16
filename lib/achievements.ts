@@ -158,6 +158,18 @@ export const achievements: Achievement[] = [
     description: "Create your first study collection.",
     reward: 15,
   },
+  {
+    id: "flashcards_starter",
+    title: "🧠 First Recall",
+    description: "Review your first card in Flashcards Studio.",
+    reward: 5,
+  },
+  {
+    id: "flashcards_finisher",
+    title: "🗂️ Deck in Bloom",
+    description: "Complete your first Flashcards Studio session.",
+    reward: 20,
+  },
 ];
 
 export function getAchievement(id: string) {

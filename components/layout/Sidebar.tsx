@@ -15,6 +15,7 @@ import {
   Headphones,
   Home,
   LayoutDashboard,
+  Layers3,
   Menu,
   MessagesSquare,
   NotebookPen,
@@ -56,6 +57,7 @@ const navigationGroups: Array<{ label: string; items: NavItem[] }> = [
       { text: "Interview Hub", href: "/interview-hub", icon: MessagesSquare },
       { text: "Career Hub", href: "/career-hub", icon: Compass },
       { text: "Smart Notes", href: "/smart-notes", icon: NotebookPen },
+      { text: "Flashcards", href: "/flashcards", icon: Layers3 },
     ],
   },
   {

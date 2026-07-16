@@ -30,6 +30,7 @@ import { loadStreak, type StreakData } from "@/lib/streak";
 import { loadXP } from "@/lib/storage";
 import { loadUnlockedAchievements } from "@/lib/unlockedAchievements";
 import { getSmartNotesSummary, loadSmartNotesState } from "@/lib/smartNotes";
+import { getFlashcardsSummary, loadFlashcardsState } from "@/lib/flashcards";
 import { loadUserPreferences } from "@/lib/userPreferences";
 import {
   loadAnalyticsHistory,
@@ -100,6 +101,11 @@ export type AnalyticsTotals = {
   notesWritingMinutes: number;
   noteCollections: number;
   noteFavorites: number;
+  flashcardsStudied: number;
+  flashcardDecksCompleted: number;
+  flashcardAccuracy: number;
+  flashcardStudyMinutes: number;
+  flashcardXP: number;
   dashboardProjects: number;
   focusSessions: number;
 };
@@ -700,6 +706,7 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
   const interviewSummary = getInterviewSummary(loadInterviewHubState());
   const careerSummary = getCareerSummary(loadCareerHubState());
   const notesSummary = getSmartNotesSummary(loadSmartNotesState());
+  const flashcardsSummary = getFlashcardsSummary(loadFlashcardsState());
   const focusSessions = loadFocusSessions();
   const achievementAnalytics = getAchievementAnalytics();
   const weeklyActivity = loadWeeklyActivity(new Date(generatedAt));
@@ -739,6 +746,11 @@ function buildAnalyticsSnapshot(): AnalyticsSnapshot {
       notesWritingMinutes: notesSummary.writingMinutes,
       noteCollections: notesSummary.collections,
       noteFavorites: notesSummary.favorites,
+      flashcardsStudied: flashcardsSummary.cardsStudied,
+      flashcardDecksCompleted: flashcardsSummary.decksCompleted,
+      flashcardAccuracy: flashcardsSummary.accuracy,
+      flashcardStudyMinutes: flashcardsSummary.studyMinutes,
+      flashcardXP: flashcardsSummary.xpEarned,
       dashboardProjects: dashboardProjectsCompleted,
       focusSessions,
     },
@@ -800,6 +812,13 @@ export function exportAnalyticsSummary(snapshot: AnalyticsSnapshot) {
     })),
     completedLessons: snapshot.totals.completedLessons,
     completedPractice: snapshot.totals.completedPractice,
+    flashcards: {
+      cardsStudied: snapshot.totals.flashcardsStudied,
+      decksCompleted: snapshot.totals.flashcardDecksCompleted,
+      accuracy: snapshot.totals.flashcardAccuracy,
+      studyMinutes: snapshot.totals.flashcardStudyMinutes,
+      xpEarned: snapshot.totals.flashcardXP,
+    },
     dashboardProjects: snapshot.totals.dashboardProjects,
     focusSessions: snapshot.totals.focusSessions,
   };

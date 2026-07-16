@@ -163,6 +163,14 @@ export default function Home() {
               color="border-violet-200 hover:bg-violet-50"
             />
 
+            <FeatureCard
+              title="Flashcards Studio"
+              description="Build lasting recall with decks, daily review, and spaced repetition"
+              icon="🧠"
+              href="/flashcards"
+              color="border-pink-200 hover:bg-pink-50"
+            />
+
 
           </div>
 

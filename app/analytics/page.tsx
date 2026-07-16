@@ -12,6 +12,7 @@ import {
   Flame,
   Gauge,
   LayoutDashboard,
+  Layers3,
   NotebookPen,
   RefreshCw,
   Sparkles,
@@ -291,6 +292,22 @@ export default function AnalyticsPage() {
               delay={0.21}
             />
             <AnalyticsStatCard
+              label="Flashcards studied"
+              value={snapshot.totals.flashcardsStudied}
+              detail={`${snapshot.totals.flashcardDecksCompleted} decks · ${snapshot.totals.flashcardAccuracy}% accuracy`}
+              icon={<Layers3 size={21} />}
+              tone="pink"
+              delay={0.215}
+            />
+            <AnalyticsStatCard
+              label="Flashcard study time"
+              value={`${snapshot.totals.flashcardStudyMinutes} min`}
+              detail={`${snapshot.totals.flashcardXP} one-time XP earned`}
+              icon={<TimerReset size={21} />}
+              tone="blue"
+              delay={0.218}
+            />
+            <AnalyticsStatCard
               label="Dashboard projects"
               value={snapshot.totals.dashboardProjects}
               detail="Completed portfolio projects"
@@ -331,6 +348,13 @@ export default function AnalyticsPage() {
             className="ml-3 mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 px-5 font-black text-violet-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100 hover:shadow-md"
           >
             📝 Open Smart Notes
+          </Link>
+          <Link
+            href="/flashcards"
+            onClick={playClickSound}
+            className="ml-3 mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl border border-pink-200 bg-pink-50 px-5 font-black text-pink-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-pink-100 hover:shadow-md"
+          >
+            🧠 Open Flashcards
           </Link>
         </section>
 

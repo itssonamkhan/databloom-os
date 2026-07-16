@@ -195,6 +195,22 @@ const searchItems: SearchItem[] = [
     ],
   },
   {
+    title: "Flashcards Studio",
+    description: "Study decks with daily spaced repetition",
+    href: "/flashcards",
+    icon: "🧠",
+    keywords: [
+      "flashcards",
+      "flash cards",
+      "deck",
+      "spaced repetition",
+      "daily review",
+      "memory",
+      "recall",
+      "study cards",
+    ],
+  },
+  {
     title: "Planner",
     description: "Plan your daily learning goals",
     href: "/planner",
