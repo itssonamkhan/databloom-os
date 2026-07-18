@@ -136,6 +136,13 @@ html[data-databloom-theme="Cloud"] {
   --databloom-accent-strong: #1d4ed8;
   --databloom-accent-soft: #dbeafe;
   --databloom-border: #bfdbfe;
+  --databloom-selected-chip-start: rgb(219 234 254 / 0.94);
+  --databloom-selected-chip-end: rgb(239 246 255 / 0.92);
+  --databloom-selected-chip-border: rgb(96 165 250 / 0.84);
+  --databloom-selected-chip-text: #172554;
+  --databloom-selected-chip-shadow:
+    0 8px 22px rgb(37 99 235 / 0.14),
+    inset 0 1px 0 rgb(255 255 255 / 0.78);
 }
 
 html[data-databloom-theme="Night"] {
@@ -151,6 +158,13 @@ html[data-databloom-theme="Night"] {
   --databloom-accent-strong: #3730a3;
   --databloom-accent-soft: #e0e7ff;
   --databloom-border: #c7d2fe;
+  --databloom-selected-chip-start: rgb(55 48 163 / 0.94);
+  --databloom-selected-chip-end: rgb(30 41 59 / 0.94);
+  --databloom-selected-chip-border: rgb(129 140 248 / 0.9);
+  --databloom-selected-chip-text: #f8fafc;
+  --databloom-selected-chip-shadow:
+    0 9px 24px rgb(49 46 129 / 0.26),
+    inset 0 1px 0 rgb(255 255 255 / 0.16);
 }
 
 html[data-databloom-theme="Coffee House"] {
@@ -166,6 +180,13 @@ html[data-databloom-theme="Coffee House"] {
   --databloom-accent-strong: #92400e;
   --databloom-accent-soft: #fef3c7;
   --databloom-border: #fcd34d;
+  --databloom-selected-chip-start: rgb(254 243 199 / 0.94);
+  --databloom-selected-chip-end: rgb(254 215 170 / 0.92);
+  --databloom-selected-chip-border: rgb(217 119 6 / 0.64);
+  --databloom-selected-chip-text: #78350f;
+  --databloom-selected-chip-shadow:
+    0 8px 22px rgb(146 64 14 / 0.14),
+    inset 0 1px 0 rgb(255 255 255 / 0.68);
 }
 
 html[data-databloom-theme="Kawaii"] {
@@ -181,6 +202,13 @@ html[data-databloom-theme="Kawaii"] {
   --databloom-accent-strong: #a21caf;
   --databloom-accent-soft: #fae8ff;
   --databloom-border: #f0abfc;
+  --databloom-selected-chip-start: rgb(252 231 243 / 0.94);
+  --databloom-selected-chip-end: rgb(250 232 255 / 0.92);
+  --databloom-selected-chip-border: rgb(232 121 249 / 0.72);
+  --databloom-selected-chip-text: #701a75;
+  --databloom-selected-chip-shadow:
+    0 8px 22px rgb(192 38 211 / 0.14),
+    inset 0 1px 0 rgb(255 255 255 / 0.76);
 }
 
 html[data-databloom-theme] {
@@ -333,6 +361,62 @@ html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   );
   color: var(--databloom-text-on-accent);
   color: contrast-color(var(--databloom-accent-strong));
+}
+
+:is(
+  html[data-databloom-theme="Cloud"],
+  html[data-databloom-theme="Night"],
+  html[data-databloom-theme="Coffee House"],
+  html[data-databloom-theme="Kawaii"]
+):not([data-databloom-theme="Sakura"])
+  :where(button, a):where([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]):where(
+    [class~="bg-purple-500"],
+    [class~="bg-purple-600"],
+    [class~="bg-purple-700"],
+    [class~="bg-purple-800"],
+    [class~="bg-pink-500"],
+    [class~="bg-pink-600"],
+    [class~="bg-pink-700"],
+    [class~="bg-pink-800"],
+    [class~="from-purple-500"],
+    [class~="from-purple-600"],
+    [class~="from-purple-700"],
+    [class~="from-purple-800"]
+  ) {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background-color: var(--databloom-selected-chip-end);
+  background-image: linear-gradient(
+    to bottom right,
+    var(--databloom-selected-chip-start),
+    var(--databloom-selected-chip-end)
+  );
+  border-color: var(--databloom-selected-chip-border);
+  box-shadow: var(--databloom-selected-chip-shadow);
+  color: var(--databloom-selected-chip-text);
+}
+
+:is(
+  html[data-databloom-theme="Cloud"],
+  html[data-databloom-theme="Night"],
+  html[data-databloom-theme="Coffee House"],
+  html[data-databloom-theme="Kawaii"]
+):not([data-databloom-theme="Sakura"])
+  :where(button, a):where([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]):where(
+    [class~="bg-purple-500"],
+    [class~="bg-purple-600"],
+    [class~="bg-purple-700"],
+    [class~="bg-purple-800"],
+    [class~="bg-pink-500"],
+    [class~="bg-pink-600"],
+    [class~="bg-pink-700"],
+    [class~="bg-pink-800"],
+    [class~="from-purple-500"],
+    [class~="from-purple-600"],
+    [class~="from-purple-700"],
+    [class~="from-purple-800"]
+  ) :where(span, svg) {
+  color: inherit;
 }
 
 html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
