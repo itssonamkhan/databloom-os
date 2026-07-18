@@ -439,6 +439,11 @@ html[data-databloom-theme="Sakura"] .databloom-progress-fill {
   );
 }
 
+html[data-databloom-theme="Sakura"]
+  :where(button, a).databloom-brand-cta[class*="bg-gradient"] {
+  color: var(--databloom-text-on-accent);
+}
+
 .databloom-text-primary {
   color: var(--databloom-text-primary);
 }

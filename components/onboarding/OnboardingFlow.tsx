@@ -205,7 +205,7 @@ export default function OnboardingFlow() {
                   <button
                     type="button"
                     onClick={nextScreen}
-                    className="mt-9 inline-flex min-h-14 items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 px-7 py-4 text-lg font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-700"
+                    className="databloom-brand-cta mt-9 inline-flex min-h-14 items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 px-7 py-4 text-lg font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-700"
                   >
                     Begin Your Journey <ArrowRight size={20} aria-hidden="true" />
                   </button>
@@ -345,7 +345,7 @@ export default function OnboardingFlow() {
                       Continue <ArrowRight size={18} aria-hidden="true" />
                     </button>
                   ) : (
-                    <button type="button" onClick={finishOnboarding} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-bold text-white shadow-md transition hover:shadow-lg">
+                    <button type="button" onClick={finishOnboarding} className="databloom-brand-cta inline-flex min-h-12 items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-bold text-white shadow-md transition hover:shadow-lg">
                       Enter DataBloom OS <Check size={18} aria-hidden="true" />
                     </button>
                   )}
