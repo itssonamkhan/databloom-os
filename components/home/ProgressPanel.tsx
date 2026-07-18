@@ -43,7 +43,14 @@ export default function ProgressPanel() {
 
           </div>
 
-          <div className="mt-2 h-3 overflow-hidden rounded-full bg-gray-200">
+          <div
+            className="mt-2 h-3 overflow-hidden rounded-full bg-gray-200"
+            role="progressbar"
+            aria-label="XP progress to the next level"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(Math.min(progress, 100))}
+          >
 
             <div
               className="h-3 rounded-full bg-purple-400 transition-all duration-700"

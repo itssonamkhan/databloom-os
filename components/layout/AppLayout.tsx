@@ -9,7 +9,10 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-screen min-w-0 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <main
+      data-databloom-page
+      className="flex min-h-screen min-w-0 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50"
+    >
 
       {/* Sidebar */}
       <aside className="lg:sticky lg:top-0 lg:h-screen">
@@ -28,6 +31,7 @@ export default function AppLayout({
 
         {/* App Content */}
         <section
+          data-databloom-glass
           className="
           max-w-7xl
           mx-auto

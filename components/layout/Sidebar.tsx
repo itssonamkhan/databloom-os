@@ -108,6 +108,7 @@ export default function Sidebar() {
 
       {mobileOpen ? (
         <button
+          data-databloom-overlay
           type="button"
           aria-label="Close navigation overlay"
           onClick={() => setMobileOpen(false)}
@@ -116,6 +117,7 @@ export default function Sidebar() {
       ) : null}
 
       <aside
+        data-databloom-sidebar
         className={`fixed inset-y-0 left-0 z-50 h-dvh w-72 overflow-y-auto border-r border-pink-200 bg-gradient-to-b from-purple-100 via-pink-100 to-blue-100 shadow-xl transition-transform lg:static lg:h-screen lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="px-7 pb-5 pt-20 lg:pt-8">

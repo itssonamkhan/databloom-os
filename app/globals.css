@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf5ff;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -17,6 +17,26 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+/*
+ * Theme palettes define visual identity. The semantic tokens below them define
+ * readable roles once, so components and future light-pastel themes inherit the
+ * same accessibility contract without changing their gradients or layout.
+ */
+html[data-databloom-theme="Sakura"] {
+  --databloom-page-start: #fdf2f8;
+  --databloom-page-middle: #faf5ff;
+  --databloom-page-end: #eff6ff;
+  --databloom-sidebar-start: #f3e8ff;
+  --databloom-sidebar-middle: #fce7f3;
+  --databloom-sidebar-end: #dbeafe;
+  --databloom-surface: rgb(255 255 255 / 0.82);
+  --databloom-navbar: rgb(255 255 255 / 0.8);
+  --databloom-accent: #9333ea;
+  --databloom-accent-strong: #7e22ce;
+  --databloom-accent-soft: #f3e8ff;
+  --databloom-border: #e9d5ff;
 }
 
 html[data-databloom-theme="Cloud"] {
@@ -79,8 +99,50 @@ html[data-databloom-theme="Kawaii"] {
   --databloom-border: #f0abfc;
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"]) body,
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+html[data-databloom-theme] {
+  color-scheme: light;
+  --background: var(--databloom-page-middle);
+  --foreground: #0f172a;
+  --databloom-text-primary: #0f172a;
+  --databloom-text-secondary: #334155;
+  --databloom-text-muted: #475569;
+  --databloom-text-surface: #1e293b;
+  --databloom-text-heading: #1e1b4b;
+  --databloom-text-on-accent: #ffffff;
+  --databloom-text-accent: var(--databloom-accent-strong);
+  --databloom-link: var(--databloom-accent-strong);
+  --databloom-card: var(--databloom-surface);
+  --databloom-glass: rgb(255 255 255 / 0.62);
+  --databloom-input: rgb(255 255 255 / 0.9);
+  --databloom-action: var(--databloom-accent-strong);
+  --databloom-action-hover: color-mix(
+    in srgb,
+    var(--databloom-accent-strong) 82%,
+    #0f172a
+  );
+  --databloom-secondary-action: #be185d;
+  --databloom-secondary-action-hover: #9d174d;
+  --databloom-warm-action: #b45309;
+  --databloom-warm-action-hover: #92400e;
+  --databloom-orange-action: #c2410c;
+  --databloom-orange-action-hover: #9a3412;
+  --databloom-progress-track: color-mix(
+    in srgb,
+    var(--databloom-accent) 16%,
+    white
+  );
+  --databloom-progress-fill: var(--databloom-accent-strong);
+  --databloom-overlay: rgb(15 23 42 / 0.44);
+  --databloom-focus: color-mix(
+    in srgb,
+    var(--databloom-accent) 72%,
+    #0f172a
+  );
+}
+
+html[data-databloom-theme] body,
+html[data-databloom-theme] [data-databloom-page],
+html[data-databloom-theme]
   main[class*="from-pink-50"][class*="via-purple-50"],
 html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   [class*="from-rose-50"][class*="via-purple-50"],
@@ -95,7 +157,8 @@ html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   );
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+html[data-databloom-theme] [data-databloom-sidebar],
+html[data-databloom-theme]
   aside[class*="from-purple-100"][class*="via-pink-100"] {
   background-color: var(--databloom-sidebar-middle);
   background-image: linear-gradient(
@@ -106,17 +169,26 @@ html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   );
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
-  nav[class*="bg-white/80"] {
+html[data-databloom-theme] [data-databloom-navbar],
+html[data-databloom-theme] nav[class*="bg-white/80"] {
   background-color: var(--databloom-navbar);
   border-color: var(--databloom-border);
+  color: var(--databloom-text-surface);
+}
+
+html[data-databloom-theme] [data-databloom-glass],
+html[data-databloom-theme] .databloom-glass {
+  background-color: var(--databloom-glass);
+  border-color: color-mix(in srgb, var(--databloom-border) 68%, white);
+  color: var(--databloom-text-surface);
 }
 
 html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(section, article, div)[class*="bg-white/"],
 html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(section, article, div)[class~="bg-white"] {
-  background-color: var(--databloom-surface);
+  background-color: var(--databloom-card);
+  color: var(--databloom-text-surface);
 }
 
 html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
@@ -131,27 +203,128 @@ html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   );
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
-  :where([class~="text-purple-500"], [class~="text-purple-600"], [class~="text-purple-700"], [class~="text-purple-800"], [class~="text-purple-900"], [class~="text-purple-950"]) {
-  color: var(--databloom-accent-strong);
+html[data-databloom-theme]
+  :where([class~="text-slate-950"], [class~="text-slate-900"], [class~="text-gray-950"], [class~="text-gray-900"], [class~="text-gray-800"]) {
+  color: var(--databloom-text-primary);
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+html[data-databloom-theme]
+  :where([class~="text-slate-800"], [class~="text-slate-700"], [class~="text-gray-700"], [class~="text-gray-600"]) {
+  color: var(--databloom-text-secondary);
+}
+
+html[data-databloom-theme]
+  :where([class~="text-slate-600"], [class~="text-slate-500"], [class~="text-slate-400"], [class~="text-gray-500"], [class~="text-gray-400"]) {
+  color: var(--databloom-text-muted);
+}
+
+html[data-databloom-theme]
+  :where([class~="text-purple-500"], [class~="text-purple-600"], [class~="text-purple-700"], [class~="text-purple-800"], [class~="text-purple-900"], [class~="text-purple-950"]) {
+  color: var(--databloom-text-accent);
+}
+
+html[data-databloom-theme]
+  :where([class~="text-pink-500"], [class~="text-pink-600"], [class~="text-pink-700"], [class~="text-pink-800"], [class~="text-pink-900"]) {
+  color: var(--databloom-secondary-action);
+}
+
+html[data-databloom-theme]
   :where([class~="border-purple-100"], [class~="border-purple-200"], [class~="border-purple-300"], [class~="border-purple-400"], [class~="border-purple-500"]) {
   border-color: var(--databloom-border);
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
-  :where(button, a)[class~="bg-purple-500"],
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
-  :where(button, a)[class~="bg-purple-600"],
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
-  :where(button, a)[class~="bg-purple-700"] {
-  background-color: var(--databloom-accent);
+html[data-databloom-theme]
+  :where(button, a):where([class~="bg-purple-500"], [class~="bg-purple-600"], [class~="bg-purple-700"], [class~="bg-purple-800"]) {
+  background-color: var(--databloom-action);
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-action));
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+html[data-databloom-theme]
   :where(button, a)[class*="bg-gradient"][class*="from-purple-"] {
+  background-image: linear-gradient(
+    to right,
+    var(--databloom-accent),
+    var(--databloom-accent-strong)
+  );
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-accent-strong));
+}
+
+html[data-databloom-theme]
+  :where(button, a)[class*="hover:bg-purple-"]:hover {
+  background-color: var(--databloom-action-hover);
+}
+
+html[data-databloom-theme]
+  :where([class~="bg-purple-50"], [class~="bg-purple-100"], [class~="bg-purple-200"]) {
+  background-color: var(--databloom-accent-soft);
+}
+
+html[data-databloom-theme]
+  :where(button, a):where([class~="bg-pink-500"], [class~="bg-pink-600"], [class~="bg-pink-700"], [class~="bg-pink-800"]) {
+  background-color: var(--databloom-secondary-action);
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-secondary-action));
+}
+
+html[data-databloom-theme]
+  :where(button, a)[class*="hover:bg-pink-"]:hover {
+  background-color: var(--databloom-secondary-action-hover);
+}
+
+html[data-databloom-theme]
+  :where(button, a)[class~="bg-amber-600"] {
+  background-color: var(--databloom-warm-action);
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-warm-action));
+}
+
+html[data-databloom-theme]
+  :where(button, a)[class*="hover:bg-amber-"]:hover {
+  background-color: var(--databloom-warm-action-hover);
+}
+
+html[data-databloom-theme]
+  :where(button, a)[class~="bg-orange-600"] {
+  background-color: var(--databloom-orange-action);
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-orange-action));
+}
+
+html[data-databloom-theme]
+  :where(button, a)[class*="hover:bg-orange-"]:hover {
+  background-color: var(--databloom-orange-action-hover);
+}
+
+html[data-databloom-theme] :where(input, textarea, select) {
+  color: var(--databloom-text-primary);
+  caret-color: var(--databloom-accent-strong);
+}
+
+html[data-databloom-theme] :where(input, textarea)::placeholder {
+  color: var(--databloom-text-muted);
+  opacity: 1;
+}
+
+html[data-databloom-theme]
+  :where(input, textarea, select)[class*="bg-white"] {
+  background-color: var(--databloom-input);
+}
+
+html[data-databloom-theme] :where(a, button, input, textarea, select):focus-visible {
+  outline-color: var(--databloom-focus);
+}
+
+html[data-databloom-theme]
+  [role="progressbar"]:where([class~="bg-purple-100"], [class~="bg-gray-200"], [class~="bg-white"]) {
+  background-color: var(--databloom-progress-track);
+}
+
+html[data-databloom-theme]
+  [role="progressbar"]
+  > :first-child[class*="from-purple-"] {
+  background-color: var(--databloom-progress-fill);
   background-image: linear-gradient(
     to right,
     var(--databloom-accent),
@@ -159,18 +332,48 @@ html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   );
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
-  :where(button, a)[class*="hover:bg-purple-"]:hover {
-  background-color: var(--databloom-accent-strong);
+.databloom-progress-track {
+  background-color: var(--databloom-progress-track);
 }
 
-html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
-  :where([class~="bg-purple-50"], [class~="bg-purple-100"], [class~="bg-purple-200"]) {
-  background-color: var(--databloom-accent-soft);
+.databloom-progress-fill {
+  background-color: var(--databloom-progress-fill);
+  background-image: linear-gradient(
+    to right,
+    var(--databloom-accent),
+    var(--databloom-accent-strong)
+  );
+}
+
+html[data-databloom-theme]
+  :where([class*="bg-slate-950/35"], [class*="bg-slate-950/40"], [class*="bg-slate-950/45"]) {
+  background-color: var(--databloom-overlay);
+}
+
+.databloom-text-primary {
+  color: var(--databloom-text-primary);
+}
+
+.databloom-text-secondary {
+  color: var(--databloom-text-secondary);
+}
+
+.databloom-text-muted {
+  color: var(--databloom-text-muted);
+}
+
+.databloom-text-accent {
+  color: var(--databloom-text-accent);
+}
+
+.databloom-surface {
+  background-color: var(--databloom-card);
+  border-color: var(--databloom-border);
+  color: var(--databloom-text-surface);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: var(--databloom-page-middle, var(--background));
+  color: var(--databloom-text-primary, var(--foreground));
   font-family: Arial, Helvetica, sans-serif;
 }
