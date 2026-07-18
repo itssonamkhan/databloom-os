@@ -31,12 +31,22 @@ html[data-databloom-theme="Sakura"] {
   --databloom-sidebar-start: #f3e8ff;
   --databloom-sidebar-middle: #fce7f3;
   --databloom-sidebar-end: #dbeafe;
-  --databloom-surface: rgb(255 255 255 / 0.82);
+  --databloom-surface: rgb(255 255 255 / 0.78);
   --databloom-navbar: rgb(255 255 255 / 0.8);
   --databloom-accent: #9333ea;
   --databloom-accent-strong: #7e22ce;
   --databloom-accent-soft: #f3e8ff;
   --databloom-border: #e9d5ff;
+  --databloom-sakura-glass: rgb(255 255 255 / 0.4);
+  --databloom-sakura-glass-border: rgb(255 255 255 / 0.5);
+  --databloom-sakura-navbar-border: rgb(255 255 255 / 0.8);
+  --databloom-sakura-action: #9333ea;
+  --databloom-sakura-action-hover: #7e22ce;
+  --databloom-sakura-action-end: #be185d;
+  --databloom-sakura-accent-subtle: #faf5ff;
+  --databloom-sakura-accent-soft-strong: #e9d5ff;
+  --databloom-sakura-soft-middle: #fce7f3;
+  --databloom-sakura-soft-end: #dbeafe;
 }
 
 html[data-databloom-theme="Cloud"] {
@@ -348,6 +358,85 @@ html[data-databloom-theme]
 html[data-databloom-theme]
   :where([class*="bg-slate-950/35"], [class*="bg-slate-950/40"], [class*="bg-slate-950/45"]) {
   background-color: var(--databloom-overlay);
+}
+
+/* Sakura keeps its approved blush-glass identity while using semantic roles. */
+html[data-databloom-theme="Sakura"] {
+  --databloom-glass: var(--databloom-sakura-glass);
+  --databloom-action: var(--databloom-sakura-action);
+  --databloom-action-hover: var(--databloom-sakura-action-hover);
+}
+
+html[data-databloom-theme="Sakura"] [data-databloom-navbar] {
+  border-color: var(--databloom-sakura-navbar-border);
+}
+
+html[data-databloom-theme="Sakura"] [data-databloom-glass],
+html[data-databloom-theme="Sakura"] .databloom-glass {
+  border-color: var(--databloom-sakura-glass-border);
+}
+
+html[data-databloom-theme="Sakura"]
+  :where([class~="text-purple-500"], [class~="text-purple-600"]) {
+  color: var(--databloom-sakura-action);
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a)[class*="bg-gradient"][class*="from-purple-"] {
+  background-image: linear-gradient(
+    to right,
+    var(--databloom-sakura-action),
+    var(--databloom-sakura-action-end)
+  );
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-action-end));
+}
+
+html[data-databloom-theme="Sakura"] :where([class~="bg-purple-50"]) {
+  background-color: var(--databloom-sakura-accent-subtle);
+}
+
+html[data-databloom-theme="Sakura"] :where([class~="bg-purple-200"]) {
+  background-color: var(--databloom-sakura-accent-soft-strong);
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a)[class*="bg-gradient"]:where(
+    [class*="from-purple-50"],
+    [class*="from-purple-100"],
+    [class*="from-purple-200"]
+  ) {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--databloom-accent-soft),
+    var(--databloom-sakura-soft-middle),
+    var(--databloom-sakura-soft-end)
+  );
+  color: var(--databloom-text-accent);
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a)[class*="bg-gradient"]:where(
+    [class*="from-purple-50"],
+    [class*="from-purple-100"],
+    [class*="from-purple-200"]
+  )[class*="to-pink-"] {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--databloom-accent-soft),
+    var(--databloom-sakura-soft-middle)
+  );
+}
+
+html[data-databloom-theme="Sakura"]
+  [role="progressbar"]
+  > :first-child[class*="from-purple-"],
+html[data-databloom-theme="Sakura"] .databloom-progress-fill {
+  background-image: linear-gradient(
+    to right,
+    var(--databloom-sakura-action),
+    var(--databloom-sakura-action-end)
+  );
 }
 
 .databloom-text-primary {
