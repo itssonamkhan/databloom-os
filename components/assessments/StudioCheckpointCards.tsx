@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import {
   CHECKPOINT_PROGRESS_EVENT,
+  getFinalSkillExamUnlockStatus,
   getStudioAssessmentConfiguration,
   getStudioProgressEventName,
   isCheckpointUnlocked,
@@ -44,6 +45,12 @@ export default function StudioCheckpointCards({
 
   const completed = useMemo(() => new Set(completedTopicIds), [completedTopicIds]);
   if (!studio) return null;
+  const finalExamStatus = getFinalSkillExamUnlockStatus(
+    studio,
+    completedTopicIds,
+    checkpointProgress,
+  );
+  const masteryResult = checkpointProgress.masteryResults[studioId];
 
   return (
     <section aria-labelledby={`${studioId}-checkpoints-heading`}>
@@ -130,6 +137,54 @@ export default function StudioCheckpointCards({
           );
         })}
       </div>
+
+      <article className="mt-5 rounded-[2rem] border border-purple-200 bg-gradient-to-br from-purple-100/90 via-pink-100/90 to-amber-100/90 p-6 shadow-lg backdrop-blur-xl sm:p-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-3xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-black uppercase tracking-wider text-purple-800">
+                Official studio mastery
+              </span>
+              {masteryResult ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-800">
+                  <CheckCircle2 size={16} aria-hidden="true" /> Mastered · {masteryResult.officialMasteryScore}%
+                </span>
+              ) : !finalExamStatus.unlocked ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-3 py-1 text-sm font-black text-slate-600">
+                  <LockKeyhole size={15} aria-hidden="true" /> Locked
+                </span>
+              ) : null}
+            </div>
+            <h3 className="mt-4 text-2xl font-black text-slate-950">
+              {studio.finalExam.name}
+            </h3>
+            <p className="mt-2 leading-7 text-slate-700">
+              A comprehensive assessment covering all {studio.finalExam.coverage.topicIds.length} studio topics.
+            </p>
+            {!finalExamStatus.unlocked && (
+              <p className="mt-3 text-sm font-bold text-slate-600">
+                {finalExamStatus.missingCheckpointIds.length > 0 &&
+                  `Pass ${finalExamStatus.missingCheckpointIds.length} remaining ${finalExamStatus.missingCheckpointIds.length === 1 ? "checkpoint" : "checkpoints"}. `}
+                {finalExamStatus.missingTopicIds.length > 0 &&
+                  `Complete ${finalExamStatus.missingTopicIds.length} remaining ${finalExamStatus.missingTopicIds.length === 1 ? "lesson" : "lessons"}.`}
+              </p>
+            )}
+          </div>
+
+          {finalExamStatus.unlocked ? (
+            <Link
+              href={`/final-exam/${studioId}/${studio.finalExam.id}`}
+              className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-2xl bg-purple-800 px-6 py-3 font-black text-white transition hover:bg-purple-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+            >
+              {masteryResult ? "Improve mastery score" : "Start Final Skill Exam"}
+            </Link>
+          ) : (
+            <span className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-2xl bg-white/70 px-6 py-3 font-black text-slate-500">
+              Final exam locked
+            </span>
+          )}
+        </div>
+      </article>
     </section>
   );
 }

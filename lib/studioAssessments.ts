@@ -54,6 +54,7 @@ export type StudioFinalSkillExam = {
   unlockRequirement: AssessmentUnlockRequirement;
   suggestedQuestionCount: number;
   suggestedPassingScore: number;
+  xpReward: number;
   scoreVisibility: "final-skill-score";
 };
 
@@ -69,6 +70,8 @@ export type StudioAssessmentConfiguration = {
 
 export const DEFAULT_CHECKPOINT_PASSING_SCORE = 70 as const;
 export const DEFAULT_CHECKPOINT_XP_REWARD = 50 as const;
+export const DEFAULT_FINAL_SKILL_EXAM_PASSING_SCORE = 75 as const;
+export const DEFAULT_FINAL_SKILL_EXAM_XP_REWARD = 150 as const;
 
 function getChapterNames(studioId: AssessableStudioId) {
   return Array.from(
@@ -131,7 +134,8 @@ function finalExam(
   id: string,
   name: string,
   suggestedQuestionCount: number,
-  suggestedPassingScore = 75,
+  suggestedPassingScore = DEFAULT_FINAL_SKILL_EXAM_PASSING_SCORE,
+  xpReward = DEFAULT_FINAL_SKILL_EXAM_XP_REWARD,
 ): StudioFinalSkillExam {
   const coverage = getCoverage(studioId, getChapterNames(studioId));
 
@@ -145,6 +149,7 @@ function finalExam(
     },
     suggestedQuestionCount,
     suggestedPassingScore,
+    xpReward,
     scoreVisibility: "final-skill-score",
   };
 }

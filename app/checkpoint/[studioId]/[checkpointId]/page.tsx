@@ -32,8 +32,9 @@ export default async function CheckpointPage({
 
   return (
     <CheckpointExamEngine
+      kind="checkpoint"
       studio={assessment.studio}
-      checkpoint={assessment.checkpoint}
+      assessment={assessment.checkpoint}
       questions={questions}
     />
   );

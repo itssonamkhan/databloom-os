@@ -14,11 +14,15 @@ import { useEffect, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProgress } from "@/context/ProgressContext";
 import {
+  CHECKPOINT_PROGRESS_EVENT,
+  getFinalSkillExamUnlockStatus,
   getStudioProgressEventName,
   isCheckpointUnlocked,
+  loadCheckpointProgress,
   loadCompletedStudioTopicIds,
   saveCheckpointPass,
-  type CheckpointQuestion,
+  saveFinalSkillExamPass,
+  type AssessmentQuestion,
 } from "@/lib/checkpointExams";
 import {
   playClickSound,
@@ -29,6 +33,7 @@ import {
 import type {
   StudioAssessmentConfiguration,
   StudioCheckpoint,
+  StudioFinalSkillExam,
 } from "@/lib/studioAssessments";
 
 type ExamResult = {
@@ -36,17 +41,24 @@ type ExamResult = {
   correctCount: number;
   percentage: number;
   xpAwarded: number;
+  officialMasteryScore?: number;
 };
+
+type AssessmentExamProps = {
+  studio: StudioAssessmentConfiguration;
+  questions: readonly AssessmentQuestion[];
+} & (
+  | { kind: "checkpoint"; assessment: StudioCheckpoint }
+  | { kind: "final"; assessment: StudioFinalSkillExam }
+);
 
 export default function CheckpointExamEngine({
   studio,
-  checkpoint,
+  kind,
+  assessment,
   questions,
-}: {
-  studio: StudioAssessmentConfiguration;
-  checkpoint: StudioCheckpoint;
-  questions: readonly CheckpointQuestion[];
-}) {
+}: AssessmentExamProps) {
+  const isFinalSkillExam = kind === "final";
   const { addXP } = useProgress();
   const [accessChecked, setAccessChecked] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
@@ -57,29 +69,35 @@ export default function CheckpointExamEngine({
 
   useEffect(() => {
     const syncAccess = () => {
+      const completedTopicIds = loadCompletedStudioTopicIds(studio.studioId);
       setUnlocked(
-        isCheckpointUnlocked(
-          checkpoint,
-          loadCompletedStudioTopicIds(studio.studioId),
-        ),
+        isFinalSkillExam
+          ? getFinalSkillExamUnlockStatus(
+              studio,
+              completedTopicIds,
+              loadCheckpointProgress(),
+            ).unlocked
+          : isCheckpointUnlocked(assessment, completedTopicIds),
       );
       setAccessChecked(true);
     };
     const progressEvent = getStudioProgressEventName(studio.studioId);
     syncAccess();
     window.addEventListener(progressEvent, syncAccess);
+    window.addEventListener(CHECKPOINT_PROGRESS_EVENT, syncAccess);
     window.addEventListener("storage", syncAccess);
     return () => {
       window.removeEventListener(progressEvent, syncAccess);
+      window.removeEventListener(CHECKPOINT_PROGRESS_EVENT, syncAccess);
       window.removeEventListener("storage", syncAccess);
     };
-  }, [checkpoint, studio.studioId]);
+  }, [assessment, isFinalSkillExam, studio]);
 
   if (!accessChecked) {
     return (
       <AppLayout>
         <div className="rounded-3xl border border-purple-100 bg-white/80 p-8 font-bold text-slate-700 shadow-md">
-          Checking checkpoint access…
+          Checking {isFinalSkillExam ? "final exam" : "checkpoint"} access…
         </div>
       </AppLayout>
     );
@@ -90,9 +108,13 @@ export default function CheckpointExamEngine({
       <AppLayout>
         <div className="mx-auto max-w-3xl rounded-[2rem] border border-purple-100 bg-white/80 p-8 text-center shadow-lg backdrop-blur-xl sm:p-10">
           <LockKeyhole className="mx-auto text-purple-700" size={42} aria-hidden="true" />
-          <h1 className="mt-5 text-3xl font-black text-slate-950">Checkpoint locked</h1>
+          <h1 className="mt-5 text-3xl font-black text-slate-950">
+            {isFinalSkillExam ? "Final Skill Exam locked" : "Checkpoint locked"}
+          </h1>
           <p className="mt-3 leading-7 text-slate-600">
-            Complete every lesson in {checkpoint.coverage.chapterNames.join(", ")} before starting this checkpoint.
+            {isFinalSkillExam
+              ? "Pass every checkpoint and complete the full studio curriculum before starting the Final Skill Exam."
+              : `Complete every lesson in ${assessment.coverage.chapterNames.join(", ")} before starting this checkpoint.`}
           </p>
           <Link
             href={studio.studioRoute}
@@ -109,8 +131,8 @@ export default function CheckpointExamEngine({
     return (
       <AppLayout>
         <div className="rounded-3xl border border-amber-200 bg-amber-50 p-8 text-slate-800 shadow-md">
-          <h1 className="text-2xl font-black">Checkpoint questions unavailable</h1>
-          <p className="mt-2">No existing lesson questions could be prepared for this checkpoint.</p>
+          <h1 className="text-2xl font-black">Assessment questions unavailable</h1>
+          <p className="mt-2">No existing lesson questions could be prepared for this assessment.</p>
           <Link href={studio.studioRoute} className="mt-5 inline-flex font-black text-purple-800">
             Return to {studio.studioName}
           </Link>
@@ -139,19 +161,40 @@ export default function CheckpointExamEngine({
               {studio.studioName}
             </p>
             <h1 className="mt-2 text-3xl font-black sm:text-4xl">
-              {result.passed ? "Checkpoint passed!" : "Review and retry"}
+              {result.passed
+                ? isFinalSkillExam
+                  ? "Congratulations — studio mastered!"
+                  : "Checkpoint passed!"
+                : "Review and retry"}
             </h1>
             <p className="mt-4 text-lg font-bold text-slate-700">
               {result.correctCount} of {questions.length} correct · {result.percentage}%
             </p>
+            {isFinalSkillExam && (
+              <p className="mt-2 font-bold text-slate-700">
+                {questions.length - result.correctCount} incorrect
+              </p>
+            )}
             <p className="mt-3 text-slate-600">
-              Passing score: {checkpoint.suggestedPassingScore}%
+              Passing score: {assessment.suggestedPassingScore}%
             </p>
+            {isFinalSkillExam && result.passed && result.officialMasteryScore !== undefined && (
+              <div className="mx-auto mt-5 inline-flex rounded-full border border-purple-200 bg-gradient-to-r from-purple-100 via-pink-100 to-amber-100 px-5 py-3 font-black text-purple-900 shadow-sm">
+                ✨ Final Mastery · {result.officialMasteryScore}%
+              </div>
+            )}
+            {isFinalSkillExam && result.passed && result.officialMasteryScore === undefined && (
+              <p className="mt-4 font-bold text-rose-700">
+                Your passing result could not be saved on this device. Please retry.
+              </p>
+            )}
             <div className="mx-auto mt-6 max-w-2xl rounded-2xl bg-white/80 p-5 text-left text-slate-700 shadow-sm">
               <p className="font-black text-purple-800">🌸 Mochi says</p>
               <p className="mt-2 leading-7">
                 {result.passed
-                  ? "Beautiful work! You connected the chapter ideas and reached this learning milestone."
+                  ? isFinalSkillExam
+                    ? "You did it! Your steady learning has bloomed into complete studio mastery."
+                    : "Beautiful work! You connected the chapter ideas and reached this learning milestone."
                   : "You’re still growing. Review the covered lessons, then come back for another calm try."}
               </p>
               {result.xpAwarded > 0 && (
@@ -167,13 +210,14 @@ export default function CheckpointExamEngine({
               >
                 <ArrowLeft size={18} aria-hidden="true" /> Back to studio
               </Link>
-              {!result.passed && (
+              {(!result.passed || isFinalSkillExam) && (
                 <button
                   type="button"
                   onClick={retry}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-purple-700 px-6 py-3 font-black text-white hover:bg-purple-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
                 >
-                  <RotateCcw size={18} aria-hidden="true" /> Retry checkpoint
+                  <RotateCcw size={18} aria-hidden="true" />
+                  {result.passed ? "Try for a higher mastery score" : "Retry assessment"}
                 </button>
               )}
             </div>
@@ -199,7 +243,7 @@ export default function CheckpointExamEngine({
   function submitExam() {
     playClickSound();
     if (Object.keys(answers).length !== questions.length) {
-      setMessage("Answer every question before submitting your checkpoint.");
+      setMessage("Answer every question before submitting your assessment.");
       return;
     }
 
@@ -207,27 +251,50 @@ export default function CheckpointExamEngine({
       (item) => answers[item.id] === item.correctAnswer,
     ).length;
     const percentage = Math.round((correctCount / questions.length) * 100);
-    const passed = percentage >= checkpoint.suggestedPassingScore;
+    const passed = percentage >= assessment.suggestedPassingScore;
     let xpAwarded = 0;
+    let officialMasteryScore: number | undefined;
 
     if (passed) {
-      const saved = saveCheckpointPass({
-        studioId: studio.studioId,
-        checkpointId: checkpoint.id,
-        score: percentage,
-        passingScore: checkpoint.suggestedPassingScore,
-      });
-      if (saved.xpAwarded) {
-        xpAwarded = checkpoint.xpReward;
-        addXP(checkpoint.xpReward);
-        playXPSound();
+      if (isFinalSkillExam) {
+        const saved = saveFinalSkillExamPass({
+          studioId: studio.studioId,
+          finalExamId: assessment.id,
+          score: percentage,
+          passingScore: assessment.suggestedPassingScore,
+        });
+        officialMasteryScore =
+          saved.masteryResult?.officialMasteryScore;
+        if (saved.xpAwarded) {
+          xpAwarded = assessment.xpReward;
+          addXP(assessment.xpReward);
+          playXPSound();
+        }
+      } else {
+        const saved = saveCheckpointPass({
+          studioId: studio.studioId,
+          checkpointId: assessment.id,
+          score: percentage,
+          passingScore: assessment.suggestedPassingScore,
+        });
+        if (saved.xpAwarded) {
+          xpAwarded = assessment.xpReward;
+          addXP(assessment.xpReward);
+          playXPSound();
+        }
       }
       playSuccessSound();
     } else {
       playNotificationSound();
     }
 
-    setResult({ passed, correctCount, percentage, xpAwarded });
+    setResult({
+      passed,
+      correctCount,
+      percentage,
+      xpAwarded,
+      officialMasteryScore,
+    });
     setMessage("");
   }
 
@@ -245,11 +312,11 @@ export default function CheckpointExamEngine({
           <p className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-purple-700">
             <Sparkles size={17} aria-hidden="true" /> {studio.studioName}
           </p>
-          <h1 className="mt-3 text-3xl font-black sm:text-4xl">{checkpoint.name}</h1>
+          <h1 className="mt-3 text-3xl font-black sm:text-4xl">{assessment.name}</h1>
           <div className="mt-4 flex flex-wrap gap-2 text-sm font-bold text-slate-700">
             <span className="rounded-full bg-white/80 px-4 py-2">{questions.length} questions</span>
-            <span className="rounded-full bg-white/80 px-4 py-2">Pass at {checkpoint.suggestedPassingScore}%</span>
-            <span className="rounded-full bg-white/80 px-4 py-2">+{checkpoint.xpReward} XP first pass</span>
+            <span className="rounded-full bg-white/80 px-4 py-2">Pass at {assessment.suggestedPassingScore}%</span>
+            <span className="rounded-full bg-white/80 px-4 py-2">+{assessment.xpReward} XP first pass</span>
           </div>
         </header>
 
@@ -263,7 +330,7 @@ export default function CheckpointExamEngine({
           <div
             className="mt-3 h-3 overflow-hidden rounded-full bg-purple-100"
             role="progressbar"
-            aria-label="Checkpoint progress"
+            aria-label={`${isFinalSkillExam ? "Final Skill Exam" : "Checkpoint"} progress`}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={progress}
@@ -332,7 +399,7 @@ export default function CheckpointExamEngine({
                 onClick={submitExam}
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-6 py-3 font-black text-white hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
               >
-                Submit checkpoint <CheckCircle2 size={18} aria-hidden="true" />
+                Submit {isFinalSkillExam ? "Final Skill Exam" : "checkpoint"} <CheckCircle2 size={18} aria-hidden="true" />
               </button>
             ) : (
               <button

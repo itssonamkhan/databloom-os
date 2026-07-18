@@ -3,6 +3,7 @@ import {
   type AssessableStudioId,
   type StudioAssessmentConfiguration,
   type StudioCheckpoint,
+  type StudioFinalSkillExam,
 } from "@/lib/studioAssessments";
 import { businessAnalyticsLessons } from "@/lib/businessAnalyticsLessons";
 import {
@@ -47,7 +48,7 @@ export const CHECKPOINT_PROGRESS_EVENT =
 
 const CHECKPOINT_PROGRESS_STORAGE_KEY = "databloom-checkpoint-progress-v1";
 
-export type CheckpointQuestion = {
+export type AssessmentQuestion = {
   id: string;
   topicId: string;
   prompt: string;
@@ -55,6 +56,13 @@ export type CheckpointQuestion = {
   correctAnswer: string;
   source: "existing-lesson-practice" | "derived-curriculum-seed";
 };
+
+export type CheckpointQuestion = AssessmentQuestion;
+
+type QuestionAssessment = Pick<
+  StudioCheckpoint,
+  "id" | "coverage" | "suggestedQuestionCount"
+>;
 
 export type CheckpointCompletion = {
   studioId: AssessableStudioId;
@@ -65,8 +73,20 @@ export type CheckpointCompletion = {
   xpAwarded: boolean;
 };
 
+export type FinalMasteryResult = {
+  studioId: AssessableStudioId;
+  finalExamId: string;
+  officialMasteryScore: number;
+  completedAt: string;
+  updatedAt: string;
+  studioCompleted: true;
+  xpAwarded: boolean;
+  nextStudioUnlockId: AssessableStudioId | null;
+};
+
 export type CheckpointProgressState = {
   completions: Record<string, CheckpointCompletion>;
+  masteryResults: Partial<Record<AssessableStudioId, FinalMasteryResult>>;
 };
 
 function completionKey(studioId: AssessableStudioId, checkpointId: string) {
@@ -74,7 +94,7 @@ function completionKey(studioId: AssessableStudioId, checkpointId: string) {
 }
 
 function emptyCheckpointProgress(): CheckpointProgressState {
-  return { completions: {} };
+  return { completions: {}, masteryResults: {} };
 }
 
 function normalizeScore(value: unknown) {
@@ -88,13 +108,15 @@ function normalizeCheckpointProgress(value: unknown): CheckpointProgressState {
     return emptyCheckpointProgress();
   }
 
-  const raw = (value as Partial<CheckpointProgressState>).completions;
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    return emptyCheckpointProgress();
-  }
-
+  const rawState = value as Partial<CheckpointProgressState>;
+  const rawCompletions =
+    rawState.completions &&
+    typeof rawState.completions === "object" &&
+    !Array.isArray(rawState.completions)
+      ? rawState.completions
+      : {};
   const completions = Object.fromEntries(
-    Object.entries(raw).flatMap(([key, entry]) => {
+    Object.entries(rawCompletions).flatMap(([key, entry]) => {
       if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
       const completion = entry as Partial<CheckpointCompletion>;
       const studio = studioAssessmentConfigurations.find(
@@ -120,7 +142,40 @@ function normalizeCheckpointProgress(value: unknown): CheckpointProgressState {
     }),
   );
 
-  return { completions };
+  const rawMasteryResults =
+    rawState.masteryResults &&
+    typeof rawState.masteryResults === "object" &&
+    !Array.isArray(rawState.masteryResults)
+      ? rawState.masteryResults
+      : {};
+  const masteryResults = Object.fromEntries(
+    Object.values(rawMasteryResults).flatMap((entry) => {
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
+      const result = entry as Partial<FinalMasteryResult>;
+      const studio = studioAssessmentConfigurations.find(
+        (item) =>
+          item.studioId === result.studioId &&
+          item.finalExam.id === result.finalExamId,
+      );
+      if (!studio) return [];
+
+      const normalized: FinalMasteryResult = {
+        studioId: studio.studioId,
+        finalExamId: studio.finalExam.id,
+        officialMasteryScore: normalizeScore(result.officialMasteryScore),
+        completedAt:
+          typeof result.completedAt === "string" ? result.completedAt : "",
+        updatedAt:
+          typeof result.updatedAt === "string" ? result.updatedAt : "",
+        studioCompleted: true,
+        xpAwarded: result.xpAwarded === true,
+        nextStudioUnlockId: null,
+      };
+      return [[studio.studioId, normalized] as const];
+    }),
+  );
+
+  return { completions, masteryResults };
 }
 
 export function loadCheckpointProgress(): CheckpointProgressState {
@@ -177,6 +232,7 @@ export function saveCheckpointPass({
   };
   const next = {
     completions: { ...state.completions, [key]: nextCompletion },
+    masteryResults: state.masteryResults,
   };
 
   if (typeof window === "undefined" || !("localStorage" in window)) {
@@ -204,6 +260,106 @@ export function saveCheckpointPass({
   }
 }
 
+export function getFinalMasteryResult(studioId: AssessableStudioId) {
+  return loadCheckpointProgress().masteryResults[studioId];
+}
+
+export function saveFinalSkillExamPass({
+  studioId,
+  finalExamId,
+  score,
+  passingScore,
+}: {
+  studioId: AssessableStudioId;
+  finalExamId: string;
+  score: number;
+  passingScore: number;
+}) {
+  const normalizedScore = normalizeScore(score);
+  const state = loadCheckpointProgress();
+  const existing = state.masteryResults[studioId];
+
+  if (normalizedScore < passingScore) {
+    return {
+      saved: false,
+      newlyCompleted: false,
+      scoreImproved: false,
+      xpAwarded: false,
+      masteryResult: existing,
+      nextStudioUnlocked: null,
+      state,
+    };
+  }
+
+  const now = new Date().toISOString();
+  const masteryResult: FinalMasteryResult = {
+    studioId,
+    finalExamId,
+    officialMasteryScore: Math.max(
+      existing?.officialMasteryScore ?? 0,
+      normalizedScore,
+    ),
+    completedAt: existing?.completedAt || now,
+    updatedAt: now,
+    studioCompleted: true,
+    xpAwarded: true,
+    nextStudioUnlockId: null,
+  };
+  const next: CheckpointProgressState = {
+    completions: state.completions,
+    masteryResults: { ...state.masteryResults, [studioId]: masteryResult },
+  };
+
+  if (typeof window === "undefined" || !("localStorage" in window)) {
+    return {
+      saved: false,
+      newlyCompleted: false,
+      scoreImproved: false,
+      xpAwarded: false,
+      masteryResult: existing,
+      nextStudioUnlocked: null,
+      state,
+    };
+  }
+
+  try {
+    window.localStorage.setItem(
+      CHECKPOINT_PROGRESS_STORAGE_KEY,
+      JSON.stringify(next),
+    );
+    window.dispatchEvent(
+      new CustomEvent(CHECKPOINT_PROGRESS_EVENT, {
+        detail: {
+          kind: "final-skill-exam",
+          studioId,
+          finalExamId,
+          state: next,
+        },
+      }),
+    );
+    return {
+      saved: true,
+      newlyCompleted: !existing,
+      scoreImproved:
+        normalizedScore > (existing?.officialMasteryScore ?? 0),
+      xpAwarded: !existing?.xpAwarded,
+      masteryResult,
+      nextStudioUnlocked: null,
+      state: next,
+    };
+  } catch {
+    return {
+      saved: false,
+      newlyCompleted: false,
+      scoreImproved: false,
+      xpAwarded: false,
+      masteryResult: existing,
+      nextStudioUnlocked: null,
+      state,
+    };
+  }
+}
+
 export function getStudioAssessmentConfiguration(studioId: string) {
   return studioAssessmentConfigurations.find(
     (studio) => studio.studioId === studioId,
@@ -222,6 +378,21 @@ export function getStudioCheckpoint(
   const studio = getStudioAssessmentConfiguration(studioId);
   const checkpoint = studio?.checkpoints.find((item) => item.id === checkpointId);
   return studio && checkpoint ? { studio, checkpoint } : undefined;
+}
+
+export function getStudioFinalSkillExam(
+  studioId: string,
+  finalExamId: string,
+):
+  | {
+      studio: StudioAssessmentConfiguration;
+      finalExam: StudioFinalSkillExam;
+    }
+  | undefined {
+  const studio = getStudioAssessmentConfiguration(studioId);
+  return studio?.finalExam.id === finalExamId
+    ? { studio, finalExam: studio.finalExam }
+    : undefined;
 }
 
 export function loadCompletedStudioTopicIds(studioId: AssessableStudioId) {
@@ -269,22 +440,61 @@ export function isCheckpointUnlocked(
   );
 }
 
+export function getFinalSkillExamUnlockStatus(
+  studio: StudioAssessmentConfiguration,
+  completedTopicIds: readonly string[],
+  progress = loadCheckpointProgress(),
+) {
+  const completed = new Set(completedTopicIds);
+  const missingTopicIds = studio.finalExam.unlockRequirement.requiredTopicIds.filter(
+    (topicId) => !completed.has(topicId),
+  );
+  const missingCheckpointIds = studio.checkpoints
+    .filter(
+      (checkpoint) =>
+        !progress.completions[completionKey(studio.studioId, checkpoint.id)],
+    )
+    .map((checkpoint) => checkpoint.id);
+
+  return {
+    unlocked: missingTopicIds.length === 0 && missingCheckpointIds.length === 0,
+    curriculumComplete: missingTopicIds.length === 0,
+    checkpointsComplete: missingCheckpointIds.length === 0,
+    missingTopicIds,
+    missingCheckpointIds,
+  };
+}
+
 export function getCheckpointQuestions(
   studioId: AssessableStudioId,
   checkpoint: StudioCheckpoint,
-): CheckpointQuestion[] {
-  const allowedIds = new Set(checkpoint.coverage.topicIds);
-  const limit = checkpoint.suggestedQuestionCount;
+): AssessmentQuestion[] {
+  return getAssessmentQuestions(studioId, checkpoint);
+}
+
+export function getFinalSkillExamQuestions(
+  studioId: AssessableStudioId,
+  finalExam: StudioFinalSkillExam,
+): AssessmentQuestion[] {
+  return getAssessmentQuestions(studioId, finalExam);
+}
+
+function getAssessmentQuestions(
+  studioId: AssessableStudioId,
+  assessment: QuestionAssessment,
+): AssessmentQuestion[] {
+  const allowedIds = new Set(assessment.coverage.topicIds);
+  const limit = assessment.suggestedQuestionCount;
 
   switch (studioId) {
     case "formula-studio": {
       const topics = formulas.filter((item) => allowedIds.has(item.id));
       return topics.slice(0, limit).map((item, index) => ({
-        id: `${checkpoint.id}:${item.id}`,
+        id: `${assessment.id}:${item.id}`,
         topicId: item.id,
         prompt: `Which formula best matches this purpose? ${item.purpose}`,
         options: peerOptions(
-          `${checkpoint.id}:${item.id}`,
+          `${assessment.id}:${item.id}`,
           item.name,
           topics.map((topic) => topic.name),
           index,
@@ -296,11 +506,11 @@ export function getCheckpointQuestions(
     case "sql-studio": {
       const topics = sqlLessons.filter((item) => allowedIds.has(item.id));
       return topics.slice(0, limit).map((item, index) => ({
-        id: `${checkpoint.id}:${item.id}`,
+        id: `${assessment.id}:${item.id}`,
         topicId: item.id,
         prompt: item.practiceTask,
         options: peerOptions(
-          `${checkpoint.id}:${item.id}`,
+          `${assessment.id}:${item.id}`,
           item.expectedAnswer,
           topics.map((topic) => topic.expectedAnswer),
           index,
@@ -314,11 +524,11 @@ export function getCheckpointQuestions(
       return topics.slice(0, limit).map((item, index) => {
         const correctAnswer = item.acceptedAnswers[0];
         return {
-          id: `${checkpoint.id}:${item.id}`,
+          id: `${assessment.id}:${item.id}`,
           topicId: item.id,
           prompt: item.practiceTask,
           options: peerOptions(
-            `${checkpoint.id}:${item.id}`,
+            `${assessment.id}:${item.id}`,
             correctAnswer,
             topics.map((topic) => topic.acceptedAnswers[0]),
             index,
@@ -333,11 +543,11 @@ export function getCheckpointQuestions(
       return topics.slice(0, limit).map((item, index) => {
         const correctAnswer = item.acceptedAnswers[0];
         return {
-          id: `${checkpoint.id}:${item.id}`,
+          id: `${assessment.id}:${item.id}`,
           topicId: item.id,
           prompt: item.practiceTask,
           options: peerOptions(
-            `${checkpoint.id}:${item.id}`,
+            `${assessment.id}:${item.id}`,
             correctAnswer,
             topics.map((topic) => topic.acceptedAnswers[0]),
             index,
@@ -350,11 +560,11 @@ export function getCheckpointQuestions(
     case "power-bi-studio": {
       const topics = powerBILessons.filter((item) => allowedIds.has(item.id));
       return topics.slice(0, limit).map((item, index) => ({
-        id: `${checkpoint.id}:${item.id}`,
+        id: `${assessment.id}:${item.id}`,
         topicId: item.id,
         prompt: `Which Power BI skill best matches this outcome? ${item.description}`,
         options: peerOptions(
-          `${checkpoint.id}:${item.id}`,
+          `${assessment.id}:${item.id}`,
           item.title,
           topics.map((topic) => topic.title),
           index,
@@ -368,7 +578,7 @@ export function getCheckpointQuestions(
         .filter((item) => allowedIds.has(item.id))
         .slice(0, limit)
         .map((item) => ({
-          id: `${checkpoint.id}:${item.id}`,
+          id: `${assessment.id}:${item.id}`,
           topicId: item.id,
           prompt: item.practiceQuestion,
           options: item.practiceOptions,
@@ -380,7 +590,7 @@ export function getCheckpointQuestions(
         .filter((item) => allowedIds.has(item.id))
         .slice(0, limit)
         .map((item) => ({
-          id: `${checkpoint.id}:${item.id}`,
+          id: `${assessment.id}:${item.id}`,
           topicId: item.id,
           prompt: item.practiceQuestion,
           options: item.practiceOptions,
@@ -392,7 +602,7 @@ export function getCheckpointQuestions(
         .filter((item) => allowedIds.has(item.id))
         .slice(0, limit)
         .map((item) => ({
-          id: `${checkpoint.id}:${item.id}`,
+          id: `${assessment.id}:${item.id}`,
           topicId: item.id,
           prompt: item.practiceQuestion,
           options: item.practiceOptions,
