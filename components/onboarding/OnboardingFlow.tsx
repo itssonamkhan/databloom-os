@@ -11,10 +11,10 @@ import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
 
 import {
   careerGoals,
-  applyUserTheme,
   buddyPresentation,
   dailyGoals,
-  defaultUserPreferences,
+  loadUserPreferences,
+  persistUserTheme,
   saveUserPreferences,
   studyBuddies,
   studyStyles,
@@ -64,22 +64,25 @@ export default function OnboardingFlow() {
   const [mood, setMood] = useState<MochiMood | null>(
     () => loadMochiAssistantState().mood,
   );
-  const [preferences, setPreferences] = useState<OnboardingPreferences>(() => ({
-    userName: defaultUserPreferences.userName,
-    studyBuddy: defaultUserPreferences.studyBuddy,
-    customBuddyName: defaultUserPreferences.customBuddyName,
-    careerGoal: defaultUserPreferences.careerGoal,
-    studyStyle: defaultUserPreferences.studyStyle,
-    dailyGoal: defaultUserPreferences.dailyGoal,
-    theme: defaultUserPreferences.theme,
-  }));
+  const [preferences, setPreferences] = useState<OnboardingPreferences>(() => {
+    const storedPreferences = loadUserPreferences();
+    return {
+      userName: storedPreferences.userName,
+      studyBuddy: storedPreferences.studyBuddy,
+      customBuddyName: storedPreferences.customBuddyName,
+      careerGoal: storedPreferences.careerGoal,
+      studyStyle: storedPreferences.studyStyle,
+      dailyGoal: storedPreferences.dailyGoal,
+      theme: storedPreferences.theme,
+    };
+  });
 
   function updatePreference<K extends keyof OnboardingPreferences>(
     key: K,
     value: OnboardingPreferences[K],
   ) {
     setPreferences((current) => ({ ...current, [key]: value }));
-    if (key === "theme") applyUserTheme(value as UserTheme);
+    if (key === "theme") persistUserTheme(value as UserTheme);
     playClickSound();
   }
 

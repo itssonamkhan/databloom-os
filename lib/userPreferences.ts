@@ -20,6 +20,7 @@ export type DailyGoal = (typeof dailyGoals)[number];
 export type UserTheme = (typeof themes)[number];
 
 export const DATABLOOM_THEME_ATTRIBUTE = "data-databloom-theme";
+export const USER_THEME_STORAGE_KEY = "theme";
 
 export type UserPreferences = {
   userName: string;
@@ -39,7 +40,7 @@ const keys = {
   careerGoal: "careerGoal",
   studyStyle: "studyStyle",
   dailyGoal: "dailyGoal",
-  theme: "theme",
+  theme: USER_THEME_STORAGE_KEY,
   completed: "hasCompletedOnboarding",
 } as const;
 
@@ -74,6 +75,18 @@ function validTheme(value: string | null) {
 export function applyUserTheme(theme: UserTheme) {
   if (typeof document === "undefined") return;
   document.documentElement.setAttribute(DATABLOOM_THEME_ATTRIBUTE, theme);
+}
+
+export function persistUserTheme(theme: UserTheme) {
+  applyUserTheme(theme);
+  if (!canUseStorage()) return false;
+
+  try {
+    window.localStorage.setItem(USER_THEME_STORAGE_KEY, theme);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function loadUserPreferences(): UserPreferences {

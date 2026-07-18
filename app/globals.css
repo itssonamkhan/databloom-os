@@ -104,6 +104,16 @@ html[data-databloom-theme="Sakura"] {
   --databloom-sakura-action: var(--databloom-sakura-purple-600);
   --databloom-sakura-action-hover: var(--databloom-sakura-purple-700);
   --databloom-sakura-action-end: var(--databloom-sakura-pink-600);
+  --databloom-sakura-action-hover-end: var(--databloom-sakura-pink-700);
+  --databloom-sakura-action-shadow: 0 10px 24px rgb(147 51 234 / 0.2);
+  --databloom-sakura-action-shadow-hover: 0 14px 30px rgb(147 51 234 / 0.26);
+  --databloom-sakura-selected-start: rgb(253 242 248 / 0.94);
+  --databloom-sakura-selected-end: rgb(243 232 255 / 0.92);
+  --databloom-sakura-selected-border: var(--databloom-sakura-purple-200);
+  --databloom-sakura-selected-text: var(--databloom-sakura-purple-900);
+  --databloom-sakura-selected-shadow: 0 8px 22px rgb(168 85 247 / 0.12);
+  --databloom-sakura-disabled-surface: rgb(243 232 255 / 0.72);
+  --databloom-sakura-disabled-text: var(--databloom-sakura-slate-600);
 }
 
 html[data-databloom-theme="Cloud"] {
@@ -474,34 +484,122 @@ html[data-databloom-theme="Sakura"] :where(input, textarea)::placeholder {
   opacity: 1;
 }
 
+/* Sakura's saturated purple and pink action utilities resolve to the original
+   DataBloom brand gradient. State-bearing controls are handled separately so
+   selected tabs and chips keep a soft, light treatment. */
 html[data-databloom-theme="Sakura"]
-  :where(button, a)[class~="bg-purple-500"] {
+  :where(button, a):where(
+    [class~="bg-purple-500"],
+    [class~="bg-purple-600"],
+    [class~="bg-purple-700"],
+    [class~="bg-purple-800"],
+    [class~="bg-purple-900"],
+    [class~="bg-pink-500"],
+    [class~="bg-pink-600"],
+    [class~="bg-pink-700"],
+    [class~="bg-pink-800"],
+    [class~="from-purple-500"],
+    [class~="from-purple-600"],
+    [class~="from-purple-700"],
+    [class~="from-purple-800"],
+    [class~="from-purple-900"]
+  ):not(:where([aria-pressed="true"], [aria-selected="true"], [aria-current="page"])) {
+  background-color: var(--databloom-sakura-action);
+  background-image: linear-gradient(
+    to right,
+    var(--databloom-sakura-action),
+    var(--databloom-sakura-action-end)
+  );
+  border-color: transparent;
+  box-shadow: var(--databloom-sakura-action-shadow);
   color: var(--databloom-text-on-accent);
-  color: contrast-color(var(--databloom-sakura-purple-500));
 }
 
 html[data-databloom-theme="Sakura"]
-  :where(button, a)[class~="bg-purple-600"] {
+  :where(button, a):where(
+    [class~="bg-purple-500"],
+    [class~="bg-purple-600"],
+    [class~="bg-purple-700"],
+    [class~="bg-purple-800"],
+    [class~="bg-purple-900"],
+    [class~="bg-pink-500"],
+    [class~="bg-pink-600"],
+    [class~="bg-pink-700"],
+    [class~="bg-pink-800"],
+    [class~="from-purple-500"],
+    [class~="from-purple-600"],
+    [class~="from-purple-700"],
+    [class~="from-purple-800"],
+    [class~="from-purple-900"]
+  ):not(:where([aria-pressed="true"], [aria-selected="true"], [aria-current="page"])):hover {
+  background-image: linear-gradient(
+    to right,
+    var(--databloom-sakura-action-hover),
+    var(--databloom-sakura-action-hover-end)
+  );
+  box-shadow: var(--databloom-sakura-action-shadow-hover);
   color: var(--databloom-text-on-accent);
-  color: contrast-color(var(--databloom-sakura-purple-600));
 }
 
 html[data-databloom-theme="Sakura"]
-  :where(button, a):where([class~="bg-purple-700"], [class~="bg-purple-800"], [class~="bg-purple-900"]) {
-  color: var(--databloom-text-on-accent);
-  color: contrast-color(var(--databloom-sakura-purple-700));
+  :where(button, a):where([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]):where(
+    [class~="bg-purple-500"],
+    [class~="bg-purple-600"],
+    [class~="bg-purple-700"],
+    [class~="bg-purple-800"],
+    [class~="bg-purple-900"],
+    [class~="bg-pink-500"],
+    [class~="bg-pink-600"],
+    [class~="bg-pink-700"],
+    [class~="bg-pink-800"],
+    [class~="from-purple-500"],
+    [class~="from-purple-600"],
+    [class~="from-purple-700"],
+    [class~="from-purple-800"],
+    [class~="from-purple-900"]
+  ) {
+  background-color: var(--databloom-sakura-selected-end);
+  background-image: linear-gradient(
+    to bottom right,
+    var(--databloom-sakura-selected-start),
+    var(--databloom-sakura-selected-end)
+  );
+  border-color: var(--databloom-sakura-selected-border);
+  box-shadow: var(--databloom-sakura-selected-shadow);
+  color: var(--databloom-sakura-selected-text);
 }
 
 html[data-databloom-theme="Sakura"]
-  :where(button, a)[class~="bg-pink-500"] {
-  color: var(--databloom-text-on-accent);
-  color: contrast-color(var(--databloom-sakura-pink-500));
+  :where(button, a):where([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]):where(
+    [class~="bg-purple-500"],
+    [class~="bg-purple-600"],
+    [class~="bg-purple-700"],
+    [class~="bg-purple-800"],
+    [class~="bg-purple-900"],
+    [class~="bg-pink-500"],
+    [class~="bg-pink-600"],
+    [class~="bg-pink-700"],
+    [class~="bg-pink-800"],
+    [class~="from-purple-500"],
+    [class~="from-purple-600"],
+    [class~="from-purple-700"],
+    [class~="from-purple-800"],
+    [class~="from-purple-900"]
+  ) :where(span, svg) {
+  color: inherit;
 }
 
 html[data-databloom-theme="Sakura"]
-  :where(button, a):where([class~="bg-pink-600"], [class~="bg-pink-700"], [class~="bg-pink-800"]) {
-  color: var(--databloom-text-on-accent);
-  color: contrast-color(var(--databloom-sakura-pink-600));
+  span:where([class~="bg-purple-600"], [class~="bg-purple-700"], [class~="bg-purple-800"]) {
+  background-color: var(--databloom-sakura-selected-end);
+  background-image: linear-gradient(
+    to bottom right,
+    var(--databloom-sakura-selected-start),
+    var(--databloom-sakura-selected-end)
+  );
+  border: 1px solid var(--databloom-sakura-selected-border);
+  box-shadow: var(--databloom-sakura-selected-shadow);
+  color: var(--databloom-sakura-selected-text);
 }
 
 html[data-databloom-theme="Sakura"]
@@ -517,20 +615,27 @@ html[data-databloom-theme="Sakura"]
 }
 
 html[data-databloom-theme="Sakura"]
-  :where(button, a)[class*="bg-gradient"][class*="from-purple-500"] {
-  color: var(--databloom-text-on-accent);
-  color: contrast-color(var(--databloom-sakura-purple-500));
-}
-
-html[data-databloom-theme="Sakura"]
-  :where(button, a)[class*="bg-gradient"][class*="from-purple-600"] {
-  color: var(--databloom-text-on-accent);
-  color: contrast-color(var(--databloom-sakura-purple-600));
-}
-
-html[data-databloom-theme="Sakura"]
-  :where(button, a):disabled[class*="disabled:bg-purple-200"] {
-  color: var(--databloom-sakura-purple-700);
+  :where(button, a):where(:disabled, [aria-disabled="true"]):where(
+    [class~="bg-purple-500"],
+    [class~="bg-purple-600"],
+    [class~="bg-purple-700"],
+    [class~="bg-purple-800"],
+    [class~="bg-purple-900"],
+    [class~="bg-pink-500"],
+    [class~="bg-pink-600"],
+    [class~="bg-pink-700"],
+    [class~="bg-pink-800"],
+    [class~="from-purple-500"],
+    [class~="from-purple-600"],
+    [class~="from-purple-700"],
+    [class~="from-purple-800"],
+    [class~="from-purple-900"]
+  ) {
+  background-color: var(--databloom-sakura-disabled-surface);
+  background-image: none;
+  border-color: var(--databloom-sakura-selected-border);
+  box-shadow: none;
+  color: var(--databloom-sakura-disabled-text);
 }
 
 html[data-databloom-theme="Sakura"]
@@ -540,6 +645,8 @@ html[data-databloom-theme="Sakura"]
     var(--databloom-sakura-action),
     var(--databloom-sakura-action-end)
   );
+  border-color: transparent;
+  box-shadow: var(--databloom-sakura-action-shadow);
   color: var(--databloom-text-on-accent);
 }
 

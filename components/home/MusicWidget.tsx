@@ -351,6 +351,7 @@ export default function MusicWidget() {
             <button
               key={mood.id}
               type="button"
+              aria-pressed={active}
               onClick={() =>
                 setSelectedMoodId(mood.id)
               }

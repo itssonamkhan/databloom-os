@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import {
+  applyUserTheme,
   defaultUserPreferences,
   loadUserPreferences,
   USER_PREFERENCES_EVENT,
@@ -14,7 +15,11 @@ export function useUserPreferences() {
   }));
 
   useEffect(() => {
-    const sync = () => setPreferences(loadUserPreferences());
+    const sync = () => {
+      const storedPreferences = loadUserPreferences();
+      applyUserTheme(storedPreferences.theme);
+      setPreferences(storedPreferences);
+    };
     sync();
     window.addEventListener(USER_PREFERENCES_EVENT, sync);
     window.addEventListener("storage", sync);

@@ -10,10 +10,10 @@ import {
 } from "lucide-react";
 
 import {
-  applyUserTheme,
   careerGoals,
   dailyGoals,
   loadUserPreferences,
+  persistUserTheme,
   resetOnboarding,
   saveUserPreferences,
   studyBuddies,
@@ -215,7 +215,7 @@ export default function PersonalizationSettings() {
       ...updates,
     }));
 
-    if (updates.theme) applyUserTheme(updates.theme);
+    if (updates.theme) persistUserTheme(updates.theme);
 
     setStatus("idle");
   }
