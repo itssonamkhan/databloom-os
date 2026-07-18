@@ -25,6 +25,67 @@
  * same accessibility contract without changing their gradients or layout.
  */
 html[data-databloom-theme="Sakura"] {
+  /* Original Sakura palette: components resolve their existing utility shades
+     through these theme-owned tokens instead of a flattened purple override. */
+  --databloom-sakura-purple-50: #faf5ff;
+  --databloom-sakura-purple-100: #f3e8ff;
+  --databloom-sakura-purple-200: #e9d5ff;
+  --databloom-sakura-purple-300: #d8b4fe;
+  --databloom-sakura-purple-400: #c084fc;
+  --databloom-sakura-purple-500: #a855f7;
+  --databloom-sakura-purple-600: #9333ea;
+  --databloom-sakura-purple-700: #7e22ce;
+  --databloom-sakura-purple-800: #6b21a8;
+  --databloom-sakura-purple-900: #581c87;
+  --databloom-sakura-purple-950: #3b0764;
+  --databloom-sakura-pink-50: #fdf2f8;
+  --databloom-sakura-pink-100: #fce7f3;
+  --databloom-sakura-pink-200: #fbcfe8;
+  --databloom-sakura-pink-300: #f9a8d4;
+  --databloom-sakura-pink-400: #f472b6;
+  --databloom-sakura-pink-500: #ec4899;
+  --databloom-sakura-pink-600: #db2777;
+  --databloom-sakura-pink-700: #be185d;
+  --databloom-sakura-pink-800: #9d174d;
+  --databloom-sakura-pink-900: #831843;
+  --databloom-sakura-blue-50: #eff6ff;
+  --databloom-sakura-blue-100: #dbeafe;
+  --databloom-sakura-sky-100: #e0f2fe;
+  --databloom-sakura-sky-300: #7dd3fc;
+  --databloom-sakura-slate-900: #0f172a;
+  --databloom-sakura-slate-800: #1e293b;
+  --databloom-sakura-slate-700: #334155;
+  --databloom-sakura-slate-600: #475569;
+  --databloom-sakura-gray-200: #e5e7eb;
+  --databloom-sakura-readable-purple-500: #9333ea;
+  --databloom-sakura-readable-pink-500: #be185d;
+  --databloom-sakura-amber-600: #d97706;
+  --databloom-sakura-orange-600: #ea580c;
+  --color-purple-50: var(--databloom-sakura-purple-50);
+  --color-purple-100: var(--databloom-sakura-purple-100);
+  --color-purple-200: var(--databloom-sakura-purple-200);
+  --color-purple-300: var(--databloom-sakura-purple-300);
+  --color-purple-400: var(--databloom-sakura-purple-400);
+  --color-purple-500: var(--databloom-sakura-purple-500);
+  --color-purple-600: var(--databloom-sakura-purple-600);
+  --color-purple-700: var(--databloom-sakura-purple-700);
+  --color-purple-800: var(--databloom-sakura-purple-800);
+  --color-purple-900: var(--databloom-sakura-purple-900);
+  --color-purple-950: var(--databloom-sakura-purple-950);
+  --color-pink-50: var(--databloom-sakura-pink-50);
+  --color-pink-100: var(--databloom-sakura-pink-100);
+  --color-pink-200: var(--databloom-sakura-pink-200);
+  --color-pink-300: var(--databloom-sakura-pink-300);
+  --color-pink-400: var(--databloom-sakura-pink-400);
+  --color-pink-500: var(--databloom-sakura-pink-500);
+  --color-pink-600: var(--databloom-sakura-pink-600);
+  --color-pink-700: var(--databloom-sakura-pink-700);
+  --color-pink-800: var(--databloom-sakura-pink-800);
+  --color-pink-900: var(--databloom-sakura-pink-900);
+  --color-blue-50: var(--databloom-sakura-blue-50);
+  --color-blue-100: var(--databloom-sakura-blue-100);
+  --color-sky-100: var(--databloom-sakura-sky-100);
+  --color-sky-300: var(--databloom-sakura-sky-300);
   --databloom-page-start: #fdf2f8;
   --databloom-page-middle: #faf5ff;
   --databloom-page-end: #eff6ff;
@@ -40,13 +101,9 @@ html[data-databloom-theme="Sakura"] {
   --databloom-sakura-glass: rgb(255 255 255 / 0.4);
   --databloom-sakura-glass-border: rgb(255 255 255 / 0.5);
   --databloom-sakura-navbar-border: rgb(255 255 255 / 0.8);
-  --databloom-sakura-action: #9333ea;
-  --databloom-sakura-action-hover: #7e22ce;
-  --databloom-sakura-action-end: #be185d;
-  --databloom-sakura-accent-subtle: #faf5ff;
-  --databloom-sakura-accent-soft-strong: #e9d5ff;
-  --databloom-sakura-soft-middle: #fce7f3;
-  --databloom-sakura-soft-end: #dbeafe;
+  --databloom-sakura-action: var(--databloom-sakura-purple-600);
+  --databloom-sakura-action-hover: var(--databloom-sakura-purple-700);
+  --databloom-sakura-action-end: var(--databloom-sakura-pink-600);
 }
 
 html[data-databloom-theme="Cloud"] {
@@ -213,44 +270,44 @@ html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   );
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where([class~="text-slate-950"], [class~="text-slate-900"], [class~="text-gray-950"], [class~="text-gray-900"], [class~="text-gray-800"]) {
   color: var(--databloom-text-primary);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where([class~="text-slate-800"], [class~="text-slate-700"], [class~="text-gray-700"], [class~="text-gray-600"]) {
   color: var(--databloom-text-secondary);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where([class~="text-slate-600"], [class~="text-slate-500"], [class~="text-slate-400"], [class~="text-gray-500"], [class~="text-gray-400"]) {
   color: var(--databloom-text-muted);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where([class~="text-purple-500"], [class~="text-purple-600"], [class~="text-purple-700"], [class~="text-purple-800"], [class~="text-purple-900"], [class~="text-purple-950"]) {
   color: var(--databloom-text-accent);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where([class~="text-pink-500"], [class~="text-pink-600"], [class~="text-pink-700"], [class~="text-pink-800"], [class~="text-pink-900"]) {
   color: var(--databloom-secondary-action);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where([class~="border-purple-100"], [class~="border-purple-200"], [class~="border-purple-300"], [class~="border-purple-400"], [class~="border-purple-500"]) {
   border-color: var(--databloom-border);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a):where([class~="bg-purple-500"], [class~="bg-purple-600"], [class~="bg-purple-700"], [class~="bg-purple-800"]) {
   background-color: var(--databloom-action);
   color: var(--databloom-text-on-accent);
   color: contrast-color(var(--databloom-action));
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a)[class*="bg-gradient"][class*="from-purple-"] {
   background-image: linear-gradient(
     to right,
@@ -261,77 +318,80 @@ html[data-databloom-theme]
   color: contrast-color(var(--databloom-accent-strong));
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a)[class*="hover:bg-purple-"]:hover {
   background-color: var(--databloom-action-hover);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where([class~="bg-purple-50"], [class~="bg-purple-100"], [class~="bg-purple-200"]) {
   background-color: var(--databloom-accent-soft);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a):where([class~="bg-pink-500"], [class~="bg-pink-600"], [class~="bg-pink-700"], [class~="bg-pink-800"]) {
   background-color: var(--databloom-secondary-action);
   color: var(--databloom-text-on-accent);
   color: contrast-color(var(--databloom-secondary-action));
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a)[class*="hover:bg-pink-"]:hover {
   background-color: var(--databloom-secondary-action-hover);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a)[class~="bg-amber-600"] {
   background-color: var(--databloom-warm-action);
   color: var(--databloom-text-on-accent);
   color: contrast-color(var(--databloom-warm-action));
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a)[class*="hover:bg-amber-"]:hover {
   background-color: var(--databloom-warm-action-hover);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a)[class~="bg-orange-600"] {
   background-color: var(--databloom-orange-action);
   color: var(--databloom-text-on-accent);
   color: contrast-color(var(--databloom-orange-action));
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(button, a)[class*="hover:bg-orange-"]:hover {
   background-color: var(--databloom-orange-action-hover);
 }
 
-html[data-databloom-theme] :where(input, textarea, select) {
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(input, textarea, select) {
   color: var(--databloom-text-primary);
   caret-color: var(--databloom-accent-strong);
 }
 
-html[data-databloom-theme] :where(input, textarea)::placeholder {
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(input, textarea)::placeholder {
   color: var(--databloom-text-muted);
   opacity: 1;
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(input, textarea, select)[class*="bg-white"] {
   background-color: var(--databloom-input);
 }
 
-html[data-databloom-theme] :where(a, button, input, textarea, select):focus-visible {
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  :where(a, button, input, textarea, select):focus-visible {
   outline-color: var(--databloom-focus);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   [role="progressbar"]:where([class~="bg-purple-100"], [class~="bg-gray-200"], [class~="bg-white"]) {
   background-color: var(--databloom-progress-track);
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   [role="progressbar"]
   > :first-child[class*="from-purple-"] {
   background-color: var(--databloom-progress-fill);
@@ -355,92 +415,131 @@ html[data-databloom-theme]
   );
 }
 
-html[data-databloom-theme]
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where([class*="bg-slate-950/35"], [class*="bg-slate-950/40"], [class*="bg-slate-950/45"]) {
   background-color: var(--databloom-overlay);
 }
 
-/* Sakura keeps its approved blush-glass identity while using semantic roles. */
+/* Sakura keeps the original DataBloom palette and utility distinctions. The
+   shared accessibility layer remains active through semantic roles and the
+   narrowly scoped readable-foreground rules below. */
 html[data-databloom-theme="Sakura"] {
   --databloom-glass: var(--databloom-sakura-glass);
   --databloom-action: var(--databloom-sakura-action);
   --databloom-action-hover: var(--databloom-sakura-action-hover);
+  --databloom-text-primary: var(--databloom-sakura-slate-900);
+  --databloom-text-secondary: var(--databloom-sakura-slate-700);
+  --databloom-text-muted: var(--databloom-sakura-slate-600);
+  --databloom-text-surface: var(--databloom-sakura-slate-800);
+  --databloom-text-heading: var(--databloom-sakura-purple-900);
+  --databloom-text-accent: var(--databloom-sakura-purple-800);
+  --databloom-link: var(--databloom-sakura-purple-700);
+  --databloom-progress-track: var(--databloom-sakura-gray-200);
+  --databloom-progress-fill: var(--databloom-sakura-purple-400);
 }
 
-html[data-databloom-theme="Sakura"] [data-databloom-navbar] {
+html[data-databloom-theme="Sakura"]
+  nav[data-databloom-navbar][class*="bg-white/80"] {
   border-color: var(--databloom-sakura-navbar-border);
+  color: inherit;
 }
 
 html[data-databloom-theme="Sakura"] [data-databloom-glass],
 html[data-databloom-theme="Sakura"] .databloom-glass {
   border-color: var(--databloom-sakura-glass-border);
+  color: inherit;
 }
 
 html[data-databloom-theme="Sakura"]
-  :where([class~="text-purple-500"], [class~="text-purple-600"]) {
-  color: var(--databloom-sakura-action);
+  :where([class~="text-slate-400"], [class~="text-gray-400"]) {
+  color: var(--databloom-text-muted);
 }
 
 html[data-databloom-theme="Sakura"]
-  :where(button, a)[class*="bg-gradient"][class*="from-purple-"] {
-  background-image: linear-gradient(
-    to right,
-    var(--databloom-sakura-action),
-    var(--databloom-sakura-action-end)
-  );
+  :where([class~="text-purple-500"]) {
+  color: var(--databloom-sakura-readable-purple-500);
+}
+
+html[data-databloom-theme="Sakura"] :where([class~="text-pink-500"]) {
+  color: var(--databloom-sakura-readable-pink-500);
+}
+
+html[data-databloom-theme="Sakura"] :where(input, textarea, select) {
+  color: var(--databloom-text-primary);
+  caret-color: var(--databloom-sakura-purple-600);
+}
+
+html[data-databloom-theme="Sakura"] :where(input, textarea)::placeholder {
+  color: var(--databloom-text-muted);
+  opacity: 1;
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a)[class~="bg-purple-500"] {
   color: var(--databloom-text-on-accent);
-  color: contrast-color(var(--databloom-sakura-action-end));
-}
-
-html[data-databloom-theme="Sakura"] :where([class~="bg-purple-50"]) {
-  background-color: var(--databloom-sakura-accent-subtle);
-}
-
-html[data-databloom-theme="Sakura"] :where([class~="bg-purple-200"]) {
-  background-color: var(--databloom-sakura-accent-soft-strong);
+  color: contrast-color(var(--databloom-sakura-purple-500));
 }
 
 html[data-databloom-theme="Sakura"]
-  :where(button, a)[class*="bg-gradient"]:where(
-    [class*="from-purple-50"],
-    [class*="from-purple-100"],
-    [class*="from-purple-200"]
-  ) {
-  background-image: linear-gradient(
-    to bottom right,
-    var(--databloom-accent-soft),
-    var(--databloom-sakura-soft-middle),
-    var(--databloom-sakura-soft-end)
-  );
-  color: var(--databloom-text-accent);
+  :where(button, a)[class~="bg-purple-600"] {
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-purple-600));
 }
 
 html[data-databloom-theme="Sakura"]
-  :where(button, a)[class*="bg-gradient"]:where(
-    [class*="from-purple-50"],
-    [class*="from-purple-100"],
-    [class*="from-purple-200"]
-  )[class*="to-pink-"] {
-  background-image: linear-gradient(
-    to bottom right,
-    var(--databloom-accent-soft),
-    var(--databloom-sakura-soft-middle)
-  );
+  :where(button, a):where([class~="bg-purple-700"], [class~="bg-purple-800"], [class~="bg-purple-900"]) {
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-purple-700));
 }
 
 html[data-databloom-theme="Sakura"]
-  [role="progressbar"]
-  > :first-child[class*="from-purple-"],
-html[data-databloom-theme="Sakura"] .databloom-progress-fill {
-  background-image: linear-gradient(
-    to right,
-    var(--databloom-sakura-action),
-    var(--databloom-sakura-action-end)
-  );
+  :where(button, a)[class~="bg-pink-500"] {
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-pink-500));
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a):where([class~="bg-pink-600"], [class~="bg-pink-700"], [class~="bg-pink-800"]) {
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-pink-600));
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a)[class~="bg-amber-600"] {
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-amber-600));
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a)[class~="bg-orange-600"] {
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-orange-600));
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a)[class*="bg-gradient"][class*="from-purple-500"] {
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-purple-500));
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a)[class*="bg-gradient"][class*="from-purple-600"] {
+  color: var(--databloom-text-on-accent);
+  color: contrast-color(var(--databloom-sakura-purple-600));
+}
+
+html[data-databloom-theme="Sakura"]
+  :where(button, a):disabled[class*="disabled:bg-purple-200"] {
+  color: var(--databloom-sakura-purple-700);
 }
 
 html[data-databloom-theme="Sakura"]
   :where(button, a).databloom-brand-cta[class*="bg-gradient"] {
+  background-image: linear-gradient(
+    to right,
+    var(--databloom-sakura-action),
+    var(--databloom-sakura-action-end)
+  );
   color: var(--databloom-text-on-accent);
 }
 
