@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Heart, Sparkles, WandSparkles } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
+import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
 import PowerQueryDatasets from "@/components/power-query/PowerQueryDatasets";
 import PowerQueryKeyboardShortcuts from "@/components/power-query/PowerQueryKeyboardShortcuts";
 import PowerQueryLessonCard from "@/components/power-query/PowerQueryLessonCard";
@@ -139,6 +140,8 @@ export default function PowerQueryStudio() {
             />
           </div>
         </section>
+
+        <StudioCheckpointCards studioId="power-query-studio" />
 
         <PowerQueryRoadmap completedLessonIds={progress.completedLessonIds} />
         <PowerQueryDatasets />

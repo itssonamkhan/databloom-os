@@ -8,6 +8,7 @@ import {
 } from "@/lib/favorites";
 import { useEffect, useMemo, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
+import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
 import StudioFilterToolbar from "@/components/studio/StudioFilterToolbar";
 import { formulas } from "@/lib/formulas";
 
@@ -96,6 +97,8 @@ useEffect(() => {
           resultCount={filteredFormulas.length}
           searchPlaceholder="Search formulas or categories"
         />
+
+        <StudioCheckpointCards studioId="formula-studio" />
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredFormulas.map((formula) => (

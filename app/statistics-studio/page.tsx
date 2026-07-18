@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChartNoAxesCombined, Download, Sparkles } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
+import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
 import StatisticsLessonCard from "@/components/statistics/StatisticsLessonCard";
 import StudioFilterToolbar from "@/components/studio/StudioFilterToolbar";
 import {
@@ -167,6 +168,8 @@ export default function StatisticsStudioPage() {
             />
           </div>
         </section>
+
+        <StudioCheckpointCards studioId="statistics-studio" />
 
         <section aria-labelledby="statistics-lessons-heading">
           <div>

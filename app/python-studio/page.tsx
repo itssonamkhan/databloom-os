@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Braces, Download, Sparkles } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
+import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
 import PythonLessonCard from "@/components/python/PythonLessonCard";
 import StudioFilterToolbar from "@/components/studio/StudioFilterToolbar";
 import {
@@ -144,6 +145,8 @@ export default function PythonStudioPage() {
             />
           </div>
         </section>
+
+        <StudioCheckpointCards studioId="python-studio" />
 
         <section aria-labelledby="python-lessons-heading">
           <div>

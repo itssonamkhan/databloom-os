@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BriefcaseBusiness, Heart, Sparkles } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
+import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
 import BusinessAnalyticsDatasets from "@/components/business-analytics/BusinessAnalyticsDatasets";
 import BusinessAnalyticsLessonCard from "@/components/business-analytics/BusinessAnalyticsLessonCard";
 import BusinessAnalyticsRoadmap from "@/components/business-analytics/BusinessAnalyticsRoadmap";
@@ -112,6 +113,8 @@ export default function BusinessAnalyticsStudio() {
             <div className="h-full rounded-full bg-gradient-to-r from-indigo-600 via-purple-500 to-amber-500 transition-[width] duration-500" style={{ width: `${percentage}%` }} />
           </div>
         </section>
+
+        <StudioCheckpointCards studioId="business-analytics-studio" />
 
         <BusinessAnalyticsRoadmap completedLessonIds={progress.completedLessonIds} />
         <BusinessAnalyticsDatasets />

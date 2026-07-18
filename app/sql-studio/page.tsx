@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Database, Download, Sparkles } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
+import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
 import SQLLessonCard from "@/components/sql/SQLLessonCard";
 import StudioFilterToolbar from "@/components/studio/StudioFilterToolbar";
 import {
@@ -118,6 +119,8 @@ export default function SQLStudioPage() {
             <div className="h-full rounded-full bg-gradient-to-r from-purple-600 to-pink-500 transition-[width] duration-500" style={{ width: `${percentage}%` }} />
           </div>
         </section>
+
+        <StudioCheckpointCards studioId="sql-studio" />
 
         <section aria-labelledby="sql-lessons-heading">
           <div>

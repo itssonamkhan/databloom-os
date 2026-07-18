@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BarChart3, Heart, Sparkles } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
+import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
 import StudioFilterToolbar from "@/components/studio/StudioFilterToolbar";
 import TableauKeyboardShortcuts from "@/components/tableau/TableauKeyboardShortcuts";
 import TableauLessonCard from "@/components/tableau/TableauLessonCard";
@@ -138,6 +139,8 @@ export default function TableauStudio() {
             />
           </div>
         </section>
+
+        <StudioCheckpointCards studioId="tableau-studio" />
 
         <TableauRoadmap completedLessonIds={progress.completedLessonIds} />
 
