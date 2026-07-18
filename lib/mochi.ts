@@ -121,6 +121,36 @@ export const MOCHI_ENCOURAGEMENTS = [
   "Mochi is proud of the care you bring to your learning.",
 ] as const;
 
+const MOCHI_LEVEL_UP_MESSAGES = [
+  "Your learning garden has its first strong roots. Every small step is counting!",
+  "That tiny sprout is growing beautifully. Keep following your curiosity!",
+  "Your study habits are getting stronger, and this new level proves it!",
+  "A brand-new bloom for your collection. Your steady effort is shining!",
+  "You are turning practice into real skill, one thoughtful lesson at a time!",
+  "Your explorer era is here. New data discoveries are waiting for you!",
+  "Your spreadsheet confidence is blooming into something truly powerful!",
+  "You are transforming data into stories people can understand. Wonderful work!",
+  "You are thinking like an analyst now—curious, careful, and insight-driven!",
+  "You reached a major DataBloom milestone. Your whole learning garden is glowing!",
+  "Legendary consistency unlocked. You keep showing what patient practice can do!",
+  "Your ideas are becoming clear, useful insights. Keep creating with confidence!",
+  "Patterns that once felt hidden are becoming your analytical superpower!",
+  "Your wisdom is blooming through every question, chart, and decision you explore!",
+  "The highest bloom is yours. You built this mastery with courage and consistency!",
+] as const;
+
+export function getMochiLevelUpMessage(
+  levelName: string,
+  buddyName = "Mochi",
+) {
+  const levelIndex = levels.findIndex((level) => level.name === levelName);
+  const message =
+    MOCHI_LEVEL_UP_MESSAGES[levelIndex] ??
+    "A beautiful new milestone is yours. Keep learning and keep blooming!";
+
+  return `${buddyName} says: ${message}`;
+}
+
 const DAILY_MOTIVATIONS = [
   "🌸 Let’s grow one useful data skill today!",
   "✨ A fresh day means a fresh little learning win.",

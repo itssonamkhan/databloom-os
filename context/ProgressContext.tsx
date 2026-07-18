@@ -8,8 +8,16 @@ import {
   useState,
 } from "react";
 
-import { getCurrentLevel } from "@/lib/levels";
-import { loadXP, saveXP } from "@/lib/storage";
+import LevelUpCelebration, {
+  type LevelUpCelebrationDetails,
+} from "@/components/effects/LevelUpCelebration";
+import { getCurrentLevel, levels } from "@/lib/levels";
+import {
+  loadLastCelebratedLevel,
+  loadXP,
+  saveLastCelebratedLevel,
+  saveXP,
+} from "@/lib/storage";
 import { checkAchievements } from "@/lib/checkAchievements";
 import { loadStreak } from "@/lib/streak";
 import {
@@ -26,6 +34,15 @@ type ProgressContextType = {
   currentLevelName: string;
   dismissLevelUp: () => void;
 };
+
+function getLevelIndex(levelName: string) {
+  return levels.findIndex((level) => level.name === levelName);
+}
+
+function loadLastCelebratedLevelIndex() {
+  const savedLevelName = loadLastCelebratedLevel();
+  return savedLevelName ? getLevelIndex(savedLevelName) : -1;
+}
 
 
 const ProgressContext =
@@ -50,8 +67,8 @@ export function ProgressProvider({
     useState(240);
 
 
-  const [levelUp,setLevelUp] =
-    useState(false);
+  const [levelCelebration, setLevelCelebration] =
+    useState<LevelUpCelebrationDetails | null>(null);
 
 
 
@@ -72,9 +89,14 @@ export function ProgressProvider({
     setXP(savedXP);
 
 
-    setCurrentLevelName(
-      getCurrentLevel(savedXP).name
-    );
+    const savedLevel = getCurrentLevel(savedXP);
+
+    setCurrentLevelName(savedLevel.name);
+
+    const savedLevelIndex = getLevelIndex(savedLevel.name);
+    if (savedLevelIndex > loadLastCelebratedLevelIndex()) {
+      saveLastCelebratedLevel(savedLevel.name);
+    }
 
 
     setMounted(true);
@@ -121,16 +143,23 @@ export function ProgressProvider({
 
 
 
-      if(
-        previousLevel.name !== newLevel.name
-      ){
+      if (previousLevel.name !== newLevel.name) {
 
         setCurrentLevelName(
           newLevel.name
         );
 
 
-        setLevelUp(true);
+        const previousLevelIndex = getLevelIndex(previousLevel.name);
+        const newLevelIndex = getLevelIndex(newLevel.name);
+
+        if (
+          newLevelIndex > previousLevelIndex &&
+          newLevelIndex > loadLastCelebratedLevelIndex()
+        ) {
+          saveLastCelebratedLevel(newLevel.name);
+          setLevelCelebration({ previousLevel, newLevel, currentXP: newXP });
+        }
 
       }
 
@@ -177,11 +206,9 @@ export function ProgressProvider({
 
 
 
-  function dismissLevelUp(){
-
-    setLevelUp(false);
-
-  }
+  const dismissLevelUp = useCallback(() => {
+    setLevelCelebration(null);
+  }, []);
 
 
 
@@ -203,7 +230,7 @@ export function ProgressProvider({
       value={{
         xp,
         addXP,
-        levelUp,
+        levelUp: levelCelebration !== null,
         currentLevelName,
         dismissLevelUp,
       }}
@@ -211,6 +238,11 @@ export function ProgressProvider({
     >
 
       {children}
+
+      <LevelUpCelebration
+        celebration={levelCelebration}
+        onClose={dismissLevelUp}
+      />
 
     </ProgressContext.Provider>
 

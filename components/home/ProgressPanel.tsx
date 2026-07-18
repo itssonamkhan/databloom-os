@@ -2,17 +2,11 @@
 
 import { useProgress } from "@/context/ProgressContext";
 import { getCurrentLevel, levels } from "@/lib/levels";
-import LevelUpModal from "@/components/effects/LevelUpModal";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 export default function ProgressPanel() {
   const preferences = useUserPreferences();
-  const {
-    xp,
-    levelUp,
-    currentLevelName,
-    dismissLevelUp,
-  } = useProgress();
+  const { xp } = useProgress();
 
   const currentLevel = getCurrentLevel(xp);
 
@@ -29,15 +23,7 @@ export default function ProgressPanel() {
     : 100;
 
   return (
-    <>
-      {levelUp && (
-        <LevelUpModal
-          level={currentLevelName}
-          onClose={dismissLevelUp}
-        />
-      )}
-
-      <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 shadow-lg border border-white/50">
+    <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 shadow-lg border border-white/50">
 
         <h2 className="text-xl font-bold text-gray-800">
           {currentLevel.name}
@@ -100,7 +86,6 @@ export default function ProgressPanel() {
 
         </div>
 
-      </div>
-    </>
+    </div>
   );
 }
