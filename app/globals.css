@@ -112,6 +112,13 @@ html[data-databloom-theme="Sakura"] {
   --databloom-sakura-selected-border: var(--databloom-sakura-purple-200);
   --databloom-sakura-selected-text: var(--databloom-sakura-purple-900);
   --databloom-sakura-selected-shadow: 0 8px 22px rgb(168 85 247 / 0.12);
+  --databloom-sakura-selected-chip-start: rgb(252 231 243 / 0.9);
+  --databloom-sakura-selected-chip-end: rgb(243 232 255 / 0.9);
+  --databloom-sakura-selected-chip-border: rgb(249 168 212 / 0.78);
+  --databloom-sakura-selected-chip-text: var(--databloom-sakura-purple-950);
+  --databloom-sakura-selected-chip-shadow:
+    0 8px 22px rgb(168 85 247 / 0.14),
+    inset 0 1px 0 rgb(255 255 255 / 0.82);
   --databloom-sakura-disabled-surface: rgb(243 232 255 / 0.72);
   --databloom-sakura-disabled-text: var(--databloom-sakura-slate-600);
 }
@@ -558,15 +565,17 @@ html[data-databloom-theme="Sakura"]
     [class~="from-purple-800"],
     [class~="from-purple-900"]
   ) {
-  background-color: var(--databloom-sakura-selected-end);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background-color: var(--databloom-sakura-selected-chip-end);
   background-image: linear-gradient(
     to bottom right,
-    var(--databloom-sakura-selected-start),
-    var(--databloom-sakura-selected-end)
+    var(--databloom-sakura-selected-chip-start),
+    var(--databloom-sakura-selected-chip-end)
   );
-  border-color: var(--databloom-sakura-selected-border);
-  box-shadow: var(--databloom-sakura-selected-shadow);
-  color: var(--databloom-sakura-selected-text);
+  border-color: var(--databloom-sakura-selected-chip-border);
+  box-shadow: var(--databloom-sakura-selected-chip-shadow);
+  color: var(--databloom-sakura-selected-chip-text);
 }
 
 html[data-databloom-theme="Sakura"]
