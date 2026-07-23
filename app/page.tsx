@@ -47,6 +47,7 @@ const journeySections: Array<{
       { title: "Power BI Studio", description: "Model data, design reports, and learn DAX", icon: "📊", href: "/power-bi-studio", color: "border-amber-200 hover:bg-amber-50" },
       { title: "Tableau Studio", description: "Build visual analytics, dashboards, and Tableau expertise", icon: "📊", href: "/tableau-studio", color: "border-blue-200 hover:bg-blue-50" },
       { title: "Dashboard Studio", description: "Create stakeholder-ready portfolio dashboards", icon: "🎨", href: "/dashboard", color: "border-blue-200 hover:bg-blue-50" },
+      { title: "Portfolio Project Studio", description: "Build resume-ready projects and real-world case studies", icon: "🏆", href: "/portfolio-project-studio", color: "border-[var(--databloom-border)] hover:bg-[var(--databloom-accent-soft)]" },
     ],
   },
   {

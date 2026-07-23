@@ -22,6 +22,8 @@ import { loadCareerHubState } from "@/lib/careerHub";
 import { careerGuides } from "@/lib/careerHubData";
 import { getCompletedDashboards } from "@/lib/dashboardProgress";
 import { dashboardProjects } from "@/lib/dashboardProjects";
+import { portfolioProjects } from "@/lib/portfolioProjects";
+import { loadPortfolioProjectProgress } from "@/lib/portfolioProjectProgress";
 import {
   createEmptyResume,
   createResumeAchievement,
@@ -87,6 +89,9 @@ const emptySuggestions: ResumeSuggestions = {
 function loadSuggestions(): ResumeSuggestions {
   const snapshot = loadAnalyticsSnapshot();
   const completedProjectIds = new Set(getCompletedDashboards());
+  const completedPortfolioProjectIds = new Set(
+    loadPortfolioProjectProgress().completedProjectIds,
+  );
   const unlocked = new Set(loadUnlockedAchievements());
   const careerState = loadCareerHubState();
 
@@ -99,17 +104,27 @@ function loadSuggestions(): ResumeSuggestions {
           studio.id !== "dashboards",
       )
       .map((studio) => studio.name.replace(" Studio", "")),
-    projects: dashboardProjects
-      .filter((project) => completedProjectIds.has(project.id))
-      .map((project) => ({
-        id: project.id,
-        name: project.title,
-        tools: project.tools.join(", "),
-        bullets: [
-          project.description,
-          ...project.learningObjectives.slice(0, 2),
-        ].join("\n"),
-      })),
+    projects: [
+      ...dashboardProjects
+        .filter((project) => completedProjectIds.has(project.id))
+        .map((project) => ({
+          id: project.id,
+          name: project.title,
+          tools: project.tools.join(", "),
+          bullets: [
+            project.description,
+            ...project.learningObjectives.slice(0, 2),
+          ].join("\n"),
+        })),
+      ...portfolioProjects
+        .filter((project) => completedPortfolioProjectIds.has(project.id))
+        .map((project) => ({
+          id: project.id,
+          name: project.title,
+          tools: project.skillsRequired.join(", "),
+          bullets: project.resumeBullet,
+        })),
+    ],
     achievements: achievementDefinitions
       .filter((achievement) => unlocked.has(achievement.id))
       .map((achievement) => ({
