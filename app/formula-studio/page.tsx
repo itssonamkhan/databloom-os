@@ -9,6 +9,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
+import ExcelProToolkit from "@/components/formula/ExcelProToolkit";
 import StudioFilterToolbar from "@/components/studio/StudioFilterToolbar";
 import { formulas } from "@/lib/formulas";
 
@@ -24,6 +25,7 @@ const difficulties = Array.from(
 );
 
 export default function FormulaStudio() {
+  const [view, setView] = useState<"formulas" | "toolkit">("formulas");
   const [search, setSearch] = useState("");
 
 const [selectedCategory, setSelectedCategory] =
@@ -85,27 +87,59 @@ useEffect(() => {
           </p>
         </div>
 
-        <StudioFilterToolbar
-          query={search}
-          onQueryChange={setSearch}
-          category={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          categories={categories}
-          difficulty={selectedDifficulty}
-          onDifficultyChange={setSelectedDifficulty}
-          difficulties={difficulties}
-          resultCount={filteredFormulas.length}
-          searchPlaceholder="Search formulas or categories"
-        />
+        <nav
+          aria-label="Formula Studio sections"
+          className="flex flex-wrap gap-2 rounded-3xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] p-3 shadow-md"
+        >
+          <button
+            type="button"
+            aria-pressed={view === "formulas"}
+            onClick={() => setView("formulas")}
+            className={`min-h-11 rounded-2xl border px-5 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] ${
+              view === "formulas"
+                ? "border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] text-[var(--databloom-text-heading)] shadow-sm"
+                : "border-transparent bg-transparent text-[var(--databloom-text-secondary)]"
+            }`}
+          >
+            📚 Formula Library
+          </button>
+          <button
+            type="button"
+            aria-pressed={view === "toolkit"}
+            onClick={() => setView("toolkit")}
+            className={`min-h-11 rounded-2xl border px-5 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] ${
+              view === "toolkit"
+                ? "border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] text-[var(--databloom-text-heading)] shadow-sm"
+                : "border-transparent bg-transparent text-[var(--databloom-text-secondary)]"
+            }`}
+          >
+            🧰 Excel Pro Toolkit
+          </button>
+        </nav>
 
-        <StudioCheckpointCards studioId="formula-studio" />
+        {view === "formulas" ? (
+          <>
+            <StudioFilterToolbar
+              query={search}
+              onQueryChange={setSearch}
+              category={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              categories={categories}
+              difficulty={selectedDifficulty}
+              onDifficultyChange={setSelectedDifficulty}
+              difficulties={difficulties}
+              resultCount={filteredFormulas.length}
+              searchPlaceholder="Search formulas or categories"
+            />
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredFormulas.map((formula) => (
-            <div
-              key={formula.id}
-              className="rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
-            >
+            <StudioCheckpointCards studioId="formula-studio" />
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredFormulas.map((formula) => (
+                <div
+                  key={formula.id}
+                  className="rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+                >
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-purple-700">
                   {formula.name}
@@ -206,9 +240,13 @@ useEffect(() => {
     : "⭐ Favorite"}
 </button>
 </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        ) : (
+          <ExcelProToolkit />
+        )}
       </div>
     </AppLayout>
   );
