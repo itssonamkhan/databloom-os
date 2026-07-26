@@ -474,11 +474,11 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="flex min-w-0 w-full flex-1 flex-wrap items-center justify-between gap-1.5 sm:w-auto sm:justify-end sm:gap-3">
+        <div className="flex w-full min-w-0 flex-none flex-wrap items-center justify-between gap-1.5 min-[1400px]:w-auto min-[1400px]:flex-1 min-[1400px]:justify-end sm:gap-2 xl:gap-3">
           <Link
             href="/"
             onClick={playClickSound}
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-purple-100 px-4 py-2 text-sm font-bold text-purple-700 transition hover:-translate-y-0.5 hover:bg-purple-200"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-purple-100 px-4 py-2 text-sm font-bold text-purple-700 transition hover:-translate-y-0.5 hover:bg-purple-200"
           >
             <Home className="size-4" />
             <span className="hidden sm:inline">Home</span>
@@ -491,7 +491,7 @@ export default function Navbar() {
               setSearchOpen(true);
               setNotificationsOpen(false);
             }}
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-purple-100 bg-white px-3 py-2 text-sm font-semibold text-gray-600 transition hover:-translate-y-0.5 hover:bg-purple-50 lg:px-4"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl border border-purple-100 bg-white px-3 py-2 text-sm font-semibold text-gray-600 transition hover:-translate-y-0.5 hover:bg-purple-50 lg:px-4"
             aria-label="Open global search"
           >
             <Search className="size-4" />
@@ -504,7 +504,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={openStudyMusic}
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-pink-100 px-3 py-2 text-sm font-bold text-pink-700 transition hover:-translate-y-0.5 hover:bg-pink-200"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl bg-pink-100 px-3 py-2 text-sm font-bold text-pink-700 transition hover:-translate-y-0.5 hover:bg-pink-200"
           >
             <Music2 className="size-4" />
             <span className="hidden xl:inline">Study Music</span>
@@ -513,7 +513,7 @@ export default function Navbar() {
           <Link
             href="/achievements"
             onClick={playClickSound}
-            className="hidden min-h-10 items-center gap-2 rounded-xl bg-orange-50 px-3 py-2 text-sm font-bold text-orange-700 transition hover:-translate-y-0.5 hover:bg-orange-100 md:flex"
+            className="hidden min-h-11 items-center gap-2 rounded-xl bg-orange-50 px-3 py-2 text-sm font-bold text-orange-700 transition hover:-translate-y-0.5 hover:bg-orange-100 md:flex"
           >
             <Flame className="size-4" />
             {streak} {streak === 1 ? "day" : "days"}
@@ -522,12 +522,12 @@ export default function Navbar() {
           <Link
             href="/profile"
             onClick={playClickSound}
-            className="min-h-10 rounded-xl bg-yellow-50 px-2.5 py-2 text-xs font-black text-yellow-700 transition hover:-translate-y-0.5 hover:bg-yellow-100 sm:px-3 sm:text-sm"
+            className="inline-flex min-h-11 items-center rounded-xl bg-yellow-50 px-2.5 py-2 text-xs font-black text-yellow-700 transition hover:-translate-y-0.5 hover:bg-yellow-100 sm:px-3 sm:text-sm"
           >
             ⭐ {xp} XP
           </Link>
 
-          <div ref={notificationsRef} className="relative">
+          <div ref={notificationsRef} className="static sm:relative">
             <button
               type="button"
               onClick={() => {
@@ -535,7 +535,7 @@ export default function Navbar() {
                 setNotificationsOpen((current) => !current);
                 setSearchOpen(false);
               }}
-              className="relative grid size-10 place-items-center rounded-xl bg-blue-50 text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100"
+              className="relative grid size-11 place-items-center rounded-xl bg-blue-50 text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100"
               aria-label="Open notifications"
               aria-expanded={notificationsOpen}
             >
@@ -545,7 +545,7 @@ export default function Navbar() {
             </button>
 
             {notificationsOpen ? (
-              <div className="absolute right-0 top-12 z-[200] w-80 rounded-3xl border border-purple-100 bg-white p-4 shadow-2xl">
+              <div className="absolute left-4 right-4 top-full z-[200] mt-3 w-auto rounded-3xl border border-purple-100 bg-white p-4 shadow-2xl sm:left-auto sm:right-0 sm:top-12 sm:mt-0 sm:w-80">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-black text-gray-900">Notifications</p>
@@ -557,7 +557,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => setNotificationsOpen(false)}
-                    className="grid size-8 place-items-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    className="grid size-11 place-items-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200"
                     aria-label="Close notifications"
                   >
                     <X className="size-4" />
@@ -611,7 +611,7 @@ export default function Navbar() {
           <Link
             href="/profile"
             onClick={playClickSound}
-            className="hidden size-10 place-items-center rounded-xl bg-purple-600 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-700 sm:grid"
+            className="hidden size-11 place-items-center rounded-xl bg-purple-600 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-700 sm:grid"
             aria-label="Open profile"
           >
             <UserRound className="size-4" />
@@ -645,7 +645,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setSearchOpen(false)}
-                className="grid size-9 place-items-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className="grid size-11 place-items-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200"
                 aria-label="Close search"
               >
                 <X className="size-4" />
