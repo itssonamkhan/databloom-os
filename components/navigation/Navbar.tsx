@@ -456,7 +456,7 @@ export default function Navbar() {
     <>
       <nav
         data-databloom-navbar
-        className="relative flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/80 bg-white/80 px-5 py-4 shadow-lg backdrop-blur-md sm:px-7"
+        className="relative z-40 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/80 bg-white/80 px-5 py-4 shadow-lg backdrop-blur-md sm:px-7"
       >
         <div className="flex items-center gap-3">
           <div className="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 text-2xl shadow-sm">
