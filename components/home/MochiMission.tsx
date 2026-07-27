@@ -44,9 +44,9 @@ export default function MochiMission() {
       <div className="rounded-3xl border border-yellow-200/50 bg-white/40 p-6 shadow-lg backdrop-blur-xl">
         <div className="flex items-center gap-3">
           <div className="text-5xl" aria-hidden="true">{buddy.emoji}</div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-800">{buddy.name} Mission</h2>
-            <p className="text-gray-600">Daily challenge from {buddy.name} 🌸</p>
+          <div className="min-w-0">
+            <h2 className="break-words text-xl font-bold text-gray-800">{buddy.name} Mission</h2>
+            <p className="break-words text-gray-600">Daily challenge from {buddy.name} 🌸</p>
           </div>
         </div>
 
@@ -62,7 +62,7 @@ export default function MochiMission() {
           <Link
             href={mission.href}
             onClick={playClickSound}
-            className="rounded-xl bg-white px-5 py-2 font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-50"
+            className="inline-flex min-h-11 items-center rounded-xl bg-white px-5 py-2 font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-50"
           >
             Open mission
           </Link>
@@ -70,7 +70,7 @@ export default function MochiMission() {
             type="button"
             onClick={handleComplete}
             disabled={missionCompleted}
-            className={`rounded-xl px-5 py-2 font-semibold shadow-sm transition-colors ${
+            className={`min-h-11 rounded-xl px-5 py-2 font-semibold shadow-sm transition-colors ${
               missionCompleted
                 ? "bg-green-100 text-green-700"
                 : "bg-purple-600 text-white hover:bg-purple-700"

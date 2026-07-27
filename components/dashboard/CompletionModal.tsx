@@ -211,9 +211,11 @@ export default function CompletionModal({
             tabIndex={-1}
             className="
               relative
+              max-h-[calc(100dvh-2rem)]
               w-full
               max-w-xl
-              overflow-hidden
+              overflow-x-hidden
+              overflow-y-auto
               rounded-[2.25rem]
               border
               border-white/90

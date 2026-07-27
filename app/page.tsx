@@ -88,12 +88,12 @@ export default function Home() {
       <Sidebar />
       <div className="min-w-0 flex-1 px-4 pb-6 pt-20 sm:px-6 lg:p-10">
         <Navbar />
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto min-w-0 max-w-7xl">
           <WelcomeHero />
 
-          <div className="mt-10">
-            <h1 className="text-5xl font-bold text-purple-700">🌸 DataBloom OS</h1>
-            <p className="mt-3 text-xl text-gray-600">Your cozy digital study companion for becoming a Data Analyst.</p>
+          <div className="mt-8 sm:mt-10">
+            <h1 className="break-words text-3xl font-bold leading-tight text-purple-700 sm:text-5xl">🌸 DataBloom OS</h1>
+            <p className="mt-3 text-base text-gray-600 sm:text-xl">Your cozy digital study companion for becoming a Data Analyst.</p>
             <HomeJourneyRecommendation />
           </div>
 

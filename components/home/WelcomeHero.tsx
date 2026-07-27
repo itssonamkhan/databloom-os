@@ -25,16 +25,16 @@ export default function WelcomeHero() {
   const currentLevel = getCurrentLevel(xp);
 
   return (
-    <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-8 shadow-lg border border-white/50">
+    <div className="min-w-0 rounded-3xl bg-white/40 p-5 shadow-lg backdrop-blur-xl border border-white/50 sm:p-8">
       <p className="text-sm font-medium text-purple-600">
         🌸 Welcome back
       </p>
 
-      <h1 className="mt-2 text-4xl font-bold text-gray-900">
+      <h1 className="mt-2 break-words text-xl font-bold leading-tight text-gray-900 sm:text-4xl">
         {greeting} {preferences.userName || "Learner"} 🌸
       </h1>
 
-      <p className="mt-3 text-lg text-gray-700">
+      <p className="mt-3 break-words text-base text-gray-700 sm:text-lg">
         Ready to grow toward {preferences.careerGoal} today?
       </p>
 

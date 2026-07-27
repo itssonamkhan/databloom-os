@@ -450,7 +450,7 @@ export default function MusicWidget() {
             <button
               type="button"
               onClick={toggleTimer}
-              className="rounded-xl bg-purple-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-purple-700"
+              className="min-h-11 rounded-xl bg-purple-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-purple-700"
             >
               {timerRunning ? "Pause" : "Start"}
             </button>
@@ -458,7 +458,7 @@ export default function MusicWidget() {
             <button
               type="button"
               onClick={resetTimer}
-              className="rounded-xl bg-purple-100 px-5 py-3 text-sm font-bold text-purple-700 transition hover:bg-purple-200"
+              className="min-h-11 rounded-xl bg-purple-100 px-5 py-3 text-sm font-bold text-purple-700 transition hover:bg-purple-200"
             >
               Reset
             </button>
@@ -478,7 +478,7 @@ export default function MusicWidget() {
           <button
             type="button"
             onClick={() => setTimerDuration(10)}
-            className="rounded-xl bg-blue-50 px-3 py-2 text-sm font-bold text-blue-700 transition hover:bg-blue-100"
+            className="min-h-11 rounded-xl bg-blue-50 px-3 py-2 text-sm font-bold text-blue-700 transition hover:bg-blue-100"
           >
             10 min
           </button>
@@ -486,7 +486,7 @@ export default function MusicWidget() {
           <button
             type="button"
             onClick={() => setTimerDuration(25)}
-            className="rounded-xl bg-pink-50 px-3 py-2 text-sm font-bold text-pink-700 transition hover:bg-pink-100"
+            className="min-h-11 rounded-xl bg-pink-50 px-3 py-2 text-sm font-bold text-pink-700 transition hover:bg-pink-100"
           >
             25 min
           </button>
@@ -494,7 +494,7 @@ export default function MusicWidget() {
           <button
             type="button"
             onClick={() => setTimerDuration(50)}
-            className="rounded-xl bg-purple-50 px-3 py-2 text-sm font-bold text-purple-700 transition hover:bg-purple-100"
+            className="min-h-11 rounded-xl bg-purple-50 px-3 py-2 text-sm font-bold text-purple-700 transition hover:bg-purple-100"
           >
             50 min
           </button>

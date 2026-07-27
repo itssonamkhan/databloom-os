@@ -93,6 +93,7 @@ export default function FormulaChallenge() {
           disabled={completed}
           className={`
             mt-5
+            min-h-11
             rounded-xl
             px-5
             py-2
