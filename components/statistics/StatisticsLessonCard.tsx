@@ -20,8 +20,8 @@ export default function StatisticsLessonCard({
   onToggleFavorite,
 }: StatisticsLessonCardProps) {
   return (
-    <article className="flex h-full flex-col rounded-3xl border border-violet-100 bg-white/90 p-6 shadow-lg transition duration-200 hover:-translate-y-1 hover:shadow-xl">
-      <div className="flex items-start justify-between gap-4">
+    <article className="flex h-full min-w-0 max-w-full flex-col rounded-3xl border border-violet-100 bg-white/90 p-6 shadow-lg transition duration-200 hover:-translate-y-1 hover:shadow-xl">
+      <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
         <span className="grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-pink-100 to-sky-100 text-3xl">
           {lesson.icon}
         </span>
@@ -32,7 +32,7 @@ export default function StatisticsLessonCard({
         ) : null}
       </div>
 
-      <h2 className="mt-5 text-2xl font-black text-slate-950">{lesson.title}</h2>
+      <h2 className="mt-5 break-words text-2xl font-black text-slate-950">{lesson.title}</h2>
       <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
         <span className="rounded-full bg-violet-100 px-3 py-1.5 text-violet-900">
           {lesson.category}
@@ -43,16 +43,16 @@ export default function StatisticsLessonCard({
       </div>
       <p className="mt-4 flex-1 leading-7 text-slate-700">{lesson.description}</p>
 
-      <div className="mt-5 overflow-hidden rounded-2xl bg-slate-950 p-4">
+      <div className="mt-5 min-w-0 max-w-full overflow-hidden rounded-2xl bg-slate-950 p-4">
         <p className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-violet-200">
           <Sigma size={15} aria-hidden="true" /> Formula preview
         </p>
-        <pre className="overflow-hidden whitespace-pre-wrap font-mono text-sm leading-6 text-emerald-200">
-          <code className="line-clamp-2">{lesson.formula}</code>
+        <pre className="max-w-full overflow-hidden whitespace-pre-wrap font-mono text-sm leading-6 text-emerald-200">
+          <code className="line-clamp-2 break-words">{lesson.formula}</code>
         </pre>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
+      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Link
           href={`/statistics-studio/${lesson.id}`}
           onClick={playClickSound}
@@ -75,7 +75,7 @@ export default function StatisticsLessonCard({
             playClickSound();
             onToggleFavorite(lesson.id);
           }}
-          className={`col-span-2 inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-3 font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-600 focus-visible:ring-offset-2 ${
+          className={`inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-3 font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-600 focus-visible:ring-offset-2 sm:col-span-2 ${
             favorite
               ? "border-pink-300 bg-pink-100 text-pink-800"
               : "border-slate-200 bg-white text-slate-700 hover:bg-pink-50"

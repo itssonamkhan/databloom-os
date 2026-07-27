@@ -98,7 +98,7 @@ export default function PythonLessonDetail({ lesson }: { lesson: PythonLesson })
 
   return (
     <AppLayout>
-      <div className="space-y-7 text-slate-950">
+      <div className="min-w-0 space-y-7 text-slate-950">
         <Link
           href="/python-studio"
           onClick={playClickSound}
@@ -109,9 +109,9 @@ export default function PythonLessonDetail({ lesson }: { lesson: PythonLesson })
 
         <header className="rounded-3xl border border-white/70 bg-gradient-to-br from-cyan-100 via-blue-100 to-amber-100 p-7 shadow-lg sm:p-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-3xl">
+            <div className="min-w-0 max-w-3xl">
               <span className="text-5xl" aria-hidden="true">{lesson.icon}</span>
-              <h1 className="mt-4 text-4xl font-black text-slate-950 sm:text-5xl">
+              <h1 className="mt-4 break-words text-4xl font-black text-slate-950 sm:text-5xl">
                 {lesson.title}
               </h1>
               <p className="mt-4 text-lg leading-8 text-slate-700">
@@ -155,7 +155,7 @@ export default function PythonLessonDetail({ lesson }: { lesson: PythonLesson })
           <p className="leading-8 text-slate-700">{lesson.explanation}</p>
         </InfoSection>
 
-        <section className="grid gap-6 lg:grid-cols-2">
+        <section className="grid min-w-0 gap-6 lg:grid-cols-2">
           <CodeSection title="Syntax" code={lesson.syntax} tone="dark" />
           <CodeSection title="Practical example" code={lesson.example} tone="light" />
         </section>
@@ -164,7 +164,7 @@ export default function PythonLessonDetail({ lesson }: { lesson: PythonLesson })
           <p className="font-semibold leading-8 text-slate-800">{lesson.memoryTrick}</p>
         </InfoSection>
 
-        <section className="grid gap-6 lg:grid-cols-2">
+        <section className="grid min-w-0 gap-6 lg:grid-cols-2">
           <ListSection
             title="When to use it"
             items={lesson.whenToUse}
@@ -305,7 +305,7 @@ function CodeSection({
 
   return (
     <article
-      className={`rounded-3xl border p-6 shadow-lg sm:p-8 ${
+      className={`min-w-0 max-w-full overflow-hidden rounded-3xl border p-6 shadow-lg sm:p-8 ${
         isDark
           ? "border-slate-800 bg-slate-950"
           : "border-blue-100 bg-white"
@@ -318,7 +318,7 @@ function CodeSection({
         <CopyCodeButton code={code} label={`Copy ${title.toLowerCase()}`} />
       </div>
       <pre
-        className={`mt-5 overflow-x-auto rounded-2xl p-5 text-sm leading-7 ${
+        className={`mt-5 max-w-full overflow-x-auto rounded-2xl p-5 text-sm leading-7 ${
           isDark
             ? "bg-slate-900 text-emerald-200"
             : "bg-blue-50 text-blue-950"
@@ -349,11 +349,11 @@ function InfoSection({
         : "border-blue-100 bg-white text-blue-900";
 
   return (
-    <section className={`rounded-3xl border p-6 shadow-md sm:p-8 ${colors}`}>
+    <section className={`min-w-0 max-w-full rounded-3xl border p-6 shadow-md sm:p-8 ${colors}`}>
       <h2 className="flex items-center gap-2 text-2xl font-black">
         {icon} {title}
       </h2>
-      <div className="mt-4">{children}</div>
+      <div className="mt-4 min-w-0">{children}</div>
     </section>
   );
 }
@@ -370,7 +370,7 @@ function ListSection({
   icon?: React.ReactNode;
 }) {
   return (
-    <article className={`rounded-3xl border p-6 shadow-md sm:p-8 ${className}`}>
+    <article className={`min-w-0 max-w-full rounded-3xl border p-6 shadow-md sm:p-8 ${className}`}>
       <h2 className="flex items-center gap-2 text-2xl font-black text-slate-950">
         {icon} {title}
       </h2>

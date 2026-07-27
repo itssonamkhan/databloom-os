@@ -78,7 +78,7 @@ export default function StatisticsStudioPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-8 text-slate-950">
+      <div className="min-w-0 space-y-8 text-slate-950">
         <header className="rounded-3xl border border-white/70 bg-gradient-to-br from-violet-100 via-pink-100 to-sky-100 p-7 shadow-lg sm:p-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
@@ -200,7 +200,7 @@ export default function StatisticsStudioPage() {
           </div>
 
           {filteredLessons.length > 0 ? (
-            <div className="mt-7 grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
+            <div className="mt-7 grid min-w-0 gap-6 md:grid-cols-2 2xl:grid-cols-3">
               {filteredLessons.map((lesson) => (
                 <StatisticsLessonCard
                   key={lesson.id}

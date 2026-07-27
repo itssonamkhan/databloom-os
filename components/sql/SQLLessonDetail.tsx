@@ -84,16 +84,16 @@ export default function SQLLessonDetail({ lesson }: { lesson: SQLLesson }) {
 
   return (
     <AppLayout>
-      <div className="space-y-7 text-gray-950">
+      <div className="min-w-0 space-y-7 text-gray-950">
         <Link href="/sql-studio" onClick={playClickSound} className="inline-flex items-center gap-2 font-bold text-purple-700 hover:text-purple-900">
           <ArrowLeft size={18} aria-hidden="true" /> Back to SQL Studio
         </Link>
 
         <header className="rounded-3xl border border-white/70 bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 p-7 shadow-lg sm:p-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-3xl">
+            <div className="min-w-0 max-w-3xl">
               <span className="text-5xl" aria-hidden="true">{lesson.icon}</span>
-              <h1 className="mt-4 text-4xl font-black text-purple-800 sm:text-5xl">{lesson.title}</h1>
+              <h1 className="mt-4 break-words text-4xl font-black text-purple-800 sm:text-5xl">{lesson.title}</h1>
               <p className="mt-4 text-lg leading-8 text-gray-700">{lesson.description}</p>
               <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold">
                 <span className="rounded-full bg-white/80 px-4 py-2 text-purple-800">{lesson.category}</span>
@@ -112,14 +112,14 @@ export default function SQLLessonDetail({ lesson }: { lesson: SQLLesson }) {
           <p className="leading-8 text-gray-700">{lesson.explanation}</p>
         </InfoSection>
 
-        <section className="grid gap-6 lg:grid-cols-2">
-          <article className="rounded-3xl border border-slate-200 bg-slate-950 p-6 shadow-lg sm:p-8">
+        <section className="grid min-w-0 gap-6 lg:grid-cols-2">
+          <article className="min-w-0 max-w-full overflow-hidden rounded-3xl border border-slate-200 bg-slate-950 p-6 shadow-lg sm:p-8">
             <h2 className="flex items-center gap-2 text-xl font-bold text-white"><Code2 size={21} /> Syntax</h2>
-            <pre className="mt-5 overflow-x-auto rounded-2xl bg-slate-900 p-5 text-sm leading-7 text-emerald-200"><code>{lesson.syntax}</code></pre>
+            <pre className="mt-5 max-w-full overflow-x-auto rounded-2xl bg-slate-900 p-5 text-sm leading-7 text-emerald-200"><code>{lesson.syntax}</code></pre>
           </article>
-          <article className="rounded-3xl border border-blue-100 bg-white p-6 shadow-lg sm:p-8">
+          <article className="min-w-0 max-w-full overflow-hidden rounded-3xl border border-blue-100 bg-white p-6 shadow-lg sm:p-8">
             <h2 className="text-xl font-bold text-blue-800">Practical example</h2>
-            <pre className="mt-5 overflow-x-auto rounded-2xl bg-blue-50 p-5 text-sm leading-7 text-blue-950"><code>{lesson.example}</code></pre>
+            <pre className="mt-5 max-w-full overflow-x-auto rounded-2xl bg-blue-50 p-5 text-sm leading-7 text-blue-950"><code>{lesson.example}</code></pre>
           </article>
         </section>
 
@@ -127,7 +127,7 @@ export default function SQLLessonDetail({ lesson }: { lesson: SQLLesson }) {
           <p className="font-semibold leading-8 text-gray-800">{lesson.memoryTrick}</p>
         </InfoSection>
 
-        <section className="grid gap-6 lg:grid-cols-2">
+        <section className="grid min-w-0 gap-6 lg:grid-cols-2">
           <ListSection title="When to use it" items={lesson.whenToUse} className="border-emerald-100 bg-emerald-50/70" />
           <ListSection title="Common mistakes" items={lesson.commonMistakes} className="border-rose-100 bg-rose-50/70" icon={<TriangleAlert size={21} />} />
         </section>
@@ -178,9 +178,9 @@ export default function SQLLessonDetail({ lesson }: { lesson: SQLLesson }) {
 
 function InfoSection({ title, icon, tone, children }: { title: string; icon: React.ReactNode; tone: "purple" | "amber" | "blue"; children: React.ReactNode }) {
   const colors = tone === "purple" ? "border-purple-100 bg-purple-50/60 text-purple-800" : tone === "amber" ? "border-amber-100 bg-amber-50/60 text-amber-800" : "border-blue-100 bg-white text-blue-800";
-  return <section className={`rounded-3xl border p-6 shadow-md sm:p-8 ${colors}`}><h2 className="flex items-center gap-2 text-2xl font-bold">{icon}{title}</h2><div className="mt-4">{children}</div></section>;
+  return <section className={`min-w-0 max-w-full rounded-3xl border p-6 shadow-md sm:p-8 ${colors}`}><h2 className="flex items-center gap-2 text-2xl font-bold">{icon}{title}</h2><div className="mt-4 min-w-0">{children}</div></section>;
 }
 
 function ListSection({ title, items, className, icon }: { title: string; items: string[]; className: string; icon?: React.ReactNode }) {
-  return <article className={`rounded-3xl border p-6 shadow-md sm:p-8 ${className}`}><h2 className="flex items-center gap-2 text-2xl font-bold text-gray-950">{icon}{title}</h2><ul className="mt-5 space-y-3 text-gray-800">{items.map((item) => <li key={item} className="rounded-2xl bg-white/80 p-4">• {item}</li>)}</ul></article>;
+  return <article className={`min-w-0 max-w-full rounded-3xl border p-6 shadow-md sm:p-8 ${className}`}><h2 className="flex items-center gap-2 text-2xl font-bold text-gray-950">{icon}{title}</h2><ul className="mt-5 space-y-3 text-gray-800">{items.map((item) => <li key={item} className="rounded-2xl bg-white/80 p-4">• {item}</li>)}</ul></article>;
 }

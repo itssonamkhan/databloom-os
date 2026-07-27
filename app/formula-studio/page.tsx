@@ -72,7 +72,7 @@ useEffect(() => {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
+      <div className="min-w-0 space-y-8">
         <div className="rounded-3xl bg-gradient-to-br from-purple-100 to-pink-100 p-8 shadow-lg">
           <h1 className="text-5xl font-bold text-purple-700">
             📚 Excel Formula Library
@@ -134,14 +134,14 @@ useEffect(() => {
 
             <StudioCheckpointCards studioId="formula-studio" />
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid min-w-0 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {filteredFormulas.map((formula) => (
                 <div
                   key={formula.id}
-                  className="rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+                  className="min-w-0 max-w-full rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
                 >
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-purple-700">
+              <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
+                <h2 className="min-w-0 break-words text-2xl font-bold text-purple-700">
                   {formula.name}
                 </h2>
                 {learnedFormulas.includes(formula.id) && (
@@ -167,11 +167,11 @@ useEffect(() => {
                 </span>
               </div>
 
-              <p className="mt-3 inline-block rounded-full bg-pink-100 px-3 py-1 text-sm font-semibold text-pink-700">
+              <p className="mt-3 inline-block max-w-full break-words rounded-full bg-pink-100 px-3 py-1 text-sm font-semibold text-pink-700">
                 {formula.category}
               </p>
 
-              <div className="mt-5 rounded-2xl bg-purple-50 p-4">
+              <div className="mt-5 min-w-0 max-w-full overflow-hidden rounded-2xl bg-purple-50 p-4">
                 <p className="font-semibold text-purple-700">Syntax</p>
 
                 <p className="mt-2 break-words font-mono text-gray-900">
@@ -205,10 +205,10 @@ useEffect(() => {
                 </p>
               </div>
 
-              <div className="mt-6 grid grid-cols-3 gap-3">
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
   <Link
     href={`/formula-studio/${formula.id}`}
-    className="rounded-xl bg-purple-600 py-2 text-center font-semibold text-white hover:bg-purple-700"
+    className="inline-flex min-h-11 items-center justify-center rounded-xl bg-purple-600 px-3 py-2 text-center font-semibold text-white hover:bg-purple-700"
   >
     📖 Learn
   </Link>
@@ -216,8 +216,13 @@ useEffect(() => {
   <Link
   href={`/formula-studio/${formula.id}/practice`}
   className="
+  inline-flex
+  min-h-11
+  items-center
+  justify-center
   rounded-xl
   bg-pink-500
+  px-3
   py-2
   text-center
   font-semibold
@@ -233,7 +238,7 @@ useEffect(() => {
     const updated = toggleFavorite(formula.id);
     setFavorites(updated);
   }}
-  className="rounded-xl bg-blue-500 py-2 font-semibold text-white hover:bg-blue-600"
+  className="min-h-11 rounded-xl bg-blue-500 px-3 py-2 font-semibold text-white hover:bg-blue-600"
 >
   {favorites.includes(formula.id)
     ? "💙 Saved"
