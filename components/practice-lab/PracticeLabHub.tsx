@@ -449,7 +449,7 @@ export default function PracticeLabHub() {
 
   return (
     <AppLayout>
-      <div className="space-y-8 text-slate-950">
+      <div className="min-w-0 space-y-8 text-slate-950">
         <header className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-gradient-to-br from-purple-100 via-pink-100 to-sky-100 p-7 shadow-lg sm:p-10">
           <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-white/50 blur-3xl" aria-hidden="true" />
           <div className="relative flex flex-col gap-7 xl:flex-row xl:items-end xl:justify-between">
@@ -594,7 +594,7 @@ export default function PracticeLabHub() {
           {query.trim() ? (
             <div className="mt-6">
               <p className="mb-3 font-bold text-slate-700">{filteredQuestions.length} matching challenges</p>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {filteredQuestions.map((question) => (
                   <QuestionCard key={question.id} question={question} completed={state.completedQuestionIds.includes(question.id)} favorite={state.favoriteQuestionIds.includes(question.id)} onFavorite={() => { togglePracticeFavorite(question.id); sync(); }} onStart={() => beginSession({ category: question.category, difficulty: "All", questionIds: [question.id], topic: question.topic })} />
                 ))}
@@ -639,31 +639,31 @@ export default function PracticeLabHub() {
           </div>
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-2">
-          <div className="rounded-[2rem] border border-pink-100 bg-white/85 p-6 shadow-lg">
+        <section className="grid min-w-0 gap-6 xl:grid-cols-2">
+          <div className="min-w-0 max-w-full rounded-[2rem] border border-pink-100 bg-white/85 p-6 shadow-lg">
             <SectionHeading eyebrow="Recommended Practice" title="Best next challenges" description="Ranked from your learning history, retries, and unfinished work." />
-            <div className="mt-5 grid gap-3">
+            <div className="mt-5 grid min-w-0 gap-3">
               {recommended.map((question) => (
                 <CompactQuestion key={question.id} question={question} badge={state.completedQuestionIds.includes(question.id) ? "Review" : "Recommended"} onStart={() => beginSession({ category: question.category, difficulty: "All", kind: "recommended", questionIds: [question.id], topic: `Recommended · ${question.topic}` })} />
               ))}
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-rose-100 bg-white/85 p-6 shadow-lg">
+          <div className="min-w-0 max-w-full rounded-[2rem] border border-rose-100 bg-white/85 p-6 shadow-lg">
             <SectionHeading eyebrow="Weak Topics" title="Turn gaps into strengths" description="Lower-accuracy topics rise automatically as you practice." />
             <div className="mt-5 space-y-3">
               {weakTopics.length ? weakTopics.map((insight) => (
-                <button key={`${insight.category}-${insight.topic}`} type="button" onClick={() => beginSession({ category: insight.category, difficulty: "All", kind: "weak-topic", questionIds: practiceQuestions.filter((question) => question.category === insight.category && question.topic === insight.topic).map((question) => question.id), topic: `Weak topic · ${insight.topic}` })} className="flex w-full items-center justify-between gap-4 rounded-2xl border border-rose-100 bg-rose-50/60 p-4 text-left transition hover:bg-rose-100">
-                  <div><p className="font-black">{insight.topic}</p><p className="mt-1 text-sm text-slate-600">{insight.category} · {insight.attempts ? `${insight.attempts} attempts` : "Ready to reinforce"}</p></div>
-                  <span className="rounded-full bg-white px-3 py-1 text-sm font-black text-rose-800">{insight.attempts ? `${insight.accuracy}%` : "Start"}</span>
+                <button key={`${insight.category}-${insight.topic}`} type="button" onClick={() => beginSession({ category: insight.category, difficulty: "All", kind: "weak-topic", questionIds: practiceQuestions.filter((question) => question.category === insight.category && question.topic === insight.topic).map((question) => question.id), topic: `Weak topic · ${insight.topic}` })} className="flex min-w-0 w-full items-center justify-between gap-4 rounded-2xl border border-rose-100 bg-rose-50/60 p-4 text-left transition hover:bg-rose-100">
+                  <div className="min-w-0"><p className="break-words font-black">{insight.topic}</p><p className="mt-1 break-words text-sm text-slate-600">{insight.category} · {insight.attempts ? `${insight.attempts} attempts` : "Ready to reinforce"}</p></div>
+                  <span className="shrink-0 rounded-full bg-white px-3 py-1 text-sm font-black text-rose-800">{insight.attempts ? `${insight.accuracy}%` : "Start"}</span>
                 </button>
               )) : <EmptyPanel icon="🌱" text="Complete a challenge and weak-topic recommendations will adapt to your answers." />}
             </div>
           </div>
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-          <div className="rounded-[2rem] border border-emerald-100 bg-white/85 p-6 shadow-lg">
+        <section className="grid min-w-0 gap-6 xl:grid-cols-[0.8fr_1.2fr]">
+          <div className="min-w-0 rounded-[2rem] border border-emerald-100 bg-white/85 p-6 shadow-lg">
             <SectionHeading eyebrow="Recently Completed" title="Your latest wins" description="Every correct challenge persists on this device." />
             <div className="mt-5 space-y-3">
               {recentQuestions.length ? recentQuestions.map(({ question, completedAt }) => (
@@ -675,7 +675,7 @@ export default function PracticeLabHub() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-blue-100 bg-white/85 p-6 shadow-lg">
+          <div className="min-w-0 rounded-[2rem] border border-blue-100 bg-white/85 p-6 shadow-lg">
             <SectionHeading eyebrow="Practice History" title="Sessions, scores, and accuracy" description="Score, time, topic, date, and earned XP stay available after refresh." />
             <HistoryTable history={state.history} />
           </div>
@@ -708,10 +708,10 @@ function PracticeSession({ session, question, answer, setAnswer, feedback, showH
 }) {
   const progress = Math.round(((session.currentIndex + (feedback?.correct ? 1 : 0)) / session.questionIds.length) * 100);
   return (
-    <div className="space-y-6 text-slate-950">
+    <div className="min-w-0 space-y-6 text-slate-950">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <button type="button" onClick={onLeave} className="inline-flex items-center gap-2 font-black text-purple-800"><ArrowLeft size={18} aria-hidden="true" /> Exit session</button>
-        <div className="flex items-center gap-3">
+        <button type="button" onClick={onLeave} className="inline-flex min-h-11 items-center gap-2 font-black text-purple-800"><ArrowLeft size={18} aria-hidden="true" /> Exit session</button>
+        <div className="flex flex-wrap items-center gap-3">
           {session.timerEnabled ? <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-mono font-bold shadow-sm"><Clock3 size={17} aria-hidden="true" /> {formatDuration(elapsedSeconds)}</span> : null}
           <span className="rounded-full bg-purple-100 px-4 py-2 text-sm font-black text-purple-800">Question {session.currentIndex + 1}/{session.questionIds.length}</span>
         </div>
@@ -721,16 +721,16 @@ function PracticeSession({ session, question, answer, setAnswer, feedback, showH
 
       <header className="rounded-[2rem] border border-white bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 p-7 shadow-lg sm:p-9">
         <div className="flex flex-wrap items-start justify-between gap-5">
-          <div className="max-w-3xl">
+          <div className="min-w-0 max-w-3xl">
             <div className="flex flex-wrap gap-2 text-sm font-bold"><Pill>{question.category}</Pill><Pill>{question.difficulty}</Pill><Pill>{question.type}</Pill><Pill>+{question.xpReward} XP once</Pill></div>
-            <h1 className="mt-5 text-3xl font-black sm:text-4xl">{categoryMeta[question.category].icon} {question.title}</h1>
-            <p className="mt-4 text-lg font-medium leading-8 text-slate-700">{question.prompt}</p>
+            <h1 className="mt-5 break-words text-3xl font-black sm:text-4xl">{categoryMeta[question.category].icon} {question.title}</h1>
+            <p className="mt-4 break-words text-lg font-medium leading-8 text-slate-700">{question.prompt}</p>
           </div>
           <button type="button" onClick={onToggleFavorite} aria-pressed={favorite} className={`grid size-12 place-items-center rounded-2xl border shadow-sm transition ${favorite ? "border-pink-300 bg-pink-100 text-pink-700" : "border-white bg-white/80 text-slate-500 hover:text-pink-700"}`} aria-label={favorite ? "Remove from favorites" : "Add to favorites"}><Heart size={21} fill={favorite ? "currentColor" : "none"} /></button>
         </div>
       </header>
 
-      <section className="rounded-[2rem] border border-purple-100 bg-white p-6 shadow-lg sm:p-8">
+      <section className="min-w-0 rounded-[2rem] border border-purple-100 bg-white p-6 shadow-lg sm:p-8">
         {question.context ? <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50 p-5"><p className="text-sm font-black uppercase tracking-wider text-blue-800">Dashboard / case context</p><p className="mt-2 font-semibold leading-7 text-slate-800">{question.context}</p></div> : null}
         <QuestionInput question={question} answer={answer} setAnswer={setAnswer} disabled={feedback?.correct === true} draggedIndex={draggedIndex} setDraggedIndex={setDraggedIndex} />
         <div className="mt-6 flex flex-wrap gap-3">
@@ -757,7 +757,7 @@ function QuestionInput({ question, answer, setAnswer, disabled, draggedIndex, se
   if (question.type === "Match the Columns") {
     const matches = !Array.isArray(answer) && typeof answer === "object" ? answer : {};
     const rightOptions = question.pairs?.map((pair) => pair.right) ?? [];
-    return <div><p className="mb-4 font-black">Match each item</p><div className="space-y-3">{question.pairs?.map((pair) => <div key={pair.left} className="grid items-center gap-3 rounded-2xl border border-purple-100 bg-purple-50/40 p-4 sm:grid-cols-[0.8fr_auto_1.2fr]"><span className="font-black">{pair.left}</span><ArrowRight className="hidden text-purple-500 sm:block" size={18} aria-hidden="true" /><select disabled={disabled} value={matches[pair.left] ?? ""} onChange={(event) => setAnswer({ ...matches, [pair.left]: event.target.value })} className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 font-semibold"><option value="">Choose a match</option>{rightOptions.map((option) => <option key={option}>{option}</option>)}</select></div>)}</div></div>;
+    return <div className="min-w-0"><p className="mb-4 font-black">Match each item</p><div className="min-w-0 space-y-3">{question.pairs?.map((pair) => <div key={pair.left} className="grid min-w-0 items-center gap-3 rounded-2xl border border-purple-100 bg-purple-50/40 p-4 sm:grid-cols-[0.8fr_auto_1.2fr]"><span className="min-w-0 break-words font-black">{pair.left}</span><ArrowRight className="hidden text-purple-500 sm:block" size={18} aria-hidden="true" /><select disabled={disabled} value={matches[pair.left] ?? ""} onChange={(event) => setAnswer({ ...matches, [pair.left]: event.target.value })} className="min-h-11 min-w-0 max-w-full rounded-xl border border-slate-300 bg-white px-3 font-semibold"><option value="">Choose a match</option>{rightOptions.map((option) => <option key={option}>{option}</option>)}</select></div>)}</div></div>;
   }
 
   if (question.type === "Drag & Drop Ordering") {
@@ -769,17 +769,17 @@ function QuestionInput({ question, answer, setAnswer, disabled, draggedIndex, se
       next.splice(to, 0, moved);
       setAnswer(next);
     }
-    return <div><p className="mb-4 font-black">Drag to reorder <span className="font-medium text-slate-500">(or use the arrow buttons)</span></p><ol className="space-y-3">{items.map((item, index) => <li key={item} draggable={!disabled} onDragStart={() => setDraggedIndex(index)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (draggedIndex !== null) move(draggedIndex, index); setDraggedIndex(null); }} className="flex items-center gap-3 rounded-2xl border border-purple-200 bg-purple-50 p-4 shadow-sm"><GripVertical className="shrink-0 cursor-grab text-purple-500" size={20} aria-hidden="true" /><span className="grid size-8 shrink-0 place-items-center rounded-full bg-purple-700 font-black text-white">{index + 1}</span><span className="flex-1 font-bold">{item}</span><button type="button" disabled={disabled || index === 0} onClick={() => move(index, index - 1)} className="grid size-9 place-items-center rounded-xl bg-white text-purple-800 disabled:opacity-30" aria-label={`Move ${item} up`}><ArrowUp size={17} /></button><button type="button" disabled={disabled || index === items.length - 1} onClick={() => move(index, index + 1)} className="grid size-9 place-items-center rounded-xl bg-white text-purple-800 disabled:opacity-30" aria-label={`Move ${item} down`}><ArrowDown size={17} /></button></li>)}</ol></div>;
+    return <div className="min-w-0"><p className="mb-4 font-black">Drag to reorder <span className="font-medium text-slate-500">(or use the arrow buttons)</span></p><ol className="min-w-0 space-y-3">{items.map((item, index) => <li key={item} draggable={!disabled} onDragStart={() => setDraggedIndex(index)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (draggedIndex !== null) move(draggedIndex, index); setDraggedIndex(null); }} className="flex min-w-0 items-center gap-3 rounded-2xl border border-purple-200 bg-purple-50 p-4 shadow-sm"><GripVertical className="shrink-0 cursor-grab text-purple-500" size={20} aria-hidden="true" /><span className="grid size-8 shrink-0 place-items-center rounded-full bg-purple-700 font-black text-white">{index + 1}</span><span className="min-w-0 flex-1 break-words font-bold">{item}</span><button type="button" disabled={disabled || index === 0} onClick={() => move(index, index - 1)} className="grid size-11 shrink-0 place-items-center rounded-xl bg-white text-purple-800 disabled:opacity-30" aria-label={`Move ${item} up`}><ArrowUp size={17} /></button><button type="button" disabled={disabled || index === items.length - 1} onClick={() => move(index, index + 1)} className="grid size-11 shrink-0 place-items-center rounded-xl bg-white text-purple-800 disabled:opacity-30" aria-label={`Move ${item} down`}><ArrowDown size={17} /></button></li>)}</ol></div>;
   }
 
   if (question.options) {
     const selected = typeof answer === "string" ? answer : "";
-    return <fieldset className="space-y-3"><legend className="mb-4 font-black">Choose the strongest answer</legend>{question.options.map((option) => <label key={option} className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition ${selected === option ? "border-purple-500 bg-purple-50" : "border-slate-200 hover:bg-purple-50/50"}`}><input type="radio" disabled={disabled} checked={selected === option} onChange={() => setAnswer(option)} className="mt-1 size-4 accent-purple-700" /><span className="font-semibold leading-7">{option}</span></label>)}</fieldset>;
+    return <fieldset className="min-w-0 space-y-3"><legend className="mb-4 font-black">Choose the strongest answer</legend>{question.options.map((option) => <label key={option} className={`flex min-w-0 cursor-pointer items-start gap-3 rounded-2xl border p-4 transition ${selected === option ? "border-purple-500 bg-purple-50" : "border-slate-200 hover:bg-purple-50/50"}`}><input type="radio" disabled={disabled} checked={selected === option} onChange={() => setAnswer(option)} className="mt-1 size-4 shrink-0 accent-purple-700" /><span className="min-w-0 break-words font-semibold leading-7">{option}</span></label>)}</fieldset>;
   }
 
   const value = typeof answer === "string" ? answer : "";
   const code = question.type === "SQL Query" || question.type === "Python Coding";
-  return <label className="block"><span className="mb-3 block font-black">{question.type === "Formula Writing" ? "Your formula" : code ? "Your code" : "Your answer"}</span>{code ? <textarea disabled={disabled} value={value} onChange={(event) => setAnswer(event.target.value)} rows={7} spellCheck={false} placeholder={question.type === "SQL Query" ? "SELECT ..." : "# Write Python code"} className="w-full rounded-2xl border-2 border-slate-700 bg-slate-950 p-5 font-mono text-sm leading-7 text-emerald-200 outline-none focus:border-purple-500" /> : <input disabled={disabled} value={value} onChange={(event) => setAnswer(event.target.value)} placeholder={question.type === "Formula Writing" ? "=..." : "Type the missing answer"} className="min-h-14 w-full rounded-2xl border-2 border-slate-300 px-5 font-mono font-semibold outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100" />}</label>;
+  return <label className="block min-w-0"><span className="mb-3 block font-black">{question.type === "Formula Writing" ? "Your formula" : code ? "Your code" : "Your answer"}</span>{code ? <textarea disabled={disabled} value={value} onChange={(event) => setAnswer(event.target.value)} rows={7} spellCheck={false} placeholder={question.type === "SQL Query" ? "SELECT ..." : "# Write Python code"} className="max-w-full w-full rounded-2xl border-2 border-slate-700 bg-slate-950 p-5 font-mono text-sm leading-7 text-emerald-200 outline-none focus:border-purple-500" /> : <input disabled={disabled} value={value} onChange={(event) => setAnswer(event.target.value)} placeholder={question.type === "Formula Writing" ? "=..." : "Type the missing answer"} className="min-h-14 max-w-full w-full rounded-2xl border-2 border-slate-300 px-5 font-mono font-semibold outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100" />}</label>;
 }
 
 function CompletionView({ entry, onHome, onNext }: { entry: PracticeHistoryEntry; onHome: () => void; onNext: () => void }) {
@@ -787,19 +787,19 @@ function CompletionView({ entry, onHome, onNext }: { entry: PracticeHistoryEntry
 }
 
 function QuestionCard({ question, completed, favorite, onFavorite, onStart }: { question: PracticeQuestion; completed: boolean; favorite: boolean; onFavorite: () => void; onStart: () => void }) {
-  return <article className="rounded-3xl border border-purple-100 bg-white p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><span className="text-3xl" aria-hidden="true">{categoryMeta[question.category].icon}</span><button type="button" onClick={onFavorite} aria-label={favorite ? "Remove favorite" : "Add favorite"} className="text-pink-600"><Heart size={19} fill={favorite ? "currentColor" : "none"} /></button></div><h3 className="mt-3 text-lg font-black">{question.title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{question.topic} · {question.type}</p><div className="mt-4 flex items-center justify-between gap-3"><span className={`text-sm font-black ${completed ? "text-emerald-700" : "text-amber-700"}`}>{completed ? "Completed" : `+${question.xpReward} XP`}</span><button type="button" onClick={onStart} className="rounded-xl bg-purple-700 px-4 py-2 text-sm font-black text-white">Start</button></div></article>;
+  return <article className="min-w-0 max-w-full rounded-3xl border border-purple-100 bg-white p-5 shadow-sm"><div className="flex min-w-0 items-start justify-between gap-3"><span className="text-3xl" aria-hidden="true">{categoryMeta[question.category].icon}</span><button type="button" onClick={onFavorite} aria-label={favorite ? "Remove favorite" : "Add favorite"} className="grid size-11 shrink-0 place-items-center rounded-xl text-pink-600"><Heart size={19} fill={favorite ? "currentColor" : "none"} /></button></div><h3 className="mt-3 break-words text-lg font-black">{question.title}</h3><p className="mt-2 break-words text-sm leading-6 text-slate-600">{question.topic} · {question.type}</p><div className="mt-4 flex flex-wrap items-center justify-between gap-3"><span className={`text-sm font-black ${completed ? "text-emerald-700" : "text-amber-700"}`}>{completed ? "Completed" : `+${question.xpReward} XP`}</span><button type="button" onClick={onStart} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-purple-700 px-4 py-2 text-sm font-black text-white">Start</button></div></article>;
 }
 
 function CompactQuestion({ question, badge, onStart }: { question: PracticeQuestion; badge: string; onStart: () => void }) {
-  return <button type="button" onClick={onStart} className="flex w-full items-center gap-4 rounded-2xl border border-pink-100 bg-pink-50/50 p-4 text-left transition hover:bg-pink-100"><span className="text-2xl" aria-hidden="true">{categoryMeta[question.category].icon}</span><div className="min-w-0 flex-1"><p className="truncate font-black">{question.title}</p><p className="mt-1 text-sm text-slate-600">{question.category} · {question.topic}</p></div><span className="rounded-full bg-white px-3 py-1 text-xs font-black text-purple-800">{badge}</span></button>;
+  return <button type="button" onClick={onStart} className="flex min-w-0 max-w-full w-full items-center gap-4 rounded-2xl border border-pink-100 bg-pink-50/50 p-4 text-left transition hover:bg-pink-100"><span className="shrink-0 text-2xl" aria-hidden="true">{categoryMeta[question.category].icon}</span><div className="min-w-0 flex-1"><p className="truncate font-black">{question.title}</p><p className="mt-1 break-words text-sm text-slate-600">{question.category} · {question.topic}</p></div><span className="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-black text-purple-800">{badge}</span></button>;
 }
 
 function HistoryTable({ history }: { history: PracticeHistoryEntry[] }) {
   if (!history.length) return <div className="mt-5"><EmptyPanel icon="📈" text="Complete your first session to begin practice history." /></div>;
-  return <div className="mt-5 overflow-x-auto rounded-2xl border border-slate-200"><table className="min-w-full text-left text-sm"><thead className="bg-slate-900 text-white"><tr>{["Date", "Topic", "Score", "Accuracy", "Time", "XP"].map((heading) => <th key={heading} className="whitespace-nowrap px-4 py-3">{heading}</th>)}</tr></thead><tbody className="divide-y divide-slate-200">{[...history].reverse().slice(0, 8).map((entry) => <tr key={entry.id}><td className="whitespace-nowrap px-4 py-3">{new Date(entry.date).toLocaleDateString()}</td><td className="min-w-40 px-4 py-3 font-bold">{entry.topic}</td><td className="whitespace-nowrap px-4 py-3">{entry.score}/{entry.questionCount}</td><td className="whitespace-nowrap px-4 py-3">{entry.accuracy}%</td><td className="whitespace-nowrap px-4 py-3">{formatDuration(entry.time)}</td><td className="whitespace-nowrap px-4 py-3 font-black text-purple-800">+{entry.xpEarned}</td></tr>)}</tbody></table></div>;
+  return <div className="mt-5 max-w-full overflow-x-auto rounded-2xl border border-slate-200"><table className="min-w-full text-left text-sm"><thead className="bg-slate-900 text-white"><tr>{["Date", "Topic", "Score", "Accuracy", "Time", "XP"].map((heading) => <th key={heading} className="whitespace-nowrap px-4 py-3">{heading}</th>)}</tr></thead><tbody className="divide-y divide-slate-200">{[...history].reverse().slice(0, 8).map((entry) => <tr key={entry.id}><td className="whitespace-nowrap px-4 py-3">{new Date(entry.date).toLocaleDateString()}</td><td className="min-w-40 px-4 py-3 font-bold">{entry.topic}</td><td className="whitespace-nowrap px-4 py-3">{entry.score}/{entry.questionCount}</td><td className="whitespace-nowrap px-4 py-3">{entry.accuracy}%</td><td className="whitespace-nowrap px-4 py-3">{formatDuration(entry.time)}</td><td className="whitespace-nowrap px-4 py-3 font-black text-purple-800">+{entry.xpEarned}</td></tr>)}</tbody></table></div>;
 }
 
-function SectionHeading({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) { return <div><p className="text-sm font-black uppercase tracking-[0.16em] text-purple-700">{eyebrow}</p><h2 className="mt-1 text-3xl font-black">{title}</h2><p className="mt-2 leading-7 text-slate-600">{description}</p></div>; }
+function SectionHeading({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) { return <div className="min-w-0"><p className="text-sm font-black uppercase tracking-[0.16em] text-purple-700">{eyebrow}</p><h2 className="mt-1 break-words text-3xl font-black">{title}</h2><p className="mt-2 break-words leading-7 text-slate-600">{description}</p></div>; }
 function HeaderStat({ value, label }: { value: string | number; label: string }) { return <div className="min-w-20 text-center"><p className="text-2xl font-black text-purple-800">{value}</p><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</p></div>; }
 function Pill({ children }: { children: React.ReactNode }) { return <span className="rounded-full bg-white/85 px-3 py-1.5 text-slate-700 shadow-sm">{children}</span>; }
 function EmptyPanel({ icon, text }: { icon: string; text: string }) { return <div className="rounded-2xl border border-dashed border-purple-200 bg-purple-50/50 p-6 text-center"><span className="text-3xl" aria-hidden="true">{icon}</span><p className="mt-2 font-semibold leading-6 text-slate-600">{text}</p></div>; }
