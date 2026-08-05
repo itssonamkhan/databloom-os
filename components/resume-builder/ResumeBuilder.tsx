@@ -456,10 +456,10 @@ function EditorCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[2rem] border border-purple-100 bg-white/85 p-5 shadow-md sm:p-6">
+    <section className="min-w-0 rounded-[2rem] border border-purple-100 bg-white/85 p-5 shadow-md sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-black text-purple-950">{title}</h2>
+        <div className="min-w-0">
+          <h2 className="break-words text-xl font-black text-purple-950">{title}</h2>
           {description ? (
             <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
           ) : null}
@@ -485,14 +485,14 @@ function Field({
   placeholder?: string;
 }) {
   return (
-    <label className="block text-sm font-bold text-slate-700">
+    <label className="block min-w-0 text-sm font-bold text-slate-700">
       {label}
       <input
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="mt-2 min-h-11 w-full rounded-2xl border border-purple-100 bg-white/90 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
+        className="mt-2 min-h-11 w-full min-w-0 rounded-2xl border border-purple-100 bg-white/90 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
       />
     </label>
   );
@@ -512,14 +512,14 @@ function TextareaField({
   rows?: number;
 }) {
   return (
-    <label className="block text-sm font-bold text-slate-700">
+    <label className="block min-w-0 text-sm font-bold text-slate-700">
       {label}
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="mt-2 w-full resize-y rounded-2xl border border-purple-100 bg-white/90 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
+        className="mt-2 w-full min-w-0 resize-y rounded-2xl border border-purple-100 bg-white/90 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
       />
     </label>
   );
@@ -536,7 +536,7 @@ function AddButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex min-h-10 items-center gap-2 rounded-2xl border border-purple-200 bg-purple-50 px-4 text-sm font-black text-purple-800"
+      className="inline-flex min-h-11 max-w-full items-center gap-2 rounded-2xl border border-purple-200 bg-purple-50 px-4 text-sm font-black text-purple-800"
     >
       <Plus size={16} />
       {label}
@@ -550,7 +550,7 @@ function RemoveButton({ onClick, label }: { onClick: () => void; label: string }
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="grid size-10 shrink-0 place-items-center rounded-xl border border-rose-200 bg-rose-50 text-rose-700"
+      className="grid size-11 shrink-0 place-items-center rounded-xl border border-rose-200 bg-rose-50 text-rose-700"
     >
       <Trash2 size={16} />
     </button>
@@ -567,9 +567,9 @@ function EntryCard({
   children: React.ReactNode;
 }) {
   return (
-    <article className="rounded-3xl border border-purple-100 bg-purple-50/40 p-4">
+    <article className="min-w-0 rounded-3xl border border-purple-100 bg-purple-50/40 p-4">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h3 className="font-black text-purple-900">{title}</h3>
+        <h3 className="min-w-0 break-words font-black text-purple-900">{title}</h3>
         <RemoveButton onClick={onRemove} label={`Remove ${title}`} />
       </div>
       {children}
@@ -619,18 +619,18 @@ function SectionOrder({
         {order.map((section, index) => (
           <li
             key={section}
-            className="flex min-h-12 items-center justify-between gap-3 rounded-2xl border border-purple-100 bg-white px-4"
+            className="flex min-h-12 min-w-0 items-center justify-between gap-3 rounded-2xl border border-purple-100 bg-white px-4"
           >
-            <span className="font-bold text-slate-700">
+            <span className="min-w-0 break-words font-bold text-slate-700">
               {index + 1}. {sectionLabels[section]}
             </span>
-            <span className="flex gap-1">
+            <span className="flex shrink-0 gap-1">
               <button
                 type="button"
                 onClick={() => onMove(section, -1)}
                 disabled={index === 0}
                 aria-label={`Move ${sectionLabels[section]} up`}
-                className="grid size-8 place-items-center rounded-lg text-purple-700 disabled:text-slate-300"
+                className="grid size-11 place-items-center rounded-lg text-purple-700 disabled:text-slate-300"
               >
                 <ArrowUp size={15} />
               </button>
@@ -639,7 +639,7 @@ function SectionOrder({
                 onClick={() => onMove(section, 1)}
                 disabled={index === order.length - 1}
                 aria-label={`Move ${sectionLabels[section]} down`}
-                className="grid size-8 place-items-center rounded-lg text-purple-700 disabled:text-slate-300"
+                className="grid size-11 place-items-center rounded-lg text-purple-700 disabled:text-slate-300"
               >
                 <ArrowDown size={15} />
               </button>
@@ -1092,7 +1092,7 @@ function SuggestionButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="rounded-2xl border border-amber-200 bg-white px-4 py-2 text-sm font-black text-amber-900 disabled:cursor-not-allowed disabled:bg-emerald-50 disabled:text-emerald-700"
+      className="min-h-11 max-w-full break-words rounded-2xl border border-amber-200 bg-white px-4 py-2 text-sm font-black text-amber-900 disabled:cursor-not-allowed disabled:bg-emerald-50 disabled:text-emerald-700"
     >
       {disabled ? "Added" : label}
     </button>
