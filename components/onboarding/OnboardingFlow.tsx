@@ -314,7 +314,7 @@ export default function OnboardingFlow() {
                             setMood(option.id);
                             playClickSound();
                           }}
-                          className={`rounded-full border px-4 py-2 text-sm font-bold transition ${
+                          className={`min-h-11 rounded-full border px-4 py-2 text-sm font-bold transition ${
                             mood === option.id
                               ? "border-purple-500 bg-purple-600 text-white"
                               : "border-purple-100 bg-white text-slate-700 hover:bg-purple-50"
@@ -339,16 +339,16 @@ export default function OnboardingFlow() {
               )}
 
               {screen > 0 && (
-                <div className="mt-8 flex items-center justify-between gap-4 border-t border-white/80 pt-6">
-                  <button type="button" onClick={previousScreen} className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-purple-200 bg-white/80 px-5 py-3 font-bold text-purple-800 transition hover:bg-purple-50">
+                <div className="mt-8 flex flex-col items-stretch gap-4 border-t border-white/80 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                  <button type="button" onClick={previousScreen} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-purple-200 bg-white/80 px-5 py-3 font-bold text-purple-800 transition hover:bg-purple-50 sm:w-auto">
                     <ArrowLeft size={18} aria-hidden="true" /> Back
                   </button>
                   {screen < 6 ? (
-                    <button type="button" onClick={nextScreen} disabled={screen === 1 && !canContinueName} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-purple-700 px-6 py-3 font-bold text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:bg-purple-200 disabled:text-purple-500">
+                    <button type="button" onClick={nextScreen} disabled={screen === 1 && !canContinueName} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-purple-700 px-6 py-3 font-bold text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:bg-purple-200 disabled:text-purple-500 sm:w-auto">
                       Continue <ArrowRight size={18} aria-hidden="true" />
                     </button>
                   ) : (
-                    <button type="button" onClick={finishOnboarding} className="databloom-brand-cta inline-flex min-h-12 items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-bold text-white shadow-md transition hover:shadow-lg">
+                    <button type="button" onClick={finishOnboarding} className="databloom-brand-cta inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-3 font-bold text-white shadow-md transition hover:shadow-lg sm:w-auto sm:px-6">
                       Enter DataBloom OS <Check size={18} aria-hidden="true" />
                     </button>
                   )}
