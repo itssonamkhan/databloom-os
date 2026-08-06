@@ -5,6 +5,15 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  Pause,
+  Play,
+  Repeat2,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { useStudyMusic } from "@/context/StudyMusicContext";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { studyTracks, type StudyTrackId } from "@/lib/studyMusic";
@@ -59,7 +68,26 @@ const FOCUS_STATS_KEY =
 
 export default function MusicWidget() {
   const preferences = useUserPreferences();
-  const { selectedTrackId, selectTrack } = useStudyMusic();
+  const {
+    selectedTrackId,
+    selectedTrack,
+    currentTime,
+    duration,
+    isPlaying,
+    error,
+    volume,
+    muted,
+    repeat,
+    selectTrack,
+    play,
+    pause,
+    next,
+    previous,
+    seek,
+    setVolume,
+    toggleMute,
+    toggleRepeat,
+  } = useStudyMusic();
   const [selectedMoodId, setSelectedMoodId] =
     useState(moods[0].id);
 
@@ -271,6 +299,14 @@ export default function MusicWidget() {
     )}`;
   }
 
+  function formatPlaybackTime(seconds: number) {
+    if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
+  }
+
   const timerTotal =
     timerSeconds > 25 * 60
       ? 50 * 60
@@ -387,14 +423,18 @@ export default function MusicWidget() {
 
       <div className="mt-4 rounded-2xl bg-white/75 p-4 shadow-sm backdrop-blur">
         <div className="flex items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <p className="font-bold text-gray-900">
-              {selectedMood.emoji}{" "}
-              {selectedMood.name}
+              {selectedTrack.artwork}{" "}
+              <span className="break-words">{selectedTrack.title}</span>
             </p>
 
-            <p className="mt-1 text-sm text-gray-600">
-              {selectedMood.subtitle}
+            <p className="mt-1 break-words text-sm text-gray-600">
+              {selectedTrack.subtitle}
+            </p>
+
+            <p className="mt-0.5 text-xs font-semibold leading-4 text-[var(--databloom-text-muted)]">
+              Native source · licensed audio pending
             </p>
           </div>
 
@@ -412,10 +452,148 @@ export default function MusicWidget() {
           </button>
         </div>
 
+        <div className="mt-3">
+          <div className="grid min-w-0 gap-2 xl:grid-cols-[auto_minmax(0,1fr)] xl:items-center">
+            <div className="flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => void previous()}
+                aria-label="Previous native study track"
+                className="grid size-11 shrink-0 place-items-center rounded-xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] text-[var(--databloom-text-accent)] shadow-sm transition hover:bg-[var(--databloom-accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] motion-reduce:transition-none"
+              >
+                <SkipBack size={18} aria-hidden="true" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (isPlaying) {
+                    pause();
+                  } else {
+                    void play();
+                  }
+                }}
+                disabled={!selectedTrack.available}
+                aria-label={isPlaying ? "Pause native study track" : "Play native study track"}
+                className="grid size-12 shrink-0 place-items-center rounded-xl bg-[var(--databloom-action)] text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] disabled:cursor-not-allowed disabled:bg-[var(--databloom-accent-soft)] disabled:text-[var(--databloom-text-muted)] disabled:shadow-none motion-reduce:transition-none"
+              >
+                {isPlaying ? (
+                  <Pause size={19} aria-hidden="true" />
+                ) : (
+                  <Play size={19} aria-hidden="true" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void next()}
+                aria-label="Next native study track"
+                className="grid size-11 shrink-0 place-items-center rounded-xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] text-[var(--databloom-text-accent)] shadow-sm transition hover:bg-[var(--databloom-accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] motion-reduce:transition-none"
+              >
+                <SkipForward size={18} aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <label className="flex min-w-32 flex-1 items-center gap-2 text-xs font-semibold text-[var(--databloom-text-muted)]">
+                <Volume2 size={16} className="shrink-0" aria-hidden="true" />
+                <span className="sr-only">Native study music volume</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={volume}
+                  onChange={(event) => setVolume(Number(event.target.value))}
+                  aria-label="Native study music volume"
+                  aria-valuetext={`${Math.round(volume * 100)} percent`}
+                  className="h-11 w-full min-w-0 cursor-pointer accent-[var(--databloom-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)]"
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={toggleMute}
+                aria-label={muted ? "Unmute native study music" : "Mute native study music"}
+                aria-pressed={muted}
+                className={`grid size-11 shrink-0 place-items-center rounded-xl border border-[var(--databloom-border)] shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] motion-reduce:transition-none ${
+                  muted
+                    ? "bg-[var(--databloom-accent-soft)] text-[var(--databloom-text-heading)]"
+                    : "bg-[var(--databloom-card)] text-[var(--databloom-text-accent)] hover:bg-[var(--databloom-accent-soft)]"
+                }`}
+              >
+                {muted ? (
+                  <VolumeX size={18} aria-hidden="true" />
+                ) : (
+                  <Volume2 size={18} aria-hidden="true" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={toggleRepeat}
+                aria-label={repeat ? "Turn off native track repeat" : "Repeat native study track"}
+                aria-pressed={repeat}
+                className={`grid size-11 shrink-0 place-items-center rounded-xl border border-[var(--databloom-border)] shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] motion-reduce:transition-none ${
+                  repeat
+                    ? "bg-[var(--databloom-accent-soft)] text-[var(--databloom-text-heading)]"
+                    : "bg-[var(--databloom-card)] text-[var(--databloom-text-accent)] hover:bg-[var(--databloom-accent-soft)]"
+                }`}
+              >
+                <Repeat2 size={18} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+
+          {selectedTrack.available ? (
+            <div className="mt-2 flex min-w-0 items-center gap-2 text-xs font-semibold text-[var(--databloom-text-muted)]">
+              <span className="w-10 shrink-0 tabular-nums">
+                {formatPlaybackTime(currentTime)}
+              </span>
+              <label className="min-w-0 flex-1">
+                <span className="sr-only">Seek native study track</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={duration > 0 ? duration : 1}
+                  step={1}
+                  value={duration > 0 ? Math.min(currentTime, duration) : 0}
+                  onChange={(event) => seek(Number(event.target.value))}
+                  disabled={duration <= 0}
+                  aria-label="Seek native study track"
+                  aria-valuetext={`${formatPlaybackTime(currentTime)} of ${
+                    duration > 0 ? formatPlaybackTime(duration) : "duration unavailable"
+                  }`}
+                  className="h-11 w-full min-w-0 cursor-pointer accent-[var(--databloom-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </label>
+              <span className="w-10 shrink-0 text-right tabular-nums">
+                {duration > 0 ? formatPlaybackTime(duration) : "--:--"}
+              </span>
+            </div>
+          ) : null}
+
+          <p
+            aria-live="polite"
+            className="mt-1 text-center text-xs font-semibold leading-5 text-[var(--databloom-text-muted)]"
+          >
+            {error ??
+              (selectedTrack.available
+                ? isPlaying
+                  ? `Playing ${selectedTrack.title}`
+                  : `${selectedTrack.title} is ready to play`
+                : "Native playback will unlock when licensed audio is added. Spotify remains available.")}
+          </p>
+        </div>
+
         <button
           type="button"
           onClick={openSpotify}
-          className="mt-4 w-full rounded-xl bg-green-600 px-4 py-3 font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-green-700"
+          className={`mt-2 min-h-11 w-full rounded-xl px-4 py-2.5 font-bold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] motion-reduce:transition-none ${
+            selectedTrack.available
+              ? "border border-[var(--databloom-border)] bg-[var(--databloom-card)] text-[var(--databloom-text-accent)] hover:bg-[var(--databloom-accent-soft)]"
+              : "bg-green-600 text-white hover:-translate-y-0.5 hover:bg-green-700"
+          }`}
         >
           Open playlist in Spotify
         </button>
