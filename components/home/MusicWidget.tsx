@@ -5,8 +5,9 @@ import {
   useRef,
   useState,
 } from "react";
+import { useStudyMusic } from "@/context/StudyMusicContext";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
-import type { StudyStyle } from "@/lib/userPreferences";
+import { studyTracks, type StudyTrackId } from "@/lib/studyMusic";
 
 type SpotifyMood = {
   id: string;
@@ -18,41 +19,37 @@ type SpotifyMood = {
   gradient: string;
 };
 
-const moods: SpotifyMood[] = [
-  {
-    id: "deep-focus",
-    name: "Deep Focus",
-    subtitle: "Calm instrumentals for concentration",
-    emoji: "📚",
+const spotifyMoods = {
+  "deep-focus": {
     playlistId: "37i9dQZF1DWZeKCadgRdKQ",
     spotifyUrl:
       "https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ",
     gradient:
       "from-purple-100 via-pink-50 to-blue-100",
   },
-  {
-    id: "lofi",
-    name: "Lo-fi Beats",
-    subtitle: "Soft beats for studying and coding",
-    emoji: "🌙",
+  lofi: {
     playlistId: "37i9dQZF1DWWQRwui0ExPn",
     spotifyUrl:
       "https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn",
     gradient:
       "from-blue-100 via-purple-50 to-pink-100",
   },
-  {
-    id: "piano",
-    name: "Peaceful Piano",
-    subtitle: "Gentle piano for calm study sessions",
-    emoji: "🎹",
+  piano: {
     playlistId: "37i9dQZF1DX4sWSpwq3LiO",
     spotifyUrl:
       "https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO",
     gradient:
       "from-pink-100 via-rose-50 to-purple-100",
   },
-];
+} satisfies Record<StudyTrackId, Pick<SpotifyMood, "playlistId" | "spotifyUrl" | "gradient">>;
+
+const moods: SpotifyMood[] = studyTracks.map((track) => ({
+  id: track.id,
+  name: track.title,
+  subtitle: track.subtitle,
+  emoji: track.artwork,
+  ...spotifyMoods[track.id],
+}));
 
 const FAVORITES_KEY =
   "databloom-spotify-favorite-moods";
@@ -60,16 +57,9 @@ const FAVORITES_KEY =
 const FOCUS_STATS_KEY =
   "databloom-focus-sessions";
 
-const preferredMoodByStudyStyle: Record<StudyStyle, SpotifyMood["id"]> = {
-  Cozy: "deep-focus",
-  Rain: "lofi",
-  "Night Owl": "lofi",
-  Piano: "piano",
-  Spotify: "deep-focus",
-};
-
 export default function MusicWidget() {
   const preferences = useUserPreferences();
+  const { selectedTrackId, selectTrack } = useStudyMusic();
   const [selectedMoodId, setSelectedMoodId] =
     useState(moods[0].id);
 
@@ -128,8 +118,8 @@ export default function MusicWidget() {
   }, []);
 
   useEffect(() => {
-    setSelectedMoodId(preferredMoodByStudyStyle[preferences.studyStyle]);
-  }, [preferences.studyStyle]);
+    setSelectedMoodId(selectedTrackId);
+  }, [selectedTrackId]);
 
   useEffect(() => {
     if (!timerRunning) {
@@ -352,9 +342,10 @@ export default function MusicWidget() {
               key={mood.id}
               type="button"
               aria-pressed={active}
-              onClick={() =>
-                setSelectedMoodId(mood.id)
-              }
+              onClick={() => {
+                setSelectedMoodId(mood.id);
+                selectTrack(mood.id as StudyTrackId);
+              }}
               className={`
                 rounded-2xl
                 border
