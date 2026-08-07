@@ -7,7 +7,12 @@ export const STUDY_MUSIC_STORAGE_KEY = "databloom-study-music-v1";
 export const STUDY_MUSIC_PREFERENCES_EVENT =
   "databloom:study-music-preferences-updated";
 
-export type StudyMusicMood = "Deep Focus" | "Lo-fi" | "Piano";
+export type StudyMusicMood =
+  | "Lo-fi"
+  | "Piano"
+  | "Rain"
+  | "Coffee Shop"
+  | "Deep Focus";
 
 export type StudyTrackAttribution = {
   status: "pending" | "verified";
@@ -34,65 +39,98 @@ export type StudyTrack = {
   available: boolean;
 };
 
-/**
- * Native-player catalog foundation. Audio files are intentionally unavailable
- * in Phase 1, so the provider will not request these paths until verified
- * assets are added in a later phase.
- */
+/** Native study tracks bundled with DataBloom OS. */
 export const studyTracks = [
   {
-    id: "deep-focus",
-    title: "Deep Focus",
-    subtitle: "Calm instrumentals for concentration",
-    mood: "Deep Focus",
-    source: "/audio/deep-focus.mp3",
-    artwork: "📚",
-    duration: {
-      seconds: null,
-      label: "Duration pending licensed audio",
-    },
-    attribution: {
-      status: "pending",
-      creator: "Not yet assigned",
-      license: "Verified audio asset pending",
-    },
-    available: false,
-  },
-  {
     id: "lofi",
-    title: "Lo-fi Beats",
+    title: "Lo-fi Focus",
     subtitle: "Soft beats for studying and coding",
     mood: "Lo-fi",
-    source: "/audio/lofi.mp3",
-    artwork: "🌙",
+    source:
+      "/audio/fassounds-satisfying-lofi-for-focus-study-amp-working-242103.mp3",
+    artwork: "🎧",
     duration: {
-      seconds: null,
-      label: "Duration pending licensed audio",
+      seconds: 130,
+      label: "2:10",
     },
     attribution: {
       status: "pending",
-      creator: "Not yet assigned",
-      license: "Verified audio asset pending",
+      creator: "Attribution requires verification",
+      license: "License requires verification",
     },
-    available: false,
+    available: true,
   },
   {
     id: "piano",
     title: "Peaceful Piano",
     subtitle: "Gentle piano for calm study sessions",
     mood: "Piano",
-    source: "/audio/peaceful-piano.mp3",
+    source: "/audio/clavier-music-peaceful-piano-303988.mp3",
     artwork: "🎹",
     duration: {
-      seconds: null,
-      label: "Duration pending licensed audio",
+      seconds: 103,
+      label: "1:43",
     },
     attribution: {
       status: "pending",
-      creator: "Not yet assigned",
-      license: "Verified audio asset pending",
+      creator: "Attribution requires verification",
+      license: "License requires verification",
     },
-    available: false,
+    available: true,
+  },
+  {
+    id: "gentle-rain",
+    title: "Gentle Rain",
+    subtitle: "Soft rain ambience for calm concentration",
+    mood: "Rain",
+    source: "/audio/eryliaa-gentle-rain-for-relaxation-and-sleep-337279.mp3",
+    artwork: "🌧️",
+    duration: {
+      seconds: 531,
+      label: "8:51",
+    },
+    attribution: {
+      status: "pending",
+      creator: "Attribution requires verification",
+      license: "License requires verification",
+    },
+    available: true,
+  },
+  {
+    id: "coffee-shop",
+    title: "Coffee Shop",
+    subtitle: "Warm lo-fi ambience for cozy study sessions",
+    mood: "Coffee Shop",
+    source: "/audio/alex-morgan-lofi-coffee-shop-568150.mp3",
+    artwork: "☕",
+    duration: {
+      seconds: 114,
+      label: "1:54",
+    },
+    attribution: {
+      status: "pending",
+      creator: "Attribution requires verification",
+      license: "License requires verification",
+    },
+    available: true,
+  },
+  {
+    id: "deep-focus",
+    title: "Inspiring Focus",
+    subtitle: "Uplifting instrumentals for productive focus",
+    mood: "Deep Focus",
+    source: "/audio/the_mountain-inspiring-focus-137045.mp3",
+    artwork: "✨",
+    duration: {
+      seconds: 151,
+      label: "2:31",
+    },
+    attribution: {
+      status: "pending",
+      creator: "Attribution requires verification",
+      license: "License requires verification",
+    },
+    available: true,
   },
 ] as const satisfies readonly StudyTrack[];
 
@@ -106,8 +144,8 @@ export type StudyMusicPreferences = {
 };
 
 const preferredTrackByStudyStyle: Record<StudyStyle, StudyTrackId> = {
-  Cozy: "deep-focus",
-  Rain: "lofi",
+  Cozy: "coffee-shop",
+  Rain: "gentle-rain",
   "Night Owl": "lofi",
   Piano: "piano",
   Spotify: "deep-focus",

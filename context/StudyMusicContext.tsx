@@ -185,14 +185,15 @@ export function StudyMusicProvider({
   }, []);
 
   const changeTrack = useCallback(
-    async (direction: 1 | -1) => {
+    async (direction: 1 | -1, shouldResumeOverride?: boolean) => {
       const currentIndex = studyTracks.findIndex(
         (track) => track.id === stateRef.current.selectedTrackId,
       );
       const nextIndex =
         (currentIndex + direction + studyTracks.length) % studyTracks.length;
       const nextTrack = studyTracks[nextIndex];
-      const shouldResume = audioRef.current?.paused === false;
+      const shouldResume =
+        shouldResumeOverride ?? audioRef.current?.paused === false;
       const nextState = {
         ...stateRef.current,
         selectedTrackId: nextTrack.id,
@@ -279,11 +280,20 @@ export function StudyMusicProvider({
       }));
     };
     const handleEnded = () => {
-      updateState((current) => ({
-        ...current,
-        currentTime: current.duration,
-        isPlaying: false,
-      }));
+      if (stateRef.current.repeat) {
+        audio.currentTime = 0;
+        updateState((current) => ({ ...current, currentTime: 0 }));
+        void audio.play().catch(() => {
+          updateState((current) => ({
+            ...current,
+            isPlaying: false,
+            error: "Press play to restart this track.",
+          }));
+        });
+        return;
+      }
+
+      void changeTrack(1, true);
     };
     const handleError = () => {
       updateState((current) => ({
@@ -300,6 +310,12 @@ export function StudyMusicProvider({
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("error", handleError);
 
+    const initialTrack = getStudyTrack(stateRef.current.selectedTrackId);
+    if (initialTrack.available) {
+      audio.src = initialTrack.source;
+      audio.load();
+    }
+
     return () => {
       audio.pause();
       audio.removeAttribute("src");
@@ -312,7 +328,7 @@ export function StudyMusicProvider({
       audio.removeEventListener("error", handleError);
       audioRef.current = null;
     };
-  }, [updateState]);
+  }, [changeTrack, updateState]);
 
   useEffect(() => {
     function handleStorage(event: StorageEvent) {

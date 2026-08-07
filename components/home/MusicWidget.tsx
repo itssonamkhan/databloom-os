@@ -50,6 +50,20 @@ const spotifyMoods = {
     gradient:
       "from-pink-100 via-rose-50 to-purple-100",
   },
+  "gentle-rain": {
+    playlistId: "37i9dQZF1DX4sWSpwq3LiO",
+    spotifyUrl:
+      "https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO",
+    gradient:
+      "from-blue-100 via-purple-50 to-pink-100",
+  },
+  "coffee-shop": {
+    playlistId: "37i9dQZF1DWWQRwui0ExPn",
+    spotifyUrl:
+      "https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn",
+    gradient:
+      "from-purple-100 via-pink-50 to-blue-100",
+  },
 } satisfies Record<StudyTrackId, Pick<SpotifyMood, "playlistId" | "spotifyUrl" | "gradient">>;
 
 const moods: SpotifyMood[] = studyTracks.map((track) => ({
@@ -434,7 +448,7 @@ export default function MusicWidget() {
             </p>
 
             <p className="mt-0.5 text-xs font-semibold leading-4 text-[var(--databloom-text-muted)]">
-              Native source · licensed audio pending
+              Native source · local audio
             </p>
           </div>
 
