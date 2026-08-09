@@ -1,4 +1,6 @@
+import { daxLessons } from "@/lib/daxFormulas";
 import { formulas } from "@/lib/formulas";
+import { powerBILessons } from "@/lib/powerBILessons";
 import { pythonLessons } from "@/lib/pythonLessons";
 import { sqlLessons } from "@/lib/sqlLessons";
 import {
@@ -15,6 +17,7 @@ export type SupportedCurriculumStudioId = Extract<
   | "sql-studio"
   | "python-studio"
   | "statistics-studio"
+  | "power-bi-studio"
   | "tableau-studio"
 >;
 
@@ -552,6 +555,146 @@ const tableauCurriculumModules: readonly CurriculumModuleDefinition[] =
     },
   }));
 
+const EXPECTED_POWER_BI_CORE_LESSON_COUNT = 39;
+const EXPECTED_POWER_BI_DAX_LESSON_COUNT = 19;
+const EXPECTED_POWER_BI_TOPIC_COUNT = 58;
+
+const powerBICurriculumLessons = (() => {
+  const coreIds = powerBILessons.map((lesson) => lesson.id);
+  const daxIds = daxLessons.map((lesson) => lesson.id);
+  const allIds = [...coreIds, ...daxIds];
+
+  if (
+    coreIds.length !== EXPECTED_POWER_BI_CORE_LESSON_COUNT ||
+    new Set(coreIds).size !== EXPECTED_POWER_BI_CORE_LESSON_COUNT
+  ) {
+    throw new Error(
+      `Power BI curriculum requires exactly ${EXPECTED_POWER_BI_CORE_LESSON_COUNT} unique core lesson IDs.`,
+    );
+  }
+
+  if (
+    daxIds.length !== EXPECTED_POWER_BI_DAX_LESSON_COUNT ||
+    new Set(daxIds).size !== EXPECTED_POWER_BI_DAX_LESSON_COUNT
+  ) {
+    throw new Error(
+      `Power BI curriculum requires exactly ${EXPECTED_POWER_BI_DAX_LESSON_COUNT} unique DAX lesson IDs.`,
+    );
+  }
+
+  if (
+    allIds.length !== EXPECTED_POWER_BI_TOPIC_COUNT ||
+    new Set(allIds).size !== EXPECTED_POWER_BI_TOPIC_COUNT
+  ) {
+    throw new Error(
+      `Power BI curriculum requires exactly ${EXPECTED_POWER_BI_TOPIC_COUNT} unique official topic IDs.`,
+    );
+  }
+
+  return [...powerBILessons, ...daxLessons];
+})();
+
+function getPowerBIIdsByCategory(categoryNames: readonly string[]) {
+  const categories = new Set(categoryNames);
+  return powerBILessons
+    .filter((lesson) => categories.has(lesson.category))
+    .map((lesson) => lesson.id);
+}
+
+function powerBIModule(
+  id: string,
+  title: string,
+  lessonIds: readonly string[],
+  eyebrow: string,
+  summary: string,
+): CurriculumModuleDefinition {
+  return {
+    id,
+    title,
+    lessonIds,
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Power BI practice",
+      routePattern: "/power-bi-studio/[id]/practice",
+    },
+    presentation: { eyebrow, summary },
+  };
+}
+
+const powerBICurriculumModules: readonly CurriculumModuleDefinition[] = [
+  powerBIModule(
+    "power-bi-foundations-import",
+    "Power BI Foundations & Import",
+    getPowerBIIdsByCategory(["Getting Started"]),
+    "Module 1",
+    "Learn the Power BI workspace, import source data, set types, and load prepared tables.",
+  ),
+  powerBIModule(
+    "data-cleaning-preparation",
+    "Data Cleaning & Preparation",
+    getPowerBIIdsByCategory(["Data Cleaning"]),
+    "Module 2",
+    "Clean, standardize, reshape, append, and merge data before modelling.",
+  ),
+  powerBIModule(
+    "data-modelling-relationships",
+    "Data Modelling & Relationships",
+    getPowerBIIdsByCategory(["Data Modelling"]),
+    "Module 3",
+    "Build trustworthy fact-and-dimension models with intentional relationships and filter flow.",
+  ),
+  powerBIModule(
+    "dax-foundations",
+    "DAX Foundations",
+    [
+      "dax-sum",
+      "dax-sumx",
+      "dax-average",
+      "dax-count",
+      "dax-countrows",
+      "dax-distinctcount",
+      "dax-divide",
+      "dax-if",
+      "dax-switch",
+      "dax-related",
+    ],
+    "Module 4",
+    "Create foundational measures with aggregation, logical, mathematical, and relationship-aware DAX.",
+  ),
+  powerBIModule(
+    "dax-context-time-intelligence",
+    "DAX Context & Time Intelligence",
+    [
+      "dax-calculate",
+      "dax-filter",
+      "dax-all",
+      "dax-date",
+      "dax-year",
+      "dax-month",
+      "dax-today",
+      "dax-totalytd",
+      "dax-sameperiodlastyear",
+    ],
+    "Module 5",
+    "Work with filter context, reporting dates, and reusable time-intelligence calculations.",
+  ),
+  powerBIModule(
+    "visual-analysis",
+    "Visual Analysis",
+    getPowerBIIdsByCategory(["Visuals"]),
+    "Module 6",
+    "Choose and configure visuals that reveal comparisons, trends, detail, geography, and context.",
+  ),
+  powerBIModule(
+    "dashboard-design",
+    "Dashboard Design",
+    getPowerBIIdsByCategory(["Dashboard Design"]),
+    "Module 7",
+    "Turn accurate analysis into a consistent, responsive, decision-focused dashboard story.",
+  ),
+];
+
 const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
   {
     studioId: "formula-studio",
@@ -690,6 +833,29 @@ const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
         checkpointId: "tableau-publishing-readiness",
         placementStatus: "placed",
         afterModuleId: "interview",
+      },
+    ],
+  },
+  {
+    studioId: "power-bi-studio",
+    studioName: "Power BI Studio",
+    description:
+      "A guided Power BI learning path combining the existing core reporting curriculum with the complete DAX foundation.",
+    structureKind: "chapter-based",
+    navigationMode: "guided-path",
+    lessons: powerBICurriculumLessons,
+    organizationStatus: "organized",
+    modules: powerBICurriculumModules,
+    checkpointPlacements: [
+      {
+        checkpointId: "power-bi-data-preparation",
+        placementStatus: "placed",
+        afterModuleId: "data-cleaning-preparation",
+      },
+      {
+        checkpointId: "power-bi-modeling-reporting",
+        placementStatus: "placed",
+        afterModuleId: "dashboard-design",
       },
     ],
   },
