@@ -11,12 +11,12 @@ export default function PowerQueryRoadmap({
 }) {
   return (
     <section aria-labelledby="power-query-roadmap-heading">
-      <p className="text-sm font-bold uppercase tracking-wider text-teal-700">Guided path</p>
+      <p className="text-sm font-bold uppercase tracking-wider text-teal-700">Optional Fast Track</p>
       <h2 id="power-query-roadmap-heading" className="mt-1 text-3xl font-black text-slate-950">
-        Learning roadmap
+        Power Query Fast Track
       </h2>
       <p className="mt-2 text-slate-700">
-        Move from first connection to reusable M, production refresh, and interview-ready cleaning workflows.
+        Follow this curated 38-lesson shortcut for a focused route through core workflows. It is not the full official curriculum, and completing it does not equal full Power Query completion or mastery. Use Guided Curriculum for all 106 lessons.
       </p>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">

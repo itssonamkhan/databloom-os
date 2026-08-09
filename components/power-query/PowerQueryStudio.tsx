@@ -1,19 +1,30 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Heart, Sparkles, WandSparkles } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
-import StudioCheckpointCards from "@/components/assessments/StudioCheckpointCards";
 import PowerQueryDatasets from "@/components/power-query/PowerQueryDatasets";
 import PowerQueryKeyboardShortcuts from "@/components/power-query/PowerQueryKeyboardShortcuts";
 import PowerQueryLessonCard from "@/components/power-query/PowerQueryLessonCard";
 import PowerQueryRoadmap from "@/components/power-query/PowerQueryRoadmap";
 import StudioFilterToolbar from "@/components/studio/StudioFilterToolbar";
 import {
+  CHECKPOINT_PROGRESS_EVENT,
+  getCurrentFinalMasteryScore,
+  getFinalSkillExamUnlockStatus,
+  getStudioAssessmentConfiguration,
+  isCheckpointUnlocked,
+  loadCheckpointProgress,
+  type CheckpointCompletion,
+  type CheckpointProgressState,
+} from "@/lib/checkpointExams";
+import {
   powerQueryCategories,
   powerQueryDifficulties,
   powerQueryLessons,
+  type PowerQueryLesson,
 } from "@/lib/powerQueryLessons";
 import {
   calculatePowerQueryProgress,
@@ -25,8 +36,97 @@ import {
   type PowerQueryProgressState,
 } from "@/lib/powerQueryProgress";
 import { playClickSound, playNotificationSound } from "@/lib/sounds";
+import {
+  getStudioCurriculumConfiguration,
+  validateStudioCurriculum,
+} from "@/lib/studioCurriculum";
+import type { StudioCheckpoint } from "@/lib/studioAssessments";
+
+const powerQueryLessonsById = new Map(
+  powerQueryLessons.map((lesson) => [lesson.id, lesson]),
+);
+
+function getPowerQueryStudioConfigurations() {
+  const curriculum = getStudioCurriculumConfiguration("power-query-studio");
+  const assessment = getStudioAssessmentConfiguration("power-query-studio");
+
+  if (!curriculum || !assessment) {
+    throw new Error(
+      "Power Query Studio curriculum or assessment configuration is missing.",
+    );
+  }
+
+  const validation = validateStudioCurriculum(curriculum);
+  if (!validation.isValid) {
+    throw new Error("Power Query Studio curriculum configuration is invalid.");
+  }
+
+  return { curriculum, assessment };
+}
+
+const {
+  curriculum: powerQueryCurriculum,
+  assessment: powerQueryAssessment,
+} = getPowerQueryStudioConfigurations();
+
+function PowerQueryCheckpointMilestone({
+  checkpoint,
+  completedLessonIds,
+  completion,
+}: {
+  checkpoint: StudioCheckpoint;
+  completedLessonIds: readonly string[];
+  completion?: CheckpointCompletion;
+}) {
+  const unlocked = isCheckpointUnlocked(checkpoint, completedLessonIds);
+  const completed = new Set(completedLessonIds);
+  const remaining = checkpoint.unlockRequirement.requiredTopicIds.filter(
+    (topicId) => !completed.has(topicId),
+  ).length;
+
+  return (
+    <aside
+      aria-label={`${checkpoint.name} milestone`}
+      className="min-w-0 rounded-3xl border border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] p-5 shadow-md sm:p-6"
+    >
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-sm font-black uppercase tracking-wider text-[var(--databloom-text-accent)]">
+            Guided checkpoint
+          </p>
+          <h3 className="mt-1 break-words text-xl font-black text-[var(--databloom-text-heading)] sm:text-2xl">
+            {checkpoint.name}
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-[var(--databloom-text-secondary)]">
+            {completion
+              ? `Passed · Best score ${completion.bestScore}%`
+              : unlocked
+                ? `Ready · Pass at ${checkpoint.suggestedPassingScore}%`
+                : `Complete ${remaining} more ${remaining === 1 ? "lesson" : "lessons"} to unlock.`}
+          </p>
+        </div>
+
+        {unlocked ? (
+          <Link
+            href={`/checkpoint/power-query-studio/${checkpoint.id}`}
+            className="inline-flex min-h-11 w-full shrink-0 items-center justify-center rounded-2xl bg-[var(--databloom-action)] px-5 py-3 text-center font-black text-[var(--databloom-text-on-accent)] transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] sm:w-auto"
+          >
+            {completion ? "Review checkpoint" : "Start checkpoint"}
+          </Link>
+        ) : (
+          <span className="inline-flex min-h-11 w-full shrink-0 items-center justify-center rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] px-5 py-3 font-black text-[var(--databloom-text-muted)] sm:w-auto">
+            Locked
+          </span>
+        )}
+      </div>
+    </aside>
+  );
+}
 
 export default function PowerQueryStudio() {
+  const [learningView, setLearningView] = useState<"guided" | "library">(
+    "guided",
+  );
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [difficulty, setDifficulty] = useState("All");
@@ -34,6 +134,8 @@ export default function PowerQueryStudio() {
   const [progress, setProgress] = useState<PowerQueryProgressState>(() =>
     loadPowerQueryProgress(),
   );
+  const [checkpointProgress, setCheckpointProgress] =
+    useState<CheckpointProgressState | null>(null);
 
   useEffect(() => {
     const syncProgress = () => setProgress(loadPowerQueryProgress());
@@ -42,6 +144,23 @@ export default function PowerQueryStudio() {
     return () => {
       window.removeEventListener(POWER_QUERY_PROGRESS_EVENT, syncProgress);
       window.removeEventListener("storage", syncProgress);
+    };
+  }, []);
+
+  useEffect(() => {
+    const syncCheckpointProgress = () => {
+      setCheckpointProgress(loadCheckpointProgress());
+    };
+
+    syncCheckpointProgress();
+    window.addEventListener(CHECKPOINT_PROGRESS_EVENT, syncCheckpointProgress);
+    window.addEventListener("storage", syncCheckpointProgress);
+    return () => {
+      window.removeEventListener(
+        CHECKPOINT_PROGRESS_EVENT,
+        syncCheckpointProgress,
+      );
+      window.removeEventListener("storage", syncCheckpointProgress);
     };
   }, []);
 
@@ -68,10 +187,22 @@ export default function PowerQueryStudio() {
   }, [category, difficulty, favoritesOnly, progress.favoriteLessonIds, search]);
 
   const completedLessonIds = getCompletedPowerQueryLessonIds(progress);
+  const completedLessonIdSet = new Set(completedLessonIds);
   const favoriteLessonIds = getFavoritePowerQueryLessonIds(progress);
+  const total = powerQueryCurriculum.officialCoreLessonIds.length;
   const percentage = calculatePowerQueryProgress(
     completedLessonIds.length,
-    powerQueryLessons.length,
+    total,
+  );
+  const finalExamStatus = checkpointProgress
+    ? getFinalSkillExamUnlockStatus(
+        powerQueryAssessment,
+        completedLessonIds,
+        checkpointProgress,
+      )
+    : null;
+  const masteryScore = getCurrentFinalMasteryScore(
+    checkpointProgress?.masteryResults["power-query-studio"],
   );
 
   function handleToggleFavorite(id: string) {
@@ -93,7 +224,7 @@ export default function PowerQueryStudio() {
 
   return (
     <AppLayout>
-      <div className="space-y-9 text-slate-950">
+      <div className="min-w-0 space-y-9 text-slate-950">
         <header className="rounded-3xl border border-white/70 bg-gradient-to-br from-teal-100 via-blue-100 to-purple-100 p-7 shadow-lg sm:p-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
@@ -109,15 +240,15 @@ export default function PowerQueryStudio() {
               </p>
             </div>
             <div className="rounded-2xl bg-white/85 px-7 py-5 text-center shadow-sm">
-              <p className="text-4xl font-black text-teal-800">{powerQueryLessons.length}</p>
+              <p className="text-4xl font-black text-teal-800">{total}</p>
               <p className="mt-1 text-sm font-semibold text-slate-700">Complete lessons</p>
             </div>
           </div>
         </header>
 
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <SummaryCard label="Total lessons" value={String(powerQueryLessons.length)} tone="text-teal-800" />
-          <SummaryCard label="Completed" value={`${completedLessonIds.length}/${powerQueryLessons.length}`} tone="text-emerald-700" />
+          <SummaryCard label="Total lessons" value={String(total)} tone="text-teal-800" />
+          <SummaryCard label="Completed" value={`${completedLessonIds.length}/${total}`} tone="text-emerald-700" />
           <SummaryCard label="Favorites" value={String(favoriteLessonIds.length)} tone="text-pink-700" />
           <SummaryCard label="Power Query progress" value={`${percentage}%`} tone="text-purple-700" />
         </section>
@@ -145,78 +276,264 @@ export default function PowerQueryStudio() {
           </div>
         </section>
 
-        <StudioCheckpointCards studioId="power-query-studio" />
+        <nav
+          aria-label="Power Query learning mode"
+          className="flex flex-wrap gap-2 rounded-3xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] p-3 shadow-md"
+        >
+          <button
+            type="button"
+            aria-pressed={learningView === "guided"}
+            onClick={() => {
+              playClickSound();
+              setLearningView("guided");
+            }}
+            className={`min-h-11 rounded-2xl border px-5 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] ${
+              learningView === "guided"
+                ? "border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] text-[var(--databloom-text-heading)] shadow-sm"
+                : "border-transparent bg-transparent text-[var(--databloom-text-secondary)]"
+            }`}
+          >
+            🧭 Guided Curriculum
+          </button>
+          <button
+            type="button"
+            aria-pressed={learningView === "library"}
+            onClick={() => {
+              playClickSound();
+              setLearningView("library");
+            }}
+            className={`min-h-11 rounded-2xl border px-5 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] ${
+              learningView === "library"
+                ? "border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] text-[var(--databloom-text-heading)] shadow-sm"
+                : "border-transparent bg-transparent text-[var(--databloom-text-secondary)]"
+            }`}
+          >
+            🔎 Reference Library
+          </button>
+        </nav>
 
-        <PowerQueryRoadmap completedLessonIds={progress.completedLessonIds} />
-        <PowerQueryDatasets />
+        {learningView === "guided" ? (
+          <div className="min-w-0 space-y-8">
+            <section className="rounded-3xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] p-5 shadow-md sm:p-6">
+              <p className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-[var(--databloom-text-accent)]">
+                <Sparkles size={17} aria-hidden="true" /> Guided Curriculum
+              </p>
+              <h2 className="mt-1 break-words text-3xl font-black text-[var(--databloom-text-heading)]">
+                Eight modules · {total} lessons
+              </h2>
+              <p className="mt-2 max-w-3xl leading-7 text-[var(--databloom-text-secondary)]">
+                Follow every module in order for the complete official Power Query path, or switch to the Reference Library for search, categories, difficulty filters, and favorites.
+              </p>
+            </section>
 
-        <section aria-labelledby="power-query-lessons-heading">
-          <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-teal-700">
-            <Sparkles size={17} aria-hidden="true" /> Learn by doing
-          </p>
-          <h2 id="power-query-lessons-heading" className="mt-1 text-3xl font-black">
-            Power Query lesson library
-          </h2>
+            {powerQueryCurriculum.modules.map((module) => {
+              const moduleLessons = module.lessonIds
+                .map((lessonId) => powerQueryLessonsById.get(lessonId))
+                .filter(
+                  (lesson): lesson is PowerQueryLesson => Boolean(lesson),
+                );
+              const moduleCategories = Array.from(
+                new Set(moduleLessons.map((lesson) => lesson.category)),
+              );
+              const checkpointPlacement =
+                powerQueryCurriculum.checkpointPlacements.find(
+                  (placement) =>
+                    placement.placementStatus === "placed" &&
+                    placement.afterModuleId === module.id,
+                );
+              const checkpoint = checkpointPlacement
+                ? powerQueryAssessment.checkpoints.find(
+                    (item) => item.id === checkpointPlacement.checkpointId,
+                  )
+                : undefined;
+              const checkpointCompletion = checkpoint
+                ? checkpointProgress?.completions[
+                    `power-query-studio:${checkpoint.id}`
+                  ]
+                : undefined;
 
-          <div className="mt-4">
-            <StudioFilterToolbar
-              query={search}
-              onQueryChange={setSearch}
-              category={category}
-              onCategoryChange={setCategory}
-              categories={powerQueryCategories}
-              difficulty={difficulty}
-              onDifficultyChange={setDifficulty}
-              difficulties={powerQueryDifficulties}
-              resultCount={filteredLessons.length}
-              searchPlaceholder="Search Power Query lessons"
-              actions={
+              return (
+                <div key={module.id} className="min-w-0 space-y-5">
+                  <section className="min-w-0 rounded-3xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] p-4 shadow-md sm:p-6">
+                    <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="text-sm font-black uppercase tracking-wider text-[var(--databloom-text-accent)]">
+                          {module.presentation?.eyebrow}
+                        </p>
+                        <h2 className="mt-1 break-words text-2xl font-black text-[var(--databloom-text-heading)] sm:text-3xl">
+                          {module.title}
+                        </h2>
+                        <p className="mt-2 max-w-3xl leading-7 text-[var(--databloom-text-secondary)]">
+                          {module.presentation?.summary}
+                        </p>
+                      </div>
+                      <span className="w-fit shrink-0 rounded-full border border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] px-3 py-1 text-sm font-black text-[var(--databloom-text-accent)]">
+                        {module.lessonIds.length} lessons
+                      </span>
+                    </div>
+
+                    <div className="mt-4 flex min-w-0 flex-wrap gap-2">
+                      {moduleCategories.map((moduleCategory) => (
+                        <span
+                          key={moduleCategory}
+                          className="max-w-full break-words rounded-full border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-3 py-1 text-xs font-bold text-[var(--databloom-text-secondary)]"
+                        >
+                          {moduleCategory}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="mt-6 grid min-w-0 gap-6 md:grid-cols-2 2xl:grid-cols-3">
+                      {moduleLessons.map((lesson) => (
+                        <div key={lesson.id} className="min-w-0">
+                          <PowerQueryLessonCard
+                            lesson={lesson}
+                            completed={completedLessonIdSet.has(lesson.id)}
+                            favorite={progress.favoriteLessonIds.includes(
+                              lesson.id,
+                            )}
+                            onToggleFavorite={handleToggleFavorite}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {checkpoint && (
+                    <PowerQueryCheckpointMilestone
+                      checkpoint={checkpoint}
+                      completedLessonIds={completedLessonIds}
+                      completion={checkpointCompletion}
+                    />
+                  )}
+                </div>
+              );
+            })}
+
+            <section className="rounded-3xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] p-5 shadow-md sm:p-6">
+              <p className="text-sm font-black uppercase tracking-wider text-[var(--databloom-text-accent)]">
+                Final Review
+              </p>
+              <h2 className="mt-1 break-words text-2xl font-black text-[var(--databloom-text-heading)] sm:text-3xl">
+                Review the complete Power Query Studio curriculum
+              </h2>
+              <p className="mt-2 max-w-3xl leading-7 text-[var(--databloom-text-secondary)]">
+                Revisit all {total} lessons, use the existing lesson-level practice, and pass all three checkpoints before the existing Final Skill Exam.
+              </p>
+            </section>
+
+            <section className="rounded-3xl border border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] p-5 shadow-md sm:p-6">
+              <div className="flex min-w-0 flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-black uppercase tracking-wider text-[var(--databloom-text-accent)]">
+                    Official studio mastery
+                  </p>
+                  <h2 className="mt-1 break-words text-2xl font-black text-[var(--databloom-text-heading)] sm:text-3xl">
+                    {powerQueryAssessment.finalExam.name}
+                  </h2>
+                  <p className="mt-2 max-w-3xl leading-7 text-[var(--databloom-text-secondary)]">
+                    {masteryScore !== undefined
+                      ? `Mastered · ${masteryScore}%`
+                      : finalExamStatus?.unlocked
+                        ? `Ready · Pass at ${powerQueryAssessment.finalExam.suggestedPassingScore}%`
+                        : finalExamStatus
+                          ? `Pass ${finalExamStatus.missingCheckpointIds.length} remaining checkpoints and complete ${finalExamStatus.missingTopicIds.length} remaining lessons.`
+                          : "Checking curriculum and checkpoint progress…"}
+                  </p>
+                </div>
+
+                {finalExamStatus?.unlocked ? (
+                  <Link
+                    href={`/final-exam/power-query-studio/${powerQueryCurriculum.finalSkillExam.assessmentId}`}
+                    className="inline-flex min-h-12 w-full shrink-0 items-center justify-center rounded-2xl bg-[var(--databloom-action)] px-6 py-3 text-center font-black text-[var(--databloom-text-on-accent)] transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] sm:w-auto"
+                  >
+                    {masteryScore !== undefined
+                      ? "Improve mastery score"
+                      : "Start Final Skill Exam"}
+                  </Link>
+                ) : (
+                  <span className="inline-flex min-h-12 w-full shrink-0 items-center justify-center rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-card)] px-6 py-3 text-center font-black text-[var(--databloom-text-muted)] sm:w-auto">
+                    Final exam locked
+                  </span>
+                )}
+              </div>
+            </section>
+          </div>
+        ) : (
+          <section
+            className="min-w-0"
+            aria-labelledby="power-query-lessons-heading"
+          >
+            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-teal-700">
+              <Sparkles size={17} aria-hidden="true" /> Learn by doing
+            </p>
+            <h2 id="power-query-lessons-heading" className="mt-1 break-words text-3xl font-black">
+              Power Query lesson library
+            </h2>
+
+            <div className="mt-4 min-w-0">
+              <StudioFilterToolbar
+                query={search}
+                onQueryChange={setSearch}
+                category={category}
+                onCategoryChange={setCategory}
+                categories={powerQueryCategories}
+                difficulty={difficulty}
+                onDifficultyChange={setDifficulty}
+                difficulties={powerQueryDifficulties}
+                resultCount={filteredLessons.length}
+                searchPlaceholder="Search Power Query lessons"
+                actions={
+                  <button
+                    type="button"
+                    aria-pressed={favoritesOnly}
+                    onClick={() => {
+                      playClickSound();
+                      setFavoritesOnly((current) => !current);
+                    }}
+                    className={`inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border px-4 text-sm font-bold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300 ${
+                      favoritesOnly
+                        ? "border-pink-300 bg-pink-100 text-pink-900"
+                        : "border-white/95 bg-white/65 text-slate-800 hover:border-purple-200 hover:bg-white/90"
+                    }`}
+                  >
+                    <Heart size={18} fill={favoritesOnly ? "currentColor" : "none"} aria-hidden="true" />
+                    Favorites
+                  </button>
+                }
+              />
+            </div>
+
+            {filteredLessons.length > 0 ? (
+              <div className="mt-7 grid min-w-0 gap-6 md:grid-cols-2 2xl:grid-cols-3">
+                {filteredLessons.map((lesson) => (
+                  <div key={lesson.id} className="min-w-0">
+                    <PowerQueryLessonCard
+                      lesson={lesson}
+                      completed={completedLessonIdSet.has(lesson.id)}
+                      favorite={progress.favoriteLessonIds.includes(lesson.id)}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-7 rounded-3xl border border-dashed border-teal-300 bg-teal-50 p-10 text-center">
+                <p className="font-bold text-teal-950">No lessons match those filters.</p>
                 <button
                   type="button"
-                  aria-pressed={favoritesOnly}
-                  onClick={() => {
-                    playClickSound();
-                    setFavoritesOnly((current) => !current);
-                  }}
-                  className={`inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border px-4 text-sm font-bold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300 ${
-                    favoritesOnly
-                      ? "border-pink-300 bg-pink-100 text-pink-900"
-                      : "border-white/95 bg-white/65 text-slate-800 hover:border-purple-200 hover:bg-white/90"
-                  }`}
+                  onClick={clearFilters}
+                  className="mt-4 rounded-xl bg-teal-700 px-5 py-3 font-bold text-white transition hover:bg-teal-800"
                 >
-                  <Heart size={18} fill={favoritesOnly ? "currentColor" : "none"} aria-hidden="true" />
-                  Favorites
+                  Clear filters
                 </button>
-              }
-            />
-          </div>
+              </div>
+            )}
+          </section>
+        )}
 
-          {filteredLessons.length > 0 ? (
-            <div className="mt-7 grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
-              {filteredLessons.map((lesson) => (
-                <PowerQueryLessonCard
-                  key={lesson.id}
-                  lesson={lesson}
-                  completed={progress.completedLessonIds.includes(lesson.id)}
-                  favorite={progress.favoriteLessonIds.includes(lesson.id)}
-                  onToggleFavorite={handleToggleFavorite}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-7 rounded-3xl border border-dashed border-teal-300 bg-teal-50 p-10 text-center">
-              <p className="font-bold text-teal-950">No lessons match those filters.</p>
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="mt-4 rounded-xl bg-teal-700 px-5 py-3 font-bold text-white transition hover:bg-teal-800"
-              >
-                Clear filters
-              </button>
-            </div>
-          )}
-        </section>
-
+        <PowerQueryRoadmap completedLessonIds={completedLessonIds} />
+        <PowerQueryDatasets />
         <PowerQueryKeyboardShortcuts />
       </div>
     </AppLayout>
