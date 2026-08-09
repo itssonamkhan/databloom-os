@@ -1,5 +1,6 @@
 import { businessAnalyticsLessons } from "@/lib/businessAnalyticsLessons";
 import { dashboardProjects } from "@/lib/dashboardProjects";
+import { daxLessons } from "@/lib/daxFormulas";
 import { formulas } from "@/lib/formulas";
 import { powerBILessons } from "@/lib/powerBILessons";
 import { powerQueryLessons } from "@/lib/powerQueryLessons";
@@ -13,12 +14,14 @@ type CurriculumTopic = {
   category: string;
 };
 
+const powerBIAssessmentCurriculum = [...powerBILessons, ...daxLessons];
+
 const studioCurricula = {
   "formula-studio": formulas,
   "sql-studio": sqlLessons,
   "python-studio": pythonLessons,
   "statistics-studio": statisticsLessons,
-  "power-bi-studio": powerBILessons,
+  "power-bi-studio": powerBIAssessmentCurriculum,
   "power-query-studio": powerQueryLessons,
   "tableau-studio": tableauLessons,
   "business-analytics-studio": businessAnalyticsLessons,
@@ -321,20 +324,30 @@ export const studioAssessmentConfigurations: readonly StudioAssessmentConfigurat
     studioName: "Power BI Studio",
     studioRoute: "/power-bi-studio",
     curriculumChapterNames: getChapterNames("power-bi-studio"),
-    curriculumTopicIds: powerBILessons.map((lesson) => lesson.id),
+    curriculumTopicIds: powerBIAssessmentCurriculum.map((lesson) => lesson.id),
     checkpoints: [
       checkpoint(
         "power-bi-studio",
         "power-bi-data-preparation",
         "Checkpoint 1: Getting Started and Data Preparation",
         ["Getting Started", "Data Cleaning"],
-        18,
+        14,
       ),
       checkpoint(
         "power-bi-studio",
         "power-bi-modeling-reporting",
         "Checkpoint 2: Modeling and Reporting",
-        ["Data Modelling", "Visuals", "Dashboard Design"],
+        [
+          "Data Modelling",
+          "DAX · Aggregation",
+          "DAX · Filter Context",
+          "DAX · Relationships",
+          "DAX · Logical & Math",
+          "DAX · Date & Time",
+          "DAX · Time Intelligence",
+          "Visuals",
+          "Dashboard Design",
+        ],
         20,
       ),
     ],

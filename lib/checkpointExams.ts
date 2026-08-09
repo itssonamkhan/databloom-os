@@ -10,6 +10,7 @@ import {
   BUSINESS_ANALYTICS_PROGRESS_EVENT,
   loadBusinessAnalyticsProgress,
 } from "@/lib/businessAnalyticsProgress";
+import { daxLessons } from "@/lib/daxFormulas";
 import { formulas } from "@/lib/formulas";
 import {
   FORMULA_PROGRESS_EVENT,
@@ -17,7 +18,7 @@ import {
 } from "@/lib/learnedFormulas";
 import { powerBILessons } from "@/lib/powerBILessons";
 import {
-  loadPowerBIProgress,
+  getCompletedPowerBITopicIds,
   POWER_BI_PROGRESS_EVENT,
 } from "@/lib/powerBIProgress";
 import { powerQueryLessons } from "@/lib/powerQueryLessons";
@@ -82,6 +83,12 @@ export type FinalMasteryResult = {
   studioCompleted: true;
   xpAwarded: boolean;
   nextStudioUnlockId: AssessableStudioId | null;
+  currentCoverage?: {
+    coveredTopicIds: string[];
+    bestScore: number;
+    completedAt: string;
+    updatedAt: string;
+  };
 };
 
 export type CheckpointProgressState = {
@@ -101,6 +108,32 @@ function normalizeScore(value: unknown) {
   return typeof value === "number" && Number.isFinite(value)
     ? Math.max(0, Math.min(100, Math.round(value)))
     : 0;
+}
+
+function normalizeTopicIds(value: unknown) {
+  return Array.isArray(value)
+    ? Array.from(
+        new Set(value.filter((item): item is string => typeof item === "string")),
+      )
+    : undefined;
+}
+
+function normalizeMasteryCoverage(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const coverage = value as NonNullable<FinalMasteryResult["currentCoverage"]>;
+  const coveredTopicIds = normalizeTopicIds(coverage.coveredTopicIds);
+  if (!coveredTopicIds) return undefined;
+
+  return {
+    coveredTopicIds,
+    bestScore: normalizeScore(coverage.bestScore),
+    completedAt:
+      typeof coverage.completedAt === "string" ? coverage.completedAt : "",
+    updatedAt: typeof coverage.updatedAt === "string" ? coverage.updatedAt : "",
+  };
 }
 
 function normalizeCheckpointProgress(value: unknown): CheckpointProgressState {
@@ -170,6 +203,10 @@ function normalizeCheckpointProgress(value: unknown): CheckpointProgressState {
         studioCompleted: true,
         xpAwarded: result.xpAwarded === true,
         nextStudioUnlockId: null,
+        currentCoverage:
+          studio.studioId === "power-bi-studio"
+            ? normalizeMasteryCoverage(result.currentCoverage)
+            : undefined,
       };
       return [[studio.studioId, normalized] as const];
     }),
@@ -264,6 +301,32 @@ export function getFinalMasteryResult(studioId: AssessableStudioId) {
   return loadCheckpointProgress().masteryResults[studioId];
 }
 
+export function isCurrentFinalMasteryResult(
+  result: FinalMasteryResult | undefined,
+) {
+  if (!result) return false;
+  if (result.studioId !== "power-bi-studio") return true;
+
+  const studio = studioAssessmentConfigurations.find(
+    (item) => item.studioId === result.studioId,
+  );
+  const covered = new Set(result.currentCoverage?.coveredTopicIds ?? []);
+  return Boolean(
+    studio &&
+      covered.size === studio.finalExam.coverage.topicIds.length &&
+      studio.finalExam.coverage.topicIds.every((topicId) => covered.has(topicId)),
+  );
+}
+
+export function getCurrentFinalMasteryScore(
+  result: FinalMasteryResult | undefined,
+) {
+  if (!isCurrentFinalMasteryResult(result)) return undefined;
+  return result?.studioId === "power-bi-studio"
+    ? result.currentCoverage?.bestScore
+    : result?.officialMasteryScore;
+}
+
 export function saveFinalSkillExamPass({
   studioId,
   finalExamId,
@@ -278,6 +341,10 @@ export function saveFinalSkillExamPass({
   const normalizedScore = normalizeScore(score);
   const state = loadCheckpointProgress();
   const existing = state.masteryResults[studioId];
+  const assessment = studioAssessmentConfigurations.find(
+    (item) =>
+      item.studioId === studioId && item.finalExam.id === finalExamId,
+  );
 
   if (normalizedScore < passingScore) {
     return {
@@ -291,19 +358,59 @@ export function saveFinalSkillExamPass({
     };
   }
 
+  if (
+    studioId === "power-bi-studio" &&
+    (!assessment ||
+      !getFinalSkillExamUnlockStatus(
+        assessment,
+        getCompletedPowerBITopicIds(),
+        state,
+      ).unlocked)
+  ) {
+    return {
+      saved: false,
+      newlyCompleted: false,
+      scoreImproved: false,
+      xpAwarded: false,
+      masteryResult: existing,
+      nextStudioUnlocked: null,
+      state,
+    };
+  }
+
   const now = new Date().toISOString();
+  const existingCoverageIsCurrent = isCurrentFinalMasteryResult(existing);
+  const existingCurrentCoverage = existingCoverageIsCurrent
+    ? existing?.currentCoverage
+    : undefined;
+  const preserveLegacyResult = Boolean(
+    studioId === "power-bi-studio" && existing && !existingCoverageIsCurrent,
+  );
   const masteryResult: FinalMasteryResult = {
     studioId,
     finalExamId,
-    officialMasteryScore: Math.max(
-      existing?.officialMasteryScore ?? 0,
-      normalizedScore,
-    ),
-    completedAt: existing?.completedAt || now,
-    updatedAt: now,
+    officialMasteryScore: preserveLegacyResult
+      ? existing?.officialMasteryScore ?? normalizedScore
+      : Math.max(existing?.officialMasteryScore ?? 0, normalizedScore),
+    completedAt: preserveLegacyResult
+      ? existing?.completedAt ?? now
+      : existing?.completedAt || now,
+    updatedAt: preserveLegacyResult ? existing?.updatedAt ?? now : now,
     studioCompleted: true,
     xpAwarded: true,
     nextStudioUnlockId: null,
+    currentCoverage:
+      studioId === "power-bi-studio" && assessment
+        ? {
+            coveredTopicIds: [...assessment.finalExam.coverage.topicIds],
+            bestScore: Math.max(
+              existingCurrentCoverage?.bestScore ?? 0,
+              normalizedScore,
+            ),
+            completedAt: existingCurrentCoverage?.completedAt || now,
+            updatedAt: now,
+          }
+        : existing?.currentCoverage,
   };
   const next: CheckpointProgressState = {
     completions: state.completions,
@@ -341,7 +448,10 @@ export function saveFinalSkillExamPass({
       saved: true,
       newlyCompleted: !existing,
       scoreImproved:
-        normalizedScore > (existing?.officialMasteryScore ?? 0),
+        normalizedScore >
+        (studioId === "power-bi-studio"
+          ? existingCurrentCoverage?.bestScore ?? 0
+          : existing?.officialMasteryScore ?? 0),
       xpAwarded: !existing?.xpAwarded,
       masteryResult,
       nextStudioUnlocked: null,
@@ -406,7 +516,7 @@ export function loadCompletedStudioTopicIds(studioId: AssessableStudioId) {
     case "statistics-studio":
       return loadStatisticsProgress().completedLessonIds;
     case "power-bi-studio":
-      return loadPowerBIProgress().completedLessonIds;
+      return getCompletedPowerBITopicIds();
     case "power-query-studio":
       return loadPowerQueryProgress().completedLessonIds;
     case "tableau-studio":
@@ -558,15 +668,18 @@ function getAssessmentQuestions(
       });
     }
     case "power-bi-studio": {
-      const topics = powerBILessons.filter((item) => allowedIds.has(item.id));
-      return topics.slice(0, limit).map((item, index) => ({
+      const topics = [...powerBILessons, ...daxLessons].filter((item) =>
+        allowedIds.has(item.id),
+      );
+      const selectedTopics = selectBalancedTopics(topics, limit);
+      return selectedTopics.map((item, index) => ({
         id: `${assessment.id}:${item.id}`,
         topicId: item.id,
         prompt: `Which Power BI skill best matches this outcome? ${item.description}`,
         options: peerOptions(
           `${assessment.id}:${item.id}`,
           item.title,
-          topics.map((topic) => topic.title),
+          selectedTopics.map((topic) => topic.title),
           index,
         ),
         correctAnswer: item.title,
@@ -610,6 +723,48 @@ function getAssessmentQuestions(
           source: "existing-lesson-practice",
         }));
   }
+}
+
+function selectBalancedTopics<T extends { category: string }>(
+  topics: readonly T[],
+  requestedCount: number,
+) {
+  const limit = Math.min(Math.max(0, requestedCount), topics.length);
+  const groups = Array.from(
+    topics.reduce((grouped, topic) => {
+      const group = grouped.get(topic.category) ?? [];
+      group.push(topic);
+      grouped.set(topic.category, group);
+      return grouped;
+    }, new Map<string, T[]>()),
+  ).map(([, items]) => items);
+  const allocations = groups.map(() => 0);
+  let allocated = 0;
+
+  while (allocated < limit) {
+    let added = false;
+    for (let index = 0; index < groups.length && allocated < limit; index += 1) {
+      if (allocations[index] >= groups[index].length) continue;
+      allocations[index] += 1;
+      allocated += 1;
+      added = true;
+    }
+    if (!added) break;
+  }
+
+  return groups.flatMap((group, index) =>
+    selectEvenlySpaced(group, allocations[index]),
+  );
+}
+
+function selectEvenlySpaced<T>(items: readonly T[], count: number) {
+  if (count <= 0) return [];
+  if (count >= items.length) return [...items];
+  if (count === 1) return [items[Math.floor((items.length - 1) / 2)]];
+
+  return Array.from({ length: count }, (_, index) =>
+    items[Math.round((index * (items.length - 1)) / (count - 1))],
+  );
 }
 
 function peerOptions(

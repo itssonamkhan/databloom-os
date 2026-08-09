@@ -1,3 +1,6 @@
+import { daxLessons } from "@/lib/daxFormulas";
+import { powerBILessons } from "@/lib/powerBILessons";
+
 const KEY = "databloom-power-bi-progress-v1";
 export const POWER_BI_PROGRESS_EVENT = "databloom:power-bi-progress-updated";
 export type PowerBIProgressState = { completedLessonIds:string[]; completedDAXIds:string[]; favoriteIds:string[]; completedPracticeIds:string[]; notes:Record<string,string> };
@@ -6,6 +9,8 @@ const usable=()=>typeof window!=="undefined"&&"localStorage" in window;
 const strings=(v:unknown)=>Array.isArray(v)?Array.from(new Set(v.filter((x):x is string=>typeof x==="string"))):[];
 function normalize(v:unknown):PowerBIProgressState { const x=(v&&typeof v==="object"?v:{}) as Partial<PowerBIProgressState>; const notes=x.notes&&typeof x.notes==="object"&&!Array.isArray(x.notes)?Object.fromEntries(Object.entries(x.notes).filter((e):e is [string,string]=>typeof e[1]==="string")):{}; return {completedLessonIds:strings(x.completedLessonIds),completedDAXIds:strings(x.completedDAXIds),favoriteIds:strings(x.favoriteIds),completedPracticeIds:strings(x.completedPracticeIds),notes}; }
 export function loadPowerBIProgress(){if(!usable())return {...EMPTY,notes:{}};try{const raw=localStorage.getItem(KEY);return raw?normalize(JSON.parse(raw)):{...EMPTY,notes:{}}}catch{return {...EMPTY,notes:{}}}}
+const OFFICIAL_POWER_BI_TOPIC_IDS = new Set([...powerBILessons,...daxLessons].map((item)=>item.id));
+export function getCompletedPowerBITopicIds(state:PowerBIProgressState=loadPowerBIProgress()){return Array.from(new Set([...state.completedLessonIds,...state.completedDAXIds])).filter((id)=>OFFICIAL_POWER_BI_TOPIC_IDS.has(id));}
 function save(state:PowerBIProgressState,id:string){if(!usable())return false;try{localStorage.setItem(KEY,JSON.stringify(state));window.dispatchEvent(new CustomEvent(POWER_BI_PROGRESS_EVENT,{detail:{id,state}}));return true}catch{return false}}
 export function completePowerBIItem(id:string){const state=loadPowerBIProgress();const dax=id.startsWith("dax-");const key=dax?"completedDAXIds":"completedLessonIds" as const;if(!id||state[key].includes(id))return{newlyCompleted:false,state};const next={...state,[key]:[...state[key],id]};return save(next,id)?{newlyCompleted:true,state:next}:{newlyCompleted:false,state};}
 export function completePowerBIPractice(id:string){const state=loadPowerBIProgress();if(!id||state.completedPracticeIds.includes(id))return{newlyCompleted:false,state};const next={...state,completedPracticeIds:[...state.completedPracticeIds,id]};return save(next,id)?{newlyCompleted:true,state:next}:{newlyCompleted:false,state};}
