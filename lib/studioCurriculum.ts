@@ -439,6 +439,100 @@ const pythonCurriculumModules: readonly CurriculumModuleDefinition[] = [
   ),
 ];
 
+function getStatisticsIdsByCategory(categoryNames: readonly string[]) {
+  const categories = new Set(categoryNames);
+  return statisticsLessons
+    .filter((lesson) => categories.has(lesson.category))
+    .map((lesson) => lesson.id);
+}
+
+function statisticsModule(
+  id: string,
+  title: string,
+  categoryNames: readonly string[],
+  eyebrow: string,
+  summary: string,
+): CurriculumModuleDefinition {
+  return {
+    id,
+    title,
+    lessonIds: getStatisticsIdsByCategory(categoryNames),
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Statistics practice",
+      routePattern: "/statistics-studio/[id]/practice",
+    },
+    presentation: { eyebrow, summary },
+  };
+}
+
+const statisticsCurriculumModules: readonly CurriculumModuleDefinition[] = [
+  statisticsModule(
+    "statistics-foundations",
+    "Statistics Foundations",
+    ["Foundations"],
+    "Module 1",
+    "Distinguish populations, samples, data types, parameters, and statistics.",
+  ),
+  statisticsModule(
+    "descriptive-statistics",
+    "Descriptive Statistics",
+    ["Descriptive Statistics"],
+    "Module 2",
+    "Summarize center, spread, position, shape, and unusual observations.",
+  ),
+  statisticsModule(
+    "probability",
+    "Probability",
+    ["Probability"],
+    "Module 3",
+    "Build uncertainty from core probability rules through conditional reasoning and expected value.",
+  ),
+  statisticsModule(
+    "distributions-data-understanding",
+    "Distributions & Data Understanding",
+    ["Distributions"],
+    "Module 4",
+    "Connect random variables to common distributions, standardized values, and sampling behavior.",
+  ),
+  statisticsModule(
+    "sampling-estimation",
+    "Sampling & Estimation",
+    ["Sampling", "Confidence Intervals"],
+    "Module 5",
+    "Choose sound samples and quantify uncertainty with standard errors and confidence intervals.",
+  ),
+  statisticsModule(
+    "hypothesis-testing",
+    "Hypothesis Testing",
+    ["Hypothesis Testing"],
+    "Module 6",
+    "Frame hypotheses, interpret evidence, choose tests, and understand errors and power.",
+  ),
+  statisticsModule(
+    "relationships-between-variables",
+    "Relationships Between Variables",
+    ["Correlation and Regression"],
+    "Module 7",
+    "Measure association, build regression models, and evaluate their assumptions and errors.",
+  ),
+  statisticsModule(
+    "applied-experiments-business-analysis",
+    "Applied Experiments & Business Analysis",
+    ["A/B Testing", "Business Statistics"],
+    "Module 8",
+    "Design experiments and apply statistical thinking to KPIs, cohorts, trends, and forecasts.",
+  ),
+  statisticsModule(
+    "analyst-interview-application",
+    "Analyst Interview Application",
+    ["Analyst Interviews"],
+    "Module 9",
+    "Apply the full statistics workflow to realistic analyst interview decisions.",
+  ),
+];
+
 const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
   {
     studioId: "formula-studio",
@@ -532,6 +626,25 @@ const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
     structureKind: "chapter-based",
     navigationMode: "guided-path",
     lessons: statisticsLessons,
+    organizationStatus: "organized",
+    modules: statisticsCurriculumModules,
+    checkpointPlacements: [
+      {
+        checkpointId: "statistics-foundations-probability",
+        placementStatus: "placed",
+        afterModuleId: "distributions-data-understanding",
+      },
+      {
+        checkpointId: "statistics-inference",
+        placementStatus: "placed",
+        afterModuleId: "hypothesis-testing",
+      },
+      {
+        checkpointId: "statistics-applied-analysis",
+        placementStatus: "placed",
+        afterModuleId: "analyst-interview-application",
+      },
+    ],
   },
   {
     studioId: "tableau-studio",
