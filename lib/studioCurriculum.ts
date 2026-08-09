@@ -219,6 +219,88 @@ const formulaCurriculumModules: readonly CurriculumModuleDefinition[] = [
   },
 ];
 
+function sqlModule(
+  id: string,
+  title: string,
+  lessonIds: readonly string[],
+  eyebrow: string,
+  summary: string,
+): CurriculumModuleDefinition {
+  return {
+    id,
+    title,
+    lessonIds,
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "SQL practice",
+      routePattern: "/sql-studio/[id]/practice",
+    },
+    presentation: { eyebrow, summary },
+  };
+}
+
+const sqlCurriculumModules: readonly CurriculumModuleDefinition[] = [
+  sqlModule(
+    "query-construction",
+    "Query Construction",
+    ["select", "from", "distinct", "aliases", "order-by", "limit"],
+    "Module 1",
+    "Build clear result sets with the core clauses of a SQL query.",
+  ),
+  sqlModule(
+    "filtering",
+    "Filtering",
+    ["where", "and", "or", "not", "between", "in", "like", "is-null"],
+    "Module 2",
+    "Filter with comparisons, logical rules, ranges, lists, patterns, and null checks.",
+  ),
+  sqlModule(
+    "aggregation-conditional-analysis",
+    "Aggregation & Conditional Analysis",
+    ["count", "sum", "avg", "min", "max", "group-by", "having", "case-when"],
+    "Module 3",
+    "Summarize datasets, group results, filter aggregates, and add conditional logic.",
+  ),
+  sqlModule(
+    "combining-data",
+    "Combining Data",
+    [
+      "inner-join",
+      "left-join",
+      "right-join",
+      "full-outer-join",
+      "union",
+      "union-all",
+    ],
+    "Module 4",
+    "Combine related tables and compatible result sets safely.",
+  ),
+  sqlModule(
+    "advanced-query-composition",
+    "Advanced Query Composition",
+    [
+      "subqueries",
+      "common-table-expressions",
+      "row-number",
+      "rank",
+      "dense-rank",
+      "lag",
+      "lead",
+      "partition-by",
+    ],
+    "Module 5",
+    "Compose layered queries and perform analytical calculations with windows.",
+  ),
+  sqlModule(
+    "reusable-performant-sql",
+    "Reusable & Performant SQL",
+    ["views", "stored-procedures", "indexes", "query-optimization"],
+    "Module 6",
+    "Reuse query logic and understand the foundations of SQL performance.",
+  ),
+];
+
 const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
   {
     studioId: "formula-studio",
@@ -256,6 +338,25 @@ const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
     structureKind: "chapter-based",
     navigationMode: "guided-path",
     lessons: sqlLessons,
+    organizationStatus: "organized",
+    modules: sqlCurriculumModules,
+    checkpointPlacements: [
+      {
+        checkpointId: "sql-query-foundations",
+        placementStatus: "placed",
+        afterModuleId: "filtering",
+      },
+      {
+        checkpointId: "sql-analysis-combination",
+        placementStatus: "placed",
+        afterModuleId: "combining-data",
+      },
+      {
+        checkpointId: "sql-advanced-performance",
+        placementStatus: "placed",
+        afterModuleId: "reusable-performant-sql",
+      },
+    ],
   },
   {
     studioId: "python-studio",
