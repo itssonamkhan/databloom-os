@@ -301,6 +301,144 @@ const sqlCurriculumModules: readonly CurriculumModuleDefinition[] = [
   ),
 ];
 
+function pythonModule(
+  id: string,
+  title: string,
+  lessonIds: readonly string[],
+  eyebrow: string,
+  summary: string,
+): CurriculumModuleDefinition {
+  return {
+    id,
+    title,
+    lessonIds,
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Python practice",
+      routePattern: "/python-studio/[id]/practice",
+    },
+    presentation: { eyebrow, summary },
+  };
+}
+
+const pythonCurriculumModules: readonly CurriculumModuleDefinition[] = [
+  pythonModule(
+    "python-fundamentals",
+    "Python Fundamentals",
+    [
+      "print-output",
+      "variables",
+      "data-types",
+      "strings",
+      "numbers",
+      "booleans",
+      "comparisons",
+      "f-strings",
+    ],
+    "Module 1",
+    "Build confidence with Python syntax, values, operators, and readable output.",
+  ),
+  pythonModule(
+    "collections-control-flow",
+    "Collections & Control Flow",
+    [
+      "lists",
+      "tuples",
+      "sets",
+      "dictionaries",
+      "if-statements",
+      "for-loops",
+      "while-loops",
+      "list-comprehensions",
+    ],
+    "Module 2",
+    "Store structured values, control program flow, and finish with concise list comprehensions.",
+  ),
+  pythonModule(
+    "functions-modules",
+    "Functions & Modules",
+    ["functions", "lambda-functions", "imports", "exceptions"],
+    "Module 3",
+    "Write reusable logic, import tools, and handle failures safely.",
+  ),
+  pythonModule(
+    "numpy-foundations",
+    "NumPy Foundations",
+    [
+      "numpy-arrays",
+      "numpy-indexing",
+      "numpy-vectorization",
+      "numpy-aggregations",
+      "numpy-reshape",
+      "numpy-missing-values",
+    ],
+    "Module 4",
+    "Create, select, transform, summarize, reshape, and validate numeric arrays.",
+  ),
+  pythonModule(
+    "pandas-foundations-selection",
+    "Pandas Foundations & Selection",
+    [
+      "dataframe-basics",
+      "read-csv",
+      "inspect-dataframe",
+      "selecting-columns",
+      "filtering-rows",
+      "loc-iloc",
+      "query-method",
+      "sorting-data",
+      "creating-columns",
+    ],
+    "Module 5",
+    "Load and inspect DataFrames, select the right records, and create useful columns.",
+  ),
+  pythonModule(
+    "pandas-transformation-aggregation-merging-time-series",
+    "Pandas Transformation, Aggregation, Merging & Time Series",
+    [
+      "apply-method",
+      "groupby",
+      "aggregations",
+      "pivot-tables",
+      "merging-data",
+      "concatenating-data",
+      "datetime-analysis",
+    ],
+    "Module 6",
+    "Transform values, summarize groups, reshape and combine data, then analyze dates.",
+  ),
+  pythonModule(
+    "data-cleaning",
+    "Data Cleaning",
+    ["missing-values", "duplicates", "data-types-pandas", "string-cleaning"],
+    "Module 7",
+    "Resolve missing, duplicate, incorrectly typed, and inconsistent text data.",
+  ),
+  pythonModule(
+    "data-analysis-visualization",
+    "Data Analysis & Visualization",
+    [
+      "correlation",
+      "line-charts",
+      "bar-charts",
+      "histograms",
+      "scatter-plots",
+      "seaborn-charts",
+      "chart-labels",
+    ],
+    "Module 8",
+    "Explore relationships and communicate findings with clear analytical charts.",
+  ),
+  pythonModule(
+    "analyst-workflow",
+    "Analyst Workflow",
+    ["export-csv", "eda-workflow"],
+    "Module 9",
+    "Move through an applied exploratory workflow and export reliable results.",
+  ),
+];
+
 const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
   {
     studioId: "formula-studio",
@@ -366,6 +504,25 @@ const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
     structureKind: "chapter-based",
     navigationMode: "guided-path",
     lessons: pythonLessons,
+    organizationStatus: "organized",
+    modules: pythonCurriculumModules,
+    checkpointPlacements: [
+      {
+        checkpointId: "python-language-foundations",
+        placementStatus: "placed",
+        afterModuleId: "functions-modules",
+      },
+      {
+        checkpointId: "python-data-wrangling",
+        placementStatus: "placed",
+        afterModuleId: "data-cleaning",
+      },
+      {
+        checkpointId: "python-analysis-communication",
+        placementStatus: "placed",
+        afterModuleId: "analyst-workflow",
+      },
+    ],
   },
   {
     studioId: "statistics-studio",
