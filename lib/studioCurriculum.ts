@@ -1,6 +1,7 @@
 import { daxLessons } from "@/lib/daxFormulas";
 import { formulas } from "@/lib/formulas";
 import { powerBILessons } from "@/lib/powerBILessons";
+import { powerQueryLessons } from "@/lib/powerQueryLessons";
 import { pythonLessons } from "@/lib/pythonLessons";
 import { sqlLessons } from "@/lib/sqlLessons";
 import {
@@ -18,6 +19,7 @@ export type SupportedCurriculumStudioId = Extract<
   | "python-studio"
   | "statistics-studio"
   | "power-bi-studio"
+  | "power-query-studio"
   | "tableau-studio"
 >;
 
@@ -695,6 +697,159 @@ const powerBICurriculumModules: readonly CurriculumModuleDefinition[] = [
   ),
 ];
 
+const EXPECTED_POWER_QUERY_TOPIC_COUNT = 106;
+const EXPECTED_POWER_QUERY_CLEANING_TOPIC_COUNT = 29;
+const POWER_QUERY_MODULE_COUNTS = [12, 14, 17, 12, 14, 16, 11, 10] as const;
+
+const powerQueryCurriculumLessons = (() => {
+  const lessonIds = powerQueryLessons.map((lesson) => lesson.id);
+
+  if (
+    lessonIds.length !== EXPECTED_POWER_QUERY_TOPIC_COUNT ||
+    new Set(lessonIds).size !== EXPECTED_POWER_QUERY_TOPIC_COUNT
+  ) {
+    throw new Error(
+      `Power Query curriculum requires exactly ${EXPECTED_POWER_QUERY_TOPIC_COUNT} unique official lesson IDs.`,
+    );
+  }
+
+  return powerQueryLessons;
+})();
+
+function getPowerQueryIdsByCategory(categoryName: string) {
+  return powerQueryLessons
+    .filter((lesson) => lesson.category === categoryName)
+    .map((lesson) => lesson.id);
+}
+
+function powerQueryModule(
+  id: string,
+  title: string,
+  lessonIds: readonly string[],
+  eyebrow: string,
+  summary: string,
+): CurriculumModuleDefinition {
+  return {
+    id,
+    title,
+    lessonIds,
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Power Query practice",
+      routePattern: "/power-query-studio/[id]/practice",
+    },
+    presentation: { eyebrow, summary },
+  };
+}
+
+const powerQueryCleaningLessonIds = getPowerQueryIdsByCategory(
+  "Cleaning and Transforming",
+);
+
+if (
+  powerQueryCleaningLessonIds.length !==
+  EXPECTED_POWER_QUERY_CLEANING_TOPIC_COUNT
+) {
+  throw new Error(
+    `Power Query curriculum requires exactly ${EXPECTED_POWER_QUERY_CLEANING_TOPIC_COUNT} Cleaning and Transforming lesson IDs.`,
+  );
+}
+
+const powerQueryCurriculumModules: readonly CurriculumModuleDefinition[] = [
+  powerQueryModule(
+    "foundations",
+    "Foundations",
+    getPowerQueryIdsByCategory("Foundations"),
+    "Module 1",
+    "Understand the Power Query workspace, query lifecycle, load behavior, and reusable query structure.",
+  ),
+  powerQueryModule(
+    "connections-imports",
+    "Connections & Imports",
+    getPowerQueryIdsByCategory("Connections and Imports"),
+    "Module 2",
+    "Connect files, folders, web content, and databases while managing credentials, parameters, and source changes.",
+  ),
+  powerQueryModule(
+    "data-profiling-core-cleanup",
+    "Data Profiling & Core Cleanup",
+    powerQueryCleaningLessonIds.slice(0, 17),
+    "Module 3",
+    "Profile data quality, set reliable types, select the required rows and columns, and resolve common cleanup issues.",
+  ),
+  powerQueryModule(
+    "transformations-derived-fields",
+    "Transformations & Derived Fields",
+    powerQueryCleaningLessonIds.slice(17),
+    "Module 4",
+    "Transform text, numbers, dates, and fields before creating conditional, custom, indexed, and aggregated outputs.",
+  ),
+  powerQueryModule(
+    "combining-shaping",
+    "Combining & Shaping",
+    getPowerQueryIdsByCategory("Combining and Shaping"),
+    "Module 5",
+    "Reshape, merge, append, align, and trace queries while preserving the existing transformation sequence.",
+  ),
+  powerQueryModule(
+    "m-language-automation",
+    "M Language & Automation",
+    getPowerQueryIdsByCategory("M Language and Automation"),
+    "Module 6",
+    "Build from M fundamentals toward reusable functions, parameters, row transformations, and metadata-driven automation.",
+  ),
+  powerQueryModule(
+    "performance-integration",
+    "Performance & Integration",
+    getPowerQueryIdsByCategory("Performance and Integration"),
+    "Module 7",
+    "Preserve query folding, reduce unnecessary work, diagnose performance, and integrate reliable refresh workflows.",
+  ),
+  powerQueryModule(
+    "business-scenarios-interviews",
+    "Business Scenarios & Interviews",
+    getPowerQueryIdsByCategory("Business Scenarios and Interviews"),
+    "Module 8",
+    "Apply the complete workflow to realistic business data and explain Power Query decisions in interviews.",
+  ),
+];
+
+const powerQueryCurriculumModuleCounts = powerQueryCurriculumModules.map(
+  (module) => module.lessonIds.length,
+);
+const powerQueryGuidedLessonIds = powerQueryCurriculumModules.flatMap(
+  (module) => module.lessonIds,
+);
+const powerQueryOfficialLessonIds = powerQueryLessons.map(
+  (lesson) => lesson.id,
+);
+
+if (
+  powerQueryCurriculumModuleCounts.length !== POWER_QUERY_MODULE_COUNTS.length ||
+  powerQueryCurriculumModuleCounts.some(
+    (count, index) => count !== POWER_QUERY_MODULE_COUNTS[index],
+  )
+) {
+  throw new Error(
+    `Power Query curriculum modules must contain ${POWER_QUERY_MODULE_COUNTS.join(
+      ", ",
+    )} lessons respectively.`,
+  );
+}
+
+if (
+  powerQueryGuidedLessonIds.length !== EXPECTED_POWER_QUERY_TOPIC_COUNT ||
+  new Set(powerQueryGuidedLessonIds).size !== EXPECTED_POWER_QUERY_TOPIC_COUNT ||
+  powerQueryGuidedLessonIds.some(
+    (lessonId, index) => lessonId !== powerQueryOfficialLessonIds[index],
+  )
+) {
+  throw new Error(
+    "Power Query guided curriculum must contain every official lesson exactly once in raw catalog order.",
+  );
+}
+
 const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
   {
     studioId: "formula-studio",
@@ -856,6 +1011,34 @@ const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
         checkpointId: "power-bi-modeling-reporting",
         placementStatus: "placed",
         afterModuleId: "dashboard-design",
+      },
+    ],
+  },
+  {
+    studioId: "power-query-studio",
+    studioName: "Power Query Studio",
+    description:
+      "A complete guided Power Query path covering all existing lessons while preserving the searchable library and raw lesson order.",
+    structureKind: "chapter-based",
+    navigationMode: "guided-path",
+    lessons: powerQueryCurriculumLessons,
+    organizationStatus: "organized",
+    modules: powerQueryCurriculumModules,
+    checkpointPlacements: [
+      {
+        checkpointId: "power-query-foundations-connections",
+        placementStatus: "placed",
+        afterModuleId: "connections-imports",
+      },
+      {
+        checkpointId: "power-query-transform-shape",
+        placementStatus: "placed",
+        afterModuleId: "combining-shaping",
+      },
+      {
+        checkpointId: "power-query-automation-performance",
+        placementStatus: "placed",
+        afterModuleId: "business-scenarios-interviews",
       },
     ],
   },
