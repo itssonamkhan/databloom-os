@@ -32,7 +32,7 @@ import { calculatePowerBIProgress, loadPowerBIProgress, POWER_BI_PROGRESS_EVENT 
 import { powerQueryLessons } from "@/lib/powerQueryLessons";
 import {
   calculatePowerQueryProgress,
-  loadPowerQueryProgress,
+  getCompletedPowerQueryLessonIds,
   POWER_QUERY_PROGRESS_EVENT,
 } from "@/lib/powerQueryProgress";
 import { pythonLessons } from "@/lib/pythonLessons";
@@ -119,7 +119,7 @@ export default function DashboardPage() {
     return state.completedLessonIds.length + state.completedDAXIds.length;
   });
   const [powerQueryCompletedCount, setPowerQueryCompletedCount] = useState(
-    () => loadPowerQueryProgress().completedLessonIds.length,
+    () => getCompletedPowerQueryLessonIds().length,
   );
   const [pythonCompletedCount, setPythonCompletedCount] = useState(() => {
     const completed = new Set(loadPythonProgress().completedLessonIds);
@@ -331,9 +331,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const syncPowerQuery = () => {
-      setPowerQueryCompletedCount(
-        loadPowerQueryProgress().completedLessonIds.length,
-      );
+      setPowerQueryCompletedCount(getCompletedPowerQueryLessonIds().length);
     };
     window.addEventListener(POWER_QUERY_PROGRESS_EVENT, syncPowerQuery);
     return () =>

@@ -17,6 +17,8 @@ import {
 } from "@/lib/powerQueryLessons";
 import {
   calculatePowerQueryProgress,
+  getCompletedPowerQueryLessonIds,
+  getFavoritePowerQueryLessonIds,
   loadPowerQueryProgress,
   POWER_QUERY_PROGRESS_EVENT,
   togglePowerQueryFavorite,
@@ -65,8 +67,10 @@ export default function PowerQueryStudio() {
     });
   }, [category, difficulty, favoritesOnly, progress.favoriteLessonIds, search]);
 
+  const completedLessonIds = getCompletedPowerQueryLessonIds(progress);
+  const favoriteLessonIds = getFavoritePowerQueryLessonIds(progress);
   const percentage = calculatePowerQueryProgress(
-    progress.completedLessonIds.length,
+    completedLessonIds.length,
     powerQueryLessons.length,
   );
 
@@ -113,8 +117,8 @@ export default function PowerQueryStudio() {
 
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <SummaryCard label="Total lessons" value={String(powerQueryLessons.length)} tone="text-teal-800" />
-          <SummaryCard label="Completed" value={`${progress.completedLessonIds.length}/${powerQueryLessons.length}`} tone="text-emerald-700" />
-          <SummaryCard label="Favorites" value={String(progress.favoriteLessonIds.length)} tone="text-pink-700" />
+          <SummaryCard label="Completed" value={`${completedLessonIds.length}/${powerQueryLessons.length}`} tone="text-emerald-700" />
+          <SummaryCard label="Favorites" value={String(favoriteLessonIds.length)} tone="text-pink-700" />
           <SummaryCard label="Power Query progress" value={`${percentage}%`} tone="text-purple-700" />
         </section>
 
