@@ -7,6 +7,7 @@ import {
 } from "@/lib/studioAssessments";
 import { statisticsLessons } from "@/lib/statisticsLessons";
 import { tableauLessons } from "@/lib/tableauLessons";
+import { tableauRoadmap } from "@/lib/tableauReference";
 
 export type SupportedCurriculumStudioId = Extract<
   AssessableStudioId,
@@ -533,6 +534,24 @@ const statisticsCurriculumModules: readonly CurriculumModuleDefinition[] = [
   ),
 ];
 
+const tableauCurriculumModules: readonly CurriculumModuleDefinition[] =
+  tableauRoadmap.map((stage, index) => ({
+    id: stage.id,
+    title: stage.title,
+    description: stage.description,
+    lessonIds: stage.lessonIds,
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Tableau practice",
+      routePattern: "/tableau-studio/[id]/practice",
+    },
+    presentation: {
+      eyebrow: `Module ${index + 1}`,
+      summary: stage.description,
+    },
+  }));
+
 const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
   {
     studioId: "formula-studio",
@@ -654,6 +673,25 @@ const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
     structureKind: "chapter-based",
     navigationMode: "guided-path",
     lessons: tableauLessons,
+    organizationStatus: "organized",
+    modules: tableauCurriculumModules,
+    checkpointPlacements: [
+      {
+        checkpointId: "tableau-foundations-modeling",
+        placementStatus: "placed",
+        afterModuleId: "modeling",
+      },
+      {
+        checkpointId: "tableau-analysis-interactivity",
+        placementStatus: "placed",
+        afterModuleId: "interactive-analytics",
+      },
+      {
+        checkpointId: "tableau-publishing-readiness",
+        placementStatus: "placed",
+        afterModuleId: "interview",
+      },
+    ],
   },
 ];
 
