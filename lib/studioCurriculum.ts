@@ -102,7 +102,122 @@ type SupportedCurriculumSource = {
   structureKind: CurriculumStructureKind;
   navigationMode: CurriculumNavigationMode;
   lessons: readonly CurriculumLessonReference[];
+  organizationStatus?: CurriculumOrganizationStatus;
+  modules?: readonly CurriculumModuleDefinition[];
+  checkpointPlacements?: readonly CurriculumCheckpointPlacement[];
 };
+
+function getFormulaIdsByCategory(categoryNames: readonly string[]) {
+  const categories = new Set(categoryNames);
+  return formulas
+    .filter((formula) => categories.has(formula.category))
+    .map((formula) => formula.id);
+}
+
+const formulaCurriculumModules: readonly CurriculumModuleDefinition[] = [
+  {
+    id: "numeric-foundations",
+    title: "Numeric Foundations",
+    lessonIds: getFormulaIdsByCategory([
+      "Beginner Foundation",
+      "Statistical Functions",
+      "Number Formatting",
+    ]),
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Formula practice",
+      routePattern: "/formula-studio/[id]/practice",
+    },
+    presentation: {
+      eyebrow: "Module 1",
+      summary: "Totals, counts, statistical measures, and reliable rounding.",
+    },
+  },
+  {
+    id: "logical-conditional-analysis",
+    title: "Logical & Conditional Analysis",
+    lessonIds: getFormulaIdsByCategory([
+      "Logical Functions",
+      "Conditional Analysis",
+    ]),
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Formula practice",
+      routePattern: "/formula-studio/[id]/practice",
+    },
+    presentation: {
+      eyebrow: "Module 2",
+      summary: "Decision rules and analysis across one or more conditions.",
+    },
+  },
+  {
+    id: "lookup-reference",
+    title: "Lookup & Reference",
+    lessonIds: getFormulaIdsByCategory(["Lookup & Reference"]),
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Formula practice",
+      routePattern: "/formula-studio/[id]/practice",
+    },
+    presentation: {
+      eyebrow: "Module 3",
+      summary: "Find, match, and return values from structured data.",
+    },
+  },
+  {
+    id: "text-data-cleaning",
+    title: "Text & Data Cleaning",
+    lessonIds: getFormulaIdsByCategory([
+      "Text Cleaning",
+      "Data Cleaning",
+      "Text Formatting",
+      "Text Combining",
+    ]),
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Formula practice",
+      routePattern: "/formula-studio/[id]/practice",
+    },
+    presentation: {
+      eyebrow: "Module 4",
+      summary: "Extract, clean, format, and combine worksheet text.",
+    },
+  },
+  {
+    id: "date-time",
+    title: "Date & Time",
+    lessonIds: getFormulaIdsByCategory(["Date & Time"]),
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Formula practice",
+      routePattern: "/formula-studio/[id]/practice",
+    },
+    presentation: {
+      eyebrow: "Module 5",
+      summary: "Build dependable calendar and reporting-period logic.",
+    },
+  },
+  {
+    id: "modern-advanced-excel",
+    title: "Modern & Advanced Excel",
+    lessonIds: getFormulaIdsByCategory(["Dynamic Array", "Advanced Excel"]),
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Formula practice",
+      routePattern: "/formula-studio/[id]/practice",
+    },
+    presentation: {
+      eyebrow: "Module 6",
+      summary: "Dynamic arrays and reusable modern Excel formulas.",
+    },
+  },
+];
 
 const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
   {
@@ -113,6 +228,25 @@ const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
     structureKind: "resource-hub",
     navigationMode: "searchable-library",
     lessons: formulas,
+    organizationStatus: "organized",
+    modules: formulaCurriculumModules,
+    checkpointPlacements: [
+      {
+        checkpointId: "formula-foundations-analysis",
+        placementStatus: "placed",
+        afterModuleId: "logical-conditional-analysis",
+      },
+      {
+        checkpointId: "formula-lookups-text",
+        placementStatus: "placed",
+        afterModuleId: "text-data-cleaning",
+      },
+      {
+        checkpointId: "formula-dates-modern-excel",
+        placementStatus: "placed",
+        afterModuleId: "modern-advanced-excel",
+      },
+    ],
   },
   {
     studioId: "sql-studio",
@@ -173,12 +307,12 @@ function createFoundationConfiguration(
     studioRoute: `/${source.studioId}`,
     overview: {
       description: source.description,
-      organizationStatus: "foundation",
+      organizationStatus: source.organizationStatus ?? "foundation",
     },
     structureKind: source.structureKind,
     navigationMode: source.navigationMode,
     officialCoreLessonIds,
-    modules: [
+    modules: source.modules ?? [
       {
         id: "current-sequence",
         title: "Current curriculum sequence",
@@ -193,18 +327,21 @@ function createFoundationConfiguration(
         },
       },
     ],
-    checkpointPlacements: assessment.checkpoints.map((checkpoint) => ({
-      checkpointId: checkpoint.id,
-      placementStatus: "pending",
-      afterModuleId: null,
-    })),
+    checkpointPlacements:
+      source.checkpointPlacements ??
+      assessment.checkpoints.map((checkpoint) => ({
+        checkpointId: checkpoint.id,
+        placementStatus: "pending",
+        afterModuleId: null,
+      })),
     finalReview: {
       title: "Final review",
       description:
         "A future review of all official core lessons before the existing Final Skill Exam.",
       coverage: "all-core-lessons",
       placement: "after-modules",
-      status: "planned",
+      status:
+        source.organizationStatus === "organized" ? "available" : "planned",
     },
     finalSkillExam: {
       assessmentId: assessment.finalExam.id,
