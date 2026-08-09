@@ -686,18 +686,20 @@ function getAssessmentQuestions(
         source: "derived-curriculum-seed",
       }));
     }
-    case "power-query-studio":
-      return powerQueryLessons
-        .filter((item) => allowedIds.has(item.id))
-        .slice(0, limit)
-        .map((item) => ({
-          id: `${assessment.id}:${item.id}`,
-          topicId: item.id,
-          prompt: item.practiceQuestion,
-          options: item.practiceOptions,
-          correctAnswer: item.correctAnswer,
-          source: "existing-lesson-practice",
-        }));
+    case "power-query-studio": {
+      const topics = powerQueryLessons.filter((item) =>
+        allowedIds.has(item.id),
+      );
+      const selectedTopics = selectBalancedTopics(topics, limit);
+      return selectedTopics.map((item) => ({
+        id: `${assessment.id}:${item.id}`,
+        topicId: item.id,
+        prompt: item.practiceQuestion,
+        options: item.practiceOptions,
+        correctAnswer: item.correctAnswer,
+        source: "existing-lesson-practice",
+      }));
+    }
     case "tableau-studio":
       return tableauLessons
         .filter((item) => allowedIds.has(item.id))
