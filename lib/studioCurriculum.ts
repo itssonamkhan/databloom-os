@@ -1,3 +1,4 @@
+import { businessAnalyticsLessons } from "@/lib/businessAnalyticsLessons";
 import { daxLessons } from "@/lib/daxFormulas";
 import { formulas } from "@/lib/formulas";
 import { powerBILessons } from "@/lib/powerBILessons";
@@ -20,6 +21,7 @@ export type SupportedCurriculumStudioId = Extract<
   | "statistics-studio"
   | "power-bi-studio"
   | "power-query-studio"
+  | "business-analytics-studio"
   | "tableau-studio"
 >;
 
@@ -850,6 +852,179 @@ if (
   );
 }
 
+const EXPECTED_BUSINESS_ANALYTICS_TOPIC_COUNT = 112;
+const EXPECTED_BUSINESS_ANALYTICS_COMMERCIAL_TOPIC_COUNT = 25;
+const BUSINESS_ANALYTICS_MODULE_COUNTS = [
+  15, 15, 11, 14, 15, 15, 12, 15,
+] as const;
+
+const businessAnalyticsCurriculumLessons = (() => {
+  const lessonIds = businessAnalyticsLessons.map((lesson) => lesson.id);
+
+  if (
+    lessonIds.length !== EXPECTED_BUSINESS_ANALYTICS_TOPIC_COUNT ||
+    new Set(lessonIds).size !== EXPECTED_BUSINESS_ANALYTICS_TOPIC_COUNT
+  ) {
+    throw new Error(
+      `Business Analytics curriculum requires exactly ${EXPECTED_BUSINESS_ANALYTICS_TOPIC_COUNT} unique official lesson IDs.`,
+    );
+  }
+
+  return businessAnalyticsLessons;
+})();
+
+function getBusinessAnalyticsIdsByCategory(categoryName: string) {
+  return businessAnalyticsLessons
+    .filter((lesson) => lesson.category === categoryName)
+    .map((lesson) => lesson.id);
+}
+
+function businessAnalyticsModule(
+  id: string,
+  title: string,
+  lessonIds: readonly string[],
+  eyebrow: string,
+  summary: string,
+): CurriculumModuleDefinition {
+  return {
+    id,
+    title,
+    lessonIds,
+    practice: {
+      kind: "existing-lesson-practice",
+      placement: "lesson-level",
+      label: "Business Analytics practice",
+      routePattern: "/business-analytics-studio/[id]/practice",
+    },
+    presentation: { eyebrow, summary },
+  };
+}
+
+const businessAnalyticsCommercialLessonIds =
+  getBusinessAnalyticsIdsByCategory("Customer, Sales, and Marketing");
+
+if (
+  businessAnalyticsCommercialLessonIds.length !==
+  EXPECTED_BUSINESS_ANALYTICS_COMMERCIAL_TOPIC_COUNT
+) {
+  throw new Error(
+    `Business Analytics curriculum requires exactly ${EXPECTED_BUSINESS_ANALYTICS_COMMERCIAL_TOPIC_COUNT} Customer, Sales, and Marketing lesson IDs.`,
+  );
+}
+
+const businessAnalyticsCurriculumModules: readonly CurriculumModuleDefinition[] =
+  [
+    businessAnalyticsModule(
+      "foundations-problem-framing",
+      "Foundations & Problem Framing",
+      getBusinessAnalyticsIdsByCategory("Foundations and Problem Framing"),
+      "Module 1",
+      "Understand the analytics lifecycle, frame decision-ready problems, define evidence, and protect data quality and ethics.",
+    ),
+    businessAnalyticsModule(
+      "metrics-financial-performance",
+      "Metrics & Financial Performance",
+      getBusinessAnalyticsIdsByCategory("Metrics and Financial Performance"),
+      "Module 2",
+      "Design useful metrics and connect revenue, costs, growth, margins, plans, and financial performance.",
+    ),
+    businessAnalyticsModule(
+      "sales-marketing-performance",
+      "Sales & Marketing Performance",
+      businessAnalyticsCommercialLessonIds.slice(0, 11),
+      "Module 3",
+      "Measure pipelines, seller performance, acquisition, campaign returns, funnels, conversion, and attribution.",
+    ),
+    businessAnalyticsModule(
+      "customer-growth-retention-pricing",
+      "Customer Growth, Retention & Pricing",
+      businessAnalyticsCommercialLessonIds.slice(11),
+      "Module 4",
+      "Analyze customers, segments, value, retention, experiments, product affinity, recommendations, and pricing.",
+    ),
+    businessAnalyticsModule(
+      "operations-people-analytics",
+      "Operations & People Analytics",
+      getBusinessAnalyticsIdsByCategory("Operations and People"),
+      "Module 5",
+      "Improve inventory, supply chains, processes, capacity, quality, hiring, productivity, and workforce outcomes.",
+    ),
+    businessAnalyticsModule(
+      "forecasting-decision-science",
+      "Forecasting & Decision Science",
+      getBusinessAnalyticsIdsByCategory("Forecasting and Decision Science"),
+      "Module 6",
+      "Forecast outcomes, compare scenarios, evaluate uncertainty, optimize decisions, and diagnose root causes.",
+    ),
+    businessAnalyticsModule(
+      "strategy-communication",
+      "Strategy & Communication",
+      getBusinessAnalyticsIdsByCategory("Strategy and Communication"),
+      "Module 7",
+      "Connect strategic context to clear visuals, executive communication, recommendations, priorities, and monitored action.",
+    ),
+    businessAnalyticsModule(
+      "case-studies-interviews",
+      "Case Studies & Interviews",
+      getBusinessAnalyticsIdsByCategory("Case Studies and Interviews"),
+      "Module 8",
+      "Apply the complete workflow across industry cases and decision-focused interview scenarios.",
+    ),
+  ];
+
+const businessAnalyticsCurriculumModuleCounts =
+  businessAnalyticsCurriculumModules.map((module) => module.lessonIds.length);
+const businessAnalyticsGuidedLessonIds =
+  businessAnalyticsCurriculumModules.flatMap((module) => module.lessonIds);
+const businessAnalyticsOfficialLessonIds = businessAnalyticsLessons.map(
+  (lesson) => lesson.id,
+);
+const businessAnalyticsSalesMarketingLessonIds =
+  businessAnalyticsCurriculumModules[2].lessonIds;
+const businessAnalyticsCustomerGrowthLessonIds =
+  businessAnalyticsCurriculumModules[3].lessonIds;
+
+if (
+  businessAnalyticsCurriculumModuleCounts.length !==
+    BUSINESS_ANALYTICS_MODULE_COUNTS.length ||
+  businessAnalyticsCurriculumModuleCounts.some(
+    (count, index) => count !== BUSINESS_ANALYTICS_MODULE_COUNTS[index],
+  )
+) {
+  throw new Error(
+    `Business Analytics curriculum modules must contain ${BUSINESS_ANALYTICS_MODULE_COUNTS.join(
+      ", ",
+    )} lessons respectively.`,
+  );
+}
+
+if (
+  businessAnalyticsSalesMarketingLessonIds.at(-1) !==
+    "marketing-attribution" ||
+  businessAnalyticsCustomerGrowthLessonIds[0] !== "customer-analytics" ||
+  businessAnalyticsSalesMarketingLessonIds.length +
+    businessAnalyticsCustomerGrowthLessonIds.length !==
+    EXPECTED_BUSINESS_ANALYTICS_COMMERCIAL_TOPIC_COUNT
+) {
+  throw new Error(
+    "Business Analytics commercial curriculum split must preserve all 25 lessons from marketing attribution through customer analytics in raw catalog order.",
+  );
+}
+
+if (
+  businessAnalyticsGuidedLessonIds.length !==
+    EXPECTED_BUSINESS_ANALYTICS_TOPIC_COUNT ||
+  new Set(businessAnalyticsGuidedLessonIds).size !==
+    EXPECTED_BUSINESS_ANALYTICS_TOPIC_COUNT ||
+  businessAnalyticsGuidedLessonIds.some(
+    (lessonId, index) => lessonId !== businessAnalyticsOfficialLessonIds[index],
+  )
+) {
+  throw new Error(
+    "Business Analytics guided curriculum must contain every official lesson exactly once in raw catalog order.",
+  );
+}
+
 const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
   {
     studioId: "formula-studio",
@@ -1039,6 +1214,34 @@ const supportedCurriculumSources: readonly SupportedCurriculumSource[] = [
         checkpointId: "power-query-automation-performance",
         placementStatus: "placed",
         afterModuleId: "business-scenarios-interviews",
+      },
+    ],
+  },
+  {
+    studioId: "business-analytics-studio",
+    studioName: "Business Analytics Studio",
+    description:
+      "A complete guided Business Analytics path covering all existing lessons while preserving the searchable library and raw lesson order.",
+    structureKind: "chapter-based",
+    navigationMode: "guided-path",
+    lessons: businessAnalyticsCurriculumLessons,
+    organizationStatus: "organized",
+    modules: businessAnalyticsCurriculumModules,
+    checkpointPlacements: [
+      {
+        checkpointId: "business-analytics-framing-metrics",
+        placementStatus: "placed",
+        afterModuleId: "metrics-financial-performance",
+      },
+      {
+        checkpointId: "business-analytics-commercial-operations",
+        placementStatus: "placed",
+        afterModuleId: "operations-people-analytics",
+      },
+      {
+        checkpointId: "business-analytics-decisions-communication",
+        placementStatus: "placed",
+        afterModuleId: "case-studies-interviews",
       },
     ],
   },
