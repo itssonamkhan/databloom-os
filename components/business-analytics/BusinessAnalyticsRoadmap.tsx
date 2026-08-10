@@ -4,12 +4,17 @@ import { CheckCircle2 } from "lucide-react";
 import { getBusinessAnalyticsLesson } from "@/lib/businessAnalyticsLessons";
 import { businessAnalyticsRoadmap } from "@/lib/businessAnalyticsReference";
 
+const fastTrackLessonCount = businessAnalyticsRoadmap.reduce(
+  (total, stage) => total + stage.lessonIds.length,
+  0,
+);
+
 export default function BusinessAnalyticsRoadmap({ completedLessonIds }: { completedLessonIds: string[] }) {
   return (
     <section aria-labelledby="business-analytics-roadmap-heading">
-      <p className="text-sm font-bold uppercase tracking-wider text-indigo-700">Guided path</p>
-      <h2 id="business-analytics-roadmap-heading" className="mt-1 text-3xl font-black text-slate-950">Learning roadmap</h2>
-      <p className="mt-2 text-slate-700">Move from framing and measurement through decisions, communication, and complete business cases.</p>
+      <p className="text-sm font-bold uppercase tracking-wider text-indigo-700">Optional Fast Track</p>
+      <h2 id="business-analytics-roadmap-heading" className="mt-1 text-3xl font-black text-slate-950">Business Analytics Fast Track</h2>
+      <p className="mt-2 text-slate-700">Follow this curated {fastTrackLessonCount}-lesson shortcut through the existing seven stages. It is optional, is not the complete official curriculum, and does not equal full Studio completion or mastery. Use Guided Curriculum for all 112 lessons.</p>
       <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {businessAnalyticsRoadmap.map((stage) => {
           const completedCount = stage.lessonIds.filter((id) => completedLessonIds.includes(id)).length;
