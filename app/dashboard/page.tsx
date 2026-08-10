@@ -47,7 +47,7 @@ import { businessAnalyticsLessons } from "@/lib/businessAnalyticsLessons";
 import {
   BUSINESS_ANALYTICS_PROGRESS_EVENT,
   calculateBusinessAnalyticsProgress,
-  loadBusinessAnalyticsProgress,
+  getCompletedBusinessAnalyticsLessonIds,
 } from "@/lib/businessAnalyticsProgress";
 import { datasetLibrary } from "@/lib/datasetLibrary";
 import {
@@ -133,7 +133,7 @@ export default function DashboardPage() {
     () => loadTableauProgress().completedLessonIds.length,
   );
   const [businessAnalyticsCompletedCount, setBusinessAnalyticsCompletedCount] =
-    useState(() => loadBusinessAnalyticsProgress().completedLessonIds.length);
+    useState(() => getCompletedBusinessAnalyticsLessonIds().length);
   const [datasetCompletedCount, setDatasetCompletedCount] = useState(
     () => loadDatasetLibraryProgress().completedLessonIds.length,
   );
@@ -279,7 +279,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const syncBusinessAnalytics = () => {
       setBusinessAnalyticsCompletedCount(
-        loadBusinessAnalyticsProgress().completedLessonIds.length,
+        getCompletedBusinessAnalyticsLessonIds().length,
       );
     };
     window.addEventListener(

@@ -18,6 +18,8 @@ import {
 import {
   BUSINESS_ANALYTICS_PROGRESS_EVENT,
   calculateBusinessAnalyticsProgress,
+  getCompletedBusinessAnalyticsLessonIds,
+  getFavoriteBusinessAnalyticsLessonIds,
   loadBusinessAnalyticsProgress,
   toggleBusinessAnalyticsFavorite,
   type BusinessAnalyticsProgressState,
@@ -43,6 +45,15 @@ export default function BusinessAnalyticsStudio() {
     };
   }, []);
 
+  const completedLessonIds = useMemo(
+    () => getCompletedBusinessAnalyticsLessonIds(progress),
+    [progress],
+  );
+  const favoriteLessonIds = useMemo(
+    () => getFavoriteBusinessAnalyticsLessonIds(progress),
+    [progress],
+  );
+
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
     return businessAnalyticsLessons.filter((lesson) => {
@@ -55,18 +66,18 @@ export default function BusinessAnalyticsStudio() {
         matchesSearch &&
         (category === "All" || lesson.category === category) &&
         (difficulty === "All" || lesson.difficulty === difficulty) &&
-        (!favoritesOnly || progress.favoriteLessonIds.includes(lesson.id))
+        (!favoritesOnly || favoriteLessonIds.includes(lesson.id))
       );
     });
-  }, [category, difficulty, favoritesOnly, progress.favoriteLessonIds, search]);
+  }, [category, difficulty, favoriteLessonIds, favoritesOnly, search]);
 
   const percentage = calculateBusinessAnalyticsProgress(
-    progress.completedLessonIds.length,
+    completedLessonIds.length,
     businessAnalyticsLessons.length,
   );
 
   function handleToggleFavorite(id: string) {
-    const wasFavorite = progress.favoriteLessonIds.includes(id);
+    const wasFavorite = favoriteLessonIds.includes(id);
     const next = toggleBusinessAnalyticsFavorite(id);
     setProgress(next);
     if (!wasFavorite && next.favoriteLessonIds.includes(id)) playNotificationSound();
@@ -99,8 +110,8 @@ export default function BusinessAnalyticsStudio() {
 
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <SummaryCard label="Total lessons" value={String(businessAnalyticsLessons.length)} tone="text-indigo-800" />
-          <SummaryCard label="Completed" value={`${progress.completedLessonIds.length}/${businessAnalyticsLessons.length}`} tone="text-emerald-700" />
-          <SummaryCard label="Favorites" value={String(progress.favoriteLessonIds.length)} tone="text-pink-700" />
+          <SummaryCard label="Completed" value={`${completedLessonIds.length}/${businessAnalyticsLessons.length}`} tone="text-emerald-700" />
+          <SummaryCard label="Favorites" value={String(favoriteLessonIds.length)} tone="text-pink-700" />
           <SummaryCard label="Business progress" value={`${percentage}%`} tone="text-amber-700" />
         </section>
 
@@ -116,7 +127,7 @@ export default function BusinessAnalyticsStudio() {
 
         <StudioCheckpointCards studioId="business-analytics-studio" />
 
-        <BusinessAnalyticsRoadmap completedLessonIds={progress.completedLessonIds} />
+        <BusinessAnalyticsRoadmap completedLessonIds={completedLessonIds} />
         <BusinessAnalyticsDatasets />
         <BusinessFrameworkReference />
 
@@ -145,7 +156,7 @@ export default function BusinessAnalyticsStudio() {
           {filteredLessons.length > 0 ? (
             <div className="mt-7 grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
               {filteredLessons.map((lesson) => (
-                <BusinessAnalyticsLessonCard key={lesson.id} lesson={lesson} completed={progress.completedLessonIds.includes(lesson.id)} favorite={progress.favoriteLessonIds.includes(lesson.id)} onToggleFavorite={handleToggleFavorite} />
+                <BusinessAnalyticsLessonCard key={lesson.id} lesson={lesson} completed={completedLessonIds.includes(lesson.id)} favorite={favoriteLessonIds.includes(lesson.id)} onToggleFavorite={handleToggleFavorite} />
               ))}
             </div>
           ) : (

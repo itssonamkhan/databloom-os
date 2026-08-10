@@ -1,5 +1,5 @@
 import { getLearnedFormulas } from "@/lib/learnedFormulas";
-import { loadBusinessAnalyticsProgress } from "@/lib/businessAnalyticsProgress";
+import { getCompletedBusinessAnalyticsLessonIds } from "@/lib/businessAnalyticsProgress";
 import { loadPowerBIProgress } from "@/lib/powerBIProgress";
 import { getCompletedPowerQueryLessonIds } from "@/lib/powerQueryProgress";
 import { loadPythonProgress } from "@/lib/pythonProgress";
@@ -267,9 +267,7 @@ export function getLearningSignals(): Record<PracticeCategory, number> {
     "Power BI": safeCount(() => loadPowerBIProgress().completedLessonIds),
     Tableau: safeCount(() => loadTableauProgress().completedLessonIds),
     "Power Query": safeCount(getCompletedPowerQueryLessonIds),
-    "Business Analytics": safeCount(
-      () => loadBusinessAnalyticsProgress().completedLessonIds,
-    ),
+    "Business Analytics": safeCount(getCompletedBusinessAnalyticsLessonIds),
   };
 }
 
