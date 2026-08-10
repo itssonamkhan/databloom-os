@@ -24,6 +24,25 @@ export const datasetDifficulties = [
 export type DatasetCategory = (typeof datasetCategories)[number];
 export type DatasetDifficulty = (typeof datasetDifficulties)[number];
 
+export type DatasetTool =
+  | "Excel"
+  | "SQL"
+  | "Python"
+  | "Statistics"
+  | "Tableau"
+  | "Power BI";
+
+export type DatasetDomain =
+  | "Sales"
+  | "Retail"
+  | "Marketing"
+  | "HR"
+  | "Finance"
+  | "Healthcare"
+  | "Supply Chain";
+
+export type DatasetLearningPath = "Business Analytics";
+
 type DatasetSchemaKey =
   | "campaign"
   | "commerce"
@@ -51,6 +70,9 @@ export type DatasetLibraryItem = {
   icon: string;
   category: DatasetCategory;
   difficulty: DatasetDifficulty;
+  tools?: DatasetTool[];
+  domains?: DatasetDomain[];
+  learningPaths?: DatasetLearningPath[];
   description: string;
   businessScenario: string;
   rowCount: number;
@@ -307,6 +329,28 @@ const recommendedStudios: Record<
   },
 };
 
+type DatasetTrackMetadata = Pick<
+  DatasetLibraryItem,
+  "tools" | "domains" | "learningPaths"
+>;
+
+const datasetTrackMetadata: Record<DatasetCategory, DatasetTrackMetadata> = {
+  Excel: { tools: ["Excel"] },
+  SQL: { tools: ["SQL"] },
+  Python: { tools: ["Python"] },
+  Statistics: { tools: ["Statistics"] },
+  Tableau: { tools: ["Tableau"] },
+  "Power BI": { tools: ["Power BI"] },
+  Sales: { domains: ["Sales"] },
+  Retail: { domains: ["Retail"] },
+  Marketing: { domains: ["Marketing"] },
+  HR: { domains: ["HR"] },
+  Finance: { domains: ["Finance"] },
+  Healthcare: { domains: ["Healthcare"] },
+  "Supply Chain": { domains: ["Supply Chain"] },
+  "Business Analytics": { learningPaths: ["Business Analytics"] },
+};
+
 function createDataset(tuple: DatasetTuple): DatasetLibraryItem {
   const [
     id,
@@ -331,6 +375,7 @@ function createDataset(tuple: DatasetTuple): DatasetLibraryItem {
     icon,
     category,
     difficulty,
+    ...datasetTrackMetadata[category],
     description,
     businessScenario,
     rowCount: 8,
