@@ -712,18 +712,20 @@ function getAssessmentQuestions(
           correctAnswer: item.correctAnswer,
           source: "existing-lesson-practice",
         }));
-    case "business-analytics-studio":
-      return businessAnalyticsLessons
-        .filter((item) => allowedIds.has(item.id))
-        .slice(0, limit)
-        .map((item) => ({
-          id: `${assessment.id}:${item.id}`,
-          topicId: item.id,
-          prompt: item.practiceQuestion,
-          options: item.practiceOptions,
-          correctAnswer: item.correctAnswer,
-          source: "existing-lesson-practice",
-        }));
+    case "business-analytics-studio": {
+      const topics = businessAnalyticsLessons.filter((item) =>
+        allowedIds.has(item.id),
+      );
+      const selectedTopics = selectBalancedTopics(topics, limit);
+      return selectedTopics.map((item) => ({
+        id: `${assessment.id}:${item.id}`,
+        topicId: item.id,
+        prompt: item.practiceQuestion,
+        options: item.practiceOptions,
+        correctAnswer: item.correctAnswer,
+        source: "existing-lesson-practice",
+      }));
+    }
   }
 }
 
