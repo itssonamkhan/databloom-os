@@ -30,6 +30,34 @@ const thumbnailGradients: Record<DatasetLibraryItem["category"], string> = {
   "Supply Chain": "from-cyan-200 via-emerald-100 to-white",
 };
 
+export function DatasetTrackBadges({
+  dataset,
+}: {
+  dataset: DatasetLibraryItem;
+}) {
+  const badges = [
+    ...(dataset.tools ?? []).map((value) => ({ label: "Tool", value })),
+    ...(dataset.domains ?? []).map((value) => ({ label: "Business domain", value })),
+    ...(dataset.learningPaths ?? []).map((value) => ({ label: "Learning path", value })),
+  ];
+
+  if (badges.length === 0) return null;
+
+  return (
+    <div className="flex min-w-0 flex-wrap gap-2" aria-label="Dataset tracks">
+      {badges.map(({ label, value }) => (
+        <span
+          key={`${label}-${value}`}
+          className="max-w-full rounded-full border border-purple-100 bg-purple-50 px-3 py-1.5 text-xs font-bold text-purple-900"
+        >
+          <span className="text-purple-700">{label} · </span>
+          <span className="break-words">{value}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function DatasetCard({
   dataset,
   completed,
@@ -115,6 +143,15 @@ export default function DatasetCard({
                 {skill}
               </span>
             ))}
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <p className="text-xs font-black uppercase tracking-wider text-purple-700">
+            Dataset tracks
+          </p>
+          <div className="mt-2">
+            <DatasetTrackBadges dataset={dataset} />
           </div>
         </div>
 

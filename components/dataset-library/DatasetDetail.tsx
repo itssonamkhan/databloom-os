@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import CompletionModal from "@/components/dashboard/CompletionModal";
+import { DatasetTrackBadges } from "@/components/dataset-library/DatasetCard";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProgress } from "@/context/ProgressContext";
 import type { DatasetLibraryItem } from "@/lib/datasetLibrary";
@@ -116,6 +117,14 @@ export default function DatasetDetail({ dataset }: { dataset: DatasetLibraryItem
                 <Badge>{dataset.columnCount} columns</Badge>
                 <Badge>+{dataset.xpReward} XP</Badge>
                 {completed ? <Badge>✓ Completed</Badge> : null}
+              </div>
+              <div className="mt-4">
+                <p className="text-sm font-black uppercase tracking-wider text-purple-700">
+                  Dataset tracks
+                </p>
+                <div className="mt-2">
+                  <DatasetTrackBadges dataset={dataset} />
+                </div>
               </div>
             </div>
             <div className="flex flex-wrap gap-3">
