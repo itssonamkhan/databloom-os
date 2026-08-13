@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Download,
   Eye,
+  FolderKanban,
   Heart,
   NotebookPen,
   TableProperties,
@@ -19,6 +20,7 @@ import { DatasetTrackBadges } from "@/components/dataset-library/DatasetCard";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProgress } from "@/context/ProgressContext";
 import type { DatasetLibraryItem } from "@/lib/datasetLibrary";
+import { portfolioProjects } from "@/lib/portfolioProjects";
 import {
   completeDatasetLibraryItem,
   DATASET_LIBRARY_PROGRESS_EVENT,
@@ -49,6 +51,9 @@ export default function DatasetDetail({ dataset }: { dataset: DatasetLibraryItem
   const [notes, setNotes] = useState(() => getDatasetLibraryNote(dataset.id));
   const [notesStatus, setNotesStatus] = useState<NotesStatus>("saved");
   const [showCompletion, setShowCompletion] = useState(false);
+  const relatedPortfolioProjects = portfolioProjects.filter(
+    (project) => project.dataset.libraryId === dataset.id,
+  );
 
   useEffect(() => {
     const syncProgress = () => {
@@ -229,6 +234,27 @@ export default function DatasetDetail({ dataset }: { dataset: DatasetLibraryItem
             ))}
           </div>
         </section>
+
+        {relatedPortfolioProjects.length > 0 ? (
+          <section className="rounded-3xl border border-indigo-100 bg-indigo-50/60 p-6 shadow-md sm:p-8">
+            <h2 className="flex items-center gap-2 text-2xl font-black text-indigo-950">
+              <FolderKanban size={22} aria-hidden="true" /> Portfolio Projects using this dataset
+            </h2>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {relatedPortfolioProjects.map((project) => (
+                <Link
+                  key={project.id}
+                  href={`/portfolio-project-studio/${project.id}`}
+                  onClick={playClickSound}
+                  className="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-indigo-200 bg-white/85 px-4 py-3 font-bold text-indigo-950 transition hover:bg-white"
+                >
+                  <span className="min-w-0 break-words">{project.title}</span>
+                  <span aria-hidden="true">↗</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="rounded-3xl border border-purple-100 bg-white p-6 shadow-lg sm:p-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
