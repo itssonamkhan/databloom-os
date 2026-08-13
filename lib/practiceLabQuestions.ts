@@ -32,7 +32,7 @@ export type PracticeDifficulty = (typeof practiceDifficulties)[number];
 export type PracticeQuestionType = (typeof practiceQuestionTypes)[number];
 export type PracticeAnswer = string | string[] | Record<string, string>;
 
-export type PracticeQuestion = {
+type PracticeQuestionBase = {
   id: string;
   category: PracticeCategory;
   topic: string;
@@ -49,6 +49,59 @@ export type PracticeQuestion = {
   pairs?: Array<{ left: string; right: string }>;
   orderItems?: string[];
   context?: string;
+};
+
+type ChoiceQuestionType =
+  | "Multiple Choice"
+  | "Dashboard Interpretation"
+  | "Business Case Questions";
+
+/**
+ * The question union documents which answer shape each interaction needs.
+ * Runtime validation below remains the boundary for catalog data loaded or
+ * edited outside TypeScript.
+ */
+export type PracticeQuestion =
+  | (PracticeQuestionBase & {
+      type: ChoiceQuestionType;
+      options: string[];
+      correctAnswer: string;
+    })
+  | (PracticeQuestionBase & {
+      type:
+        | "Fill in the Blank"
+        | "Formula Writing"
+        | "SQL Query"
+        | "Python Coding";
+      acceptedAnswers: string[];
+    })
+  | (PracticeQuestionBase & {
+      type: "Match the Columns";
+      pairs: Array<{ left: string; right: string }>;
+    })
+  | (PracticeQuestionBase & {
+      type: "Drag & Drop Ordering";
+      orderItems: string[];
+    });
+
+export type PracticeQuestionValidationIssue = {
+  code:
+    | "invalid-record"
+    | "missing-field"
+    | "invalid-value"
+    | "missing-answer"
+    | "duplicate-id";
+  index?: number;
+  questionId?: string;
+  field?: string;
+  message: string;
+};
+
+export type PracticeQuestionValidationResult = {
+  valid: boolean;
+  questionCount: number;
+  uniqueIdCount: number;
+  issues: readonly PracticeQuestionValidationIssue[];
 };
 
 export const practiceQuestions: PracticeQuestion[] = [
@@ -392,6 +445,233 @@ export const practiceQuestions: PracticeQuestion[] = [
     ],
   },
 ];
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every((item) => isNonEmptyString(item))
+  );
+}
+
+function isAllowedValue<T extends string>(
+  value: unknown,
+  values: readonly T[],
+): value is T {
+  return typeof value === "string" && values.includes(value as T);
+}
+
+function addMissingFieldIssue(
+  issues: PracticeQuestionValidationIssue[],
+  questionId: string | undefined,
+  index: number,
+  field: string,
+) {
+  issues.push({
+    code: "missing-field",
+    field,
+    index,
+    questionId,
+    message: `${field} must be a non-empty string`,
+  });
+}
+
+/** Validate one question without changing or normalizing the supplied data. */
+export function validatePracticeQuestion(
+  value: unknown,
+  index = 0,
+): readonly PracticeQuestionValidationIssue[] {
+  const issues: PracticeQuestionValidationIssue[] = [];
+  if (!isRecord(value)) {
+    return [
+      {
+        code: "invalid-record",
+        index,
+        message: "Question must be an object record",
+      },
+    ];
+  }
+
+  const questionId = typeof value.id === "string" ? value.id : undefined;
+  if (!isNonEmptyString(value.id)) {
+    addMissingFieldIssue(issues, questionId, index, "id");
+  }
+
+  for (const field of ["topic", "title", "prompt", "hint", "explanation"]) {
+    if (!isNonEmptyString(value[field])) {
+      addMissingFieldIssue(issues, questionId, index, field);
+    }
+  }
+
+  if (!isAllowedValue(value.category, practiceCategories)) {
+    issues.push({
+      code: "invalid-value",
+      field: "category",
+      index,
+      questionId,
+      message: `category must be one of: ${practiceCategories.join(", ")}`,
+    });
+  }
+  if (!isAllowedValue(value.difficulty, practiceDifficulties)) {
+    issues.push({
+      code: "invalid-value",
+      field: "difficulty",
+      index,
+      questionId,
+      message: `difficulty must be one of: ${practiceDifficulties.join(", ")}`,
+    });
+  }
+  if (!isAllowedValue(value.type, practiceQuestionTypes)) {
+    issues.push({
+      code: "invalid-value",
+      field: "type",
+      index,
+      questionId,
+      message: `type must be one of: ${practiceQuestionTypes.join(", ")}`,
+    });
+    return issues;
+  }
+  if (
+    typeof value.xpReward !== "number" ||
+    !Number.isFinite(value.xpReward) ||
+    value.xpReward < 0
+  ) {
+    issues.push({
+      code: "invalid-value",
+      field: "xpReward",
+      index,
+      questionId,
+      message: "xpReward must be a finite non-negative number",
+    });
+  }
+
+  if (
+    value.type === "Multiple Choice" ||
+    value.type === "Dashboard Interpretation" ||
+    value.type === "Business Case Questions"
+  ) {
+    if (!isStringArray(value.options)) {
+      issues.push({
+        code: "missing-answer",
+        field: "options",
+        index,
+        questionId,
+        message: "choice questions require a non-empty options array",
+      });
+    }
+    if (!isNonEmptyString(value.correctAnswer)) {
+      issues.push({
+        code: "missing-answer",
+        field: "correctAnswer",
+        index,
+        questionId,
+        message: "choice questions require a correctAnswer",
+      });
+    } else if (isStringArray(value.options) && !value.options.includes(value.correctAnswer)) {
+      issues.push({
+        code: "invalid-value",
+        field: "correctAnswer",
+        index,
+        questionId,
+        message: "correctAnswer must be present in options",
+      });
+    }
+  } else if (
+    value.type === "Fill in the Blank" ||
+    value.type === "Formula Writing" ||
+    value.type === "SQL Query" ||
+    value.type === "Python Coding"
+  ) {
+    if (!isStringArray(value.acceptedAnswers)) {
+      issues.push({
+        code: "missing-answer",
+        field: "acceptedAnswers",
+        index,
+        questionId,
+        message: "text-answer questions require acceptedAnswers",
+      });
+    }
+  } else if (value.type === "Match the Columns") {
+    if (
+      !Array.isArray(value.pairs) ||
+      value.pairs.length === 0 ||
+      !value.pairs.every(
+        (pair) =>
+          isRecord(pair) &&
+          isNonEmptyString(pair.left) &&
+          isNonEmptyString(pair.right),
+      )
+    ) {
+      issues.push({
+        code: "missing-answer",
+        field: "pairs",
+        index,
+        questionId,
+        message: "matching questions require non-empty left/right pairs",
+      });
+    }
+  } else if (!isStringArray(value.orderItems)) {
+    issues.push({
+      code: "missing-answer",
+      field: "orderItems",
+      index,
+      questionId,
+      message: "ordering questions require a non-empty orderItems array",
+    });
+  }
+
+  return issues;
+}
+
+/** Validate a question bank, including stable ID uniqueness. */
+export function validatePracticeQuestionBank(
+  questions: readonly unknown[],
+): PracticeQuestionValidationResult {
+  const issues: PracticeQuestionValidationIssue[] = [];
+  const ids = new Map<string, number>();
+
+  questions.forEach((question, index) => {
+    const questionId =
+      isRecord(question) && typeof question.id === "string"
+        ? question.id
+        : undefined;
+    if (questionId) {
+      const firstIndex = ids.get(questionId);
+      if (firstIndex !== undefined) {
+        issues.push({
+          code: "duplicate-id",
+          field: "id",
+          index,
+          questionId,
+          message: `Duplicate question id; first seen at index ${firstIndex}`,
+        });
+      } else {
+        ids.set(questionId, index);
+      }
+    }
+    issues.push(...validatePracticeQuestion(question, index));
+  });
+
+  return {
+    valid: issues.length === 0,
+    questionCount: questions.length,
+    uniqueIdCount: ids.size,
+    issues,
+  };
+}
+
+/** Snapshot validation for the shipped catalog; this never mutates learner state. */
+export const practiceQuestionValidation = validatePracticeQuestionBank(
+  practiceQuestions,
+);
 
 function normalizeText(value: string) {
   return value
