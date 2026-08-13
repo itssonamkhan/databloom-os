@@ -1,3 +1,8 @@
+import {
+  getStudioCurriculumConfiguration,
+  type SupportedCurriculumStudioId,
+} from "@/lib/studioCurriculum";
+
 export const practiceCategories = [
   "Excel",
   "SQL",
@@ -32,6 +37,11 @@ export type PracticeDifficulty = (typeof practiceDifficulties)[number];
 export type PracticeQuestionType = (typeof practiceQuestionTypes)[number];
 export type PracticeAnswer = string | string[] | Record<string, string>;
 
+export type PracticeCurriculumReference = {
+  studioId: SupportedCurriculumStudioId;
+  lessonId: string;
+};
+
 type PracticeQuestionBase = {
   id: string;
   category: PracticeCategory;
@@ -49,6 +59,7 @@ type PracticeQuestionBase = {
   pairs?: Array<{ left: string; right: string }>;
   orderItems?: string[];
   context?: string;
+  curriculum?: PracticeCurriculumReference;
 };
 
 type ChoiceQuestionType =
@@ -90,7 +101,8 @@ export type PracticeQuestionValidationIssue = {
     | "missing-field"
     | "invalid-value"
     | "missing-answer"
-    | "duplicate-id";
+    | "duplicate-id"
+    | "invalid-curriculum-reference";
   index?: number;
   questionId?: string;
   field?: string;
@@ -107,6 +119,7 @@ export type PracticeQuestionValidationResult = {
 export const practiceQuestions: PracticeQuestion[] = [
   {
     id: "excel-if-formula",
+    curriculum: { studioId: "formula-studio", lessonId: "if" },
     category: "Excel",
     topic: "Logical formulas",
     title: "Flag high-value orders",
@@ -120,6 +133,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "excel-xlookup-blank",
+    curriculum: { studioId: "formula-studio", lessonId: "xlookup" },
     category: "Excel",
     topic: "Lookup formulas",
     title: "Complete the lookup",
@@ -146,6 +160,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "sql-region-aggregate",
+    curriculum: { studioId: "sql-studio", lessonId: "group-by" },
     category: "SQL",
     topic: "Aggregation",
     title: "Revenue by region",
@@ -159,6 +174,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "sql-left-join",
+    curriculum: { studioId: "sql-studio", lessonId: "left-join" },
     category: "SQL",
     topic: "Joins",
     title: "Keep every customer",
@@ -186,6 +202,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "python-filter-revenue",
+    curriculum: { studioId: "python-studio", lessonId: "filtering-rows" },
     category: "Python",
     topic: "Pandas filtering",
     title: "Filter large orders",
@@ -199,6 +216,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "python-groupby-blank",
+    curriculum: { studioId: "python-studio", lessonId: "groupby" },
     category: "Python",
     topic: "Pandas aggregation",
     title: "Complete the aggregation",
@@ -212,6 +230,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "python-analysis-order",
+    curriculum: { studioId: "python-studio", lessonId: "eda-workflow" },
     category: "Python",
     topic: "Analysis workflow",
     title: "Order a reliable notebook workflow",
@@ -225,6 +244,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "stats-median-choice",
+    curriculum: { studioId: "statistics-studio", lessonId: "median" },
     category: "Statistics",
     topic: "Descriptive statistics",
     title: "Choose a robust center",
@@ -239,6 +259,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "stats-pvalue-blank",
+    curriculum: { studioId: "statistics-studio", lessonId: "p-value" },
     category: "Statistics",
     topic: "Hypothesis testing",
     title: "Interpret significance",
@@ -269,6 +290,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerbi-margin-card",
+    curriculum: { studioId: "power-bi-studio", lessonId: "kpi-card" },
     category: "Power BI",
     topic: "Dashboard interpretation",
     title: "Read a margin warning",
@@ -284,6 +306,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerbi-star-schema",
+    curriculum: { studioId: "power-bi-studio", lessonId: "star-schema" },
     category: "Power BI",
     topic: "Data modeling",
     title: "Choose the model shape",
@@ -298,6 +321,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerbi-margin-dax",
+    curriculum: { studioId: "power-bi-studio", lessonId: "dax-divide" },
     category: "Power BI",
     topic: "DAX measures",
     title: "Write a margin measure",
@@ -311,6 +335,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-regional-view",
+    curriculum: { studioId: "tableau-studio", lessonId: "chart-selection" },
     category: "Tableau",
     topic: "Visual analytics",
     title: "Interpret the regional view",
@@ -326,6 +351,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-shelf-match",
+    curriculum: { studioId: "tableau-studio", lessonId: "shelves-and-marks" },
     category: "Tableau",
     topic: "Building views",
     title: "Match Tableau controls",
@@ -343,6 +369,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-lod-choice",
+    curriculum: { studioId: "tableau-studio", lessonId: "level-of-detail-expressions" },
     category: "Tableau",
     topic: "Level of detail",
     title: "Fix customer-level totals",
@@ -400,6 +427,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "business-retention-case",
+    curriculum: { studioId: "business-analytics-studio", lessonId: "churn-analysis" },
     category: "Business Analytics",
     topic: "Customer retention",
     title: "Respond to rising churn",
@@ -473,6 +501,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "excel-text-cleaning",
+    curriculum: { studioId: "formula-studio", lessonId: "trim" },
     category: "Excel",
     topic: "Text cleaning",
     title: "Clean imported names",
@@ -486,6 +515,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "excel-index-match-two-way",
+    curriculum: { studioId: "formula-studio", lessonId: "index-match" },
     category: "Excel",
     topic: "Lookup design",
     title: "Build a two-way lookup",
@@ -500,6 +530,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "excel-dynamic-filter",
+    curriculum: { studioId: "formula-studio", lessonId: "filter" },
     category: "Excel",
     topic: "Dynamic arrays",
     title: "Return active customers",
@@ -528,6 +559,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "sql-where-filter",
+    curriculum: { studioId: "sql-studio", lessonId: "where" },
     category: "SQL",
     topic: "Filtering",
     title: "Filter completed orders",
@@ -541,6 +573,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "sql-count-distinct-customers",
+    curriculum: { studioId: "sql-studio", lessonId: "count" },
     category: "SQL",
     topic: "Aggregation",
     title: "Count unique customers",
@@ -554,6 +587,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "sql-case-segment",
+    curriculum: { studioId: "sql-studio", lessonId: "case-when" },
     category: "SQL",
     topic: "Conditional logic",
     title: "Create revenue bands",
@@ -568,6 +602,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "sql-subquery-top-customer",
+    curriculum: { studioId: "sql-studio", lessonId: "subqueries" },
     category: "SQL",
     topic: "Subqueries",
     title: "Find above-average orders",
@@ -609,6 +644,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "python-select-column",
+    curriculum: { studioId: "python-studio", lessonId: "selecting-columns" },
     category: "Python",
     topic: "Pandas selection",
     title: "Select one column",
@@ -622,6 +658,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "python-fill-missing-values",
+    curriculum: { studioId: "python-studio", lessonId: "missing-values" },
     category: "Python",
     topic: "Data cleaning",
     title: "Fill missing revenue",
@@ -635,6 +672,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "python-merge-dataframes",
+    curriculum: { studioId: "python-studio", lessonId: "merging-data" },
     category: "Python",
     topic: "Combining data",
     title: "Join customer attributes",
@@ -649,6 +687,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "python-groupby-multi-agg",
+    curriculum: { studioId: "python-studio", lessonId: "aggregations" },
     category: "Python",
     topic: "Grouped analysis",
     title: "Summarize by region",
@@ -662,6 +701,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "python-vectorized-transform",
+    curriculum: { studioId: "python-studio", lessonId: "numpy-vectorization" },
     category: "Python",
     topic: "Performance",
     title: "Prefer vectorized operations",
@@ -689,6 +729,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "stats-mean-calculation",
+    curriculum: { studioId: "statistics-studio", lessonId: "mean" },
     category: "Statistics",
     topic: "Descriptive statistics",
     title: "Calculate the mean",
@@ -703,6 +744,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "stats-probability-complement",
+    curriculum: { studioId: "statistics-studio", lessonId: "complement-rule" },
     category: "Statistics",
     topic: "Probability",
     title: "Use a complement",
@@ -716,6 +758,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "stats-standard-deviation-meaning",
+    curriculum: { studioId: "statistics-studio", lessonId: "standard-deviation" },
     category: "Statistics",
     topic: "Dispersion",
     title: "Interpret standard deviation",
@@ -730,6 +773,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "stats-confidence-interval",
+    curriculum: { studioId: "statistics-studio", lessonId: "confidence-interpretation" },
     category: "Statistics",
     topic: "Inference",
     title: "Read a confidence interval",
@@ -744,6 +788,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "stats-correlation-caution",
+    curriculum: { studioId: "statistics-studio", lessonId: "correlation-causation" },
     category: "Statistics",
     topic: "Correlation",
     title: "Avoid causal overreach",
@@ -758,6 +803,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "stats-regression-residuals",
+    curriculum: { studioId: "statistics-studio", lessonId: "residuals" },
     category: "Statistics",
     topic: "Regression",
     title: "Inspect residuals",
@@ -772,6 +818,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerbi-relationships-direction",
+    curriculum: { studioId: "power-bi-studio", lessonId: "filter-direction" },
     category: "Power BI",
     topic: "Data modeling",
     title: "Choose relationship direction",
@@ -786,6 +833,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerbi-card-kpi",
+    curriculum: { studioId: "power-bi-studio", lessonId: "kpi-card" },
     category: "Power BI",
     topic: "Visual selection",
     title: "Choose a KPI visual",
@@ -800,6 +848,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerbi-date-table",
+    curriculum: { studioId: "power-bi-studio", lessonId: "date-table" },
     category: "Power BI",
     topic: "Date modeling",
     title: "Build a date table",
@@ -814,6 +863,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerbi-calculate-filter",
+    curriculum: { studioId: "power-bi-studio", lessonId: "dax-calculate" },
     category: "Power BI",
     topic: "DAX context",
     title: "Change filter context",
@@ -841,6 +891,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerbi-inactive-date-relationship",
+    curriculum: { studioId: "power-bi-studio", lessonId: "active-inactive-relationships" },
     category: "Power BI",
     topic: "Advanced modeling",
     title: "Use an alternate date",
@@ -854,6 +905,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-discrete-continuous",
+    curriculum: { studioId: "tableau-studio", lessonId: "discrete-and-continuous" },
     category: "Tableau",
     topic: "Dimensions and measures",
     title: "Read a blue pill",
@@ -868,6 +920,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-filter-order",
+    curriculum: { studioId: "tableau-studio", lessonId: "filter-order-of-operations" },
     category: "Tableau",
     topic: "Filters",
     title: "Order a filtered view",
@@ -881,6 +934,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-calculated-field",
+    curriculum: { studioId: "tableau-studio", lessonId: "calculated-fields" },
     category: "Tableau",
     topic: "Calculated fields",
     title: "Create a margin calculation",
@@ -894,6 +948,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-parameter-use",
+    curriculum: { studioId: "tableau-studio", lessonId: "parameters" },
     category: "Tableau",
     topic: "Interactivity",
     title: "Use a parameter",
@@ -908,6 +963,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-dashboard-story",
+    curriculum: { studioId: "tableau-studio", lessonId: "stories" },
     category: "Tableau",
     topic: "Dashboard design",
     title: "Guide dashboard attention",
@@ -922,6 +978,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "tableau-lod-context",
+    curriculum: { studioId: "tableau-studio", lessonId: "level-of-detail-expressions" },
     category: "Tableau",
     topic: "Level of detail",
     title: "Choose a fixed grain",
@@ -935,6 +992,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerquery-type-detection",
+    curriculum: { studioId: "power-query-studio", lessonId: "detect-change-data-types" },
     category: "Power Query",
     topic: "Data types",
     title: "Set a reliable type",
@@ -949,6 +1007,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerquery-remove-errors",
+    curriculum: { studioId: "power-query-studio", lessonId: "remove-errors" },
     category: "Power Query",
     topic: "Data cleaning",
     title: "Handle transformation errors",
@@ -963,6 +1022,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerquery-append-files",
+    curriculum: { studioId: "power-query-studio", lessonId: "append-queries" },
     category: "Power Query",
     topic: "Combining data",
     title: "Stack monthly files",
@@ -977,6 +1037,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerquery-merge-key",
+    curriculum: { studioId: "power-query-studio", lessonId: "merge-queries" },
     category: "Power Query",
     topic: "Combining data",
     title: "Merge on a business key",
@@ -991,6 +1052,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerquery-m-function",
+    curriculum: { studioId: "power-query-studio", lessonId: "m-functions" },
     category: "Power Query",
     topic: "M language",
     title: "Create a reusable step",
@@ -1004,6 +1066,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "powerquery-query-folding",
+    curriculum: { studioId: "power-query-studio", lessonId: "query-folding" },
     category: "Power Query",
     topic: "Performance",
     title: "Preserve query folding",
@@ -1018,6 +1081,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "business-revenue-growth",
+    curriculum: { studioId: "business-analytics-studio", lessonId: "mom-yoy-growth" },
     category: "Business Analytics",
     topic: "Business metrics",
     title: "Calculate growth",
@@ -1031,6 +1095,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "business-funnel-conversion",
+    curriculum: { studioId: "business-analytics-studio", lessonId: "conversion-analysis" },
     category: "Business Analytics",
     topic: "Marketing analytics",
     title: "Read a funnel rate",
@@ -1044,6 +1109,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "business-operations-kpi",
+    curriculum: { studioId: "business-analytics-studio", lessonId: "process-cycle-time" },
     category: "Business Analytics",
     topic: "Operations analytics",
     title: "Choose an operations KPI",
@@ -1058,6 +1124,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "business-segment-retention",
+    curriculum: { studioId: "business-analytics-studio", lessonId: "cohort-analysis" },
     category: "Business Analytics",
     topic: "Customer analytics",
     title: "Compare retention cohorts",
@@ -1086,6 +1153,7 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
   {
     id: "business-experiment-incrementality",
+    curriculum: { studioId: "business-analytics-studio", lessonId: "experiment-design" },
     category: "Business Analytics",
     topic: "Decision science",
     title: "Measure incremental impact",
@@ -1205,6 +1273,42 @@ export function validatePracticeQuestion(
       questionId,
       message: "xpReward must be a finite non-negative number",
     });
+  }
+
+  if (value.curriculum !== undefined) {
+    const reference = value.curriculum;
+    if (!isRecord(reference)) {
+      issues.push({
+        code: "invalid-curriculum-reference",
+        field: "curriculum",
+        index,
+        questionId,
+        message: "curriculum must contain a studioId and lessonId",
+      });
+    } else if (
+      typeof reference.studioId !== "string" ||
+      typeof reference.lessonId !== "string" ||
+      reference.lessonId.trim().length === 0
+    ) {
+      issues.push({
+        code: "invalid-curriculum-reference",
+        field: "curriculum",
+        index,
+        questionId,
+        message: "curriculum studioId and lessonId must be non-empty strings",
+      });
+    } else {
+      const configuration = getStudioCurriculumConfiguration(reference.studioId);
+      if (!configuration || !configuration.officialCoreLessonIds.includes(reference.lessonId)) {
+        issues.push({
+          code: "invalid-curriculum-reference",
+          field: "curriculum",
+          index,
+          questionId,
+          message: `No official curriculum lesson ${reference.studioId}/${reference.lessonId} exists`,
+        });
+      }
+    }
   }
 
   if (
