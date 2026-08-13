@@ -10,6 +10,9 @@ import {
   datasetCategories,
   datasetDifficulties,
   datasetLibrary,
+  type DatasetDomain,
+  type DatasetLearningPath,
+  type DatasetTool,
 } from "@/lib/datasetLibrary";
 import {
   calculateDatasetLibraryProgress,
@@ -20,11 +23,26 @@ import {
 } from "@/lib/datasetLibraryProgress";
 import { playClickSound, playNotificationSound } from "@/lib/sounds";
 
+const datasetToolOptions = Array.from(
+  new Set(datasetLibrary.flatMap((dataset) => dataset.tools ?? [])),
+);
+const datasetDomainOptions = Array.from(
+  new Set(datasetLibrary.flatMap((dataset) => dataset.domains ?? [])),
+);
+const datasetLearningPathOptions = Array.from(
+  new Set(datasetLibrary.flatMap((dataset) => dataset.learningPaths ?? [])),
+);
+
 export default function DatasetLibraryStudio() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [difficulty, setDifficulty] = useState("All");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [selectedTools, setSelectedTools] = useState<DatasetTool[]>([]);
+  const [selectedDomains, setSelectedDomains] = useState<DatasetDomain[]>([]);
+  const [selectedLearningPaths, setSelectedLearningPaths] = useState<
+    DatasetLearningPath[]
+  >([]);
   const [progress, setProgress] = useState<DatasetLibraryProgressState>(() =>
     loadDatasetLibraryProgress(),
   );
@@ -56,10 +74,27 @@ export default function DatasetLibraryStudio() {
         matchesSearch &&
         (category === "All" || dataset.category === category) &&
         (difficulty === "All" || dataset.difficulty === difficulty) &&
+        (selectedTools.length === 0 ||
+          selectedTools.some((tool) => dataset.tools?.includes(tool))) &&
+        (selectedDomains.length === 0 ||
+          selectedDomains.some((domain) => dataset.domains?.includes(domain))) &&
+        (selectedLearningPaths.length === 0 ||
+          selectedLearningPaths.some((path) =>
+            dataset.learningPaths?.includes(path),
+          )) &&
         (!favoritesOnly || progress.favoriteLessonIds.includes(dataset.id))
       );
     });
-  }, [category, difficulty, favoritesOnly, progress.favoriteLessonIds, query]);
+  }, [
+    category,
+    difficulty,
+    favoritesOnly,
+    progress.favoriteLessonIds,
+    query,
+    selectedDomains,
+    selectedLearningPaths,
+    selectedTools,
+  ]);
 
   const percentage = calculateDatasetLibraryProgress(
     progress.completedLessonIds.length,
@@ -82,7 +117,19 @@ export default function DatasetLibraryStudio() {
     setCategory("All");
     setDifficulty("All");
     setFavoritesOnly(false);
+    setSelectedTools([]);
+    setSelectedDomains([]);
+    setSelectedLearningPaths([]);
   }
+
+  const hasActiveFilters =
+    query.trim().length > 0 ||
+    category !== "All" ||
+    difficulty !== "All" ||
+    favoritesOnly ||
+    selectedTools.length > 0 ||
+    selectedDomains.length > 0 ||
+    selectedLearningPaths.length > 0;
 
   return (
     <AppLayout>
@@ -193,6 +240,53 @@ export default function DatasetLibraryStudio() {
                 </button>
               }
             />
+            <div className="mt-3 rounded-[26px] border border-white/90 bg-gradient-to-br from-pink-100/80 via-violet-100/75 to-sky-100/80 p-4 text-slate-950 shadow-[0_16px_36px_-22px_rgba(88,28,135,0.45)] ring-1 ring-purple-200/60 sm:p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-purple-700">
+                    Metadata tracks
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-slate-700">
+                    Choose one or more values within a track.
+                  </p>
+                </div>
+                {hasActiveFilters ? (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="min-h-11 rounded-2xl border border-white/95 bg-white/70 px-4 text-sm font-bold text-purple-900 shadow-sm transition hover:border-purple-200 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300"
+                  >
+                    Clear filters
+                  </button>
+                ) : null}
+              </div>
+              <div className="mt-4 grid min-w-0 gap-4 md:grid-cols-3">
+                <MetadataFilter
+                  label="Tool"
+                  options={datasetToolOptions}
+                  selected={selectedTools}
+                  onToggle={(value) =>
+                    setSelectedTools((current) => toggleValue(current, value))
+                  }
+                />
+                <MetadataFilter
+                  label="Business domain"
+                  options={datasetDomainOptions}
+                  selected={selectedDomains}
+                  onToggle={(value) =>
+                    setSelectedDomains((current) => toggleValue(current, value))
+                  }
+                />
+                <MetadataFilter
+                  label="Learning path"
+                  options={datasetLearningPathOptions}
+                  selected={selectedLearningPaths}
+                  onToggle={(value) =>
+                    setSelectedLearningPaths((current) => toggleValue(current, value))
+                  }
+                />
+              </div>
+            </div>
           </div>
 
           {filteredDatasets.length > 0 ? (
@@ -224,6 +318,50 @@ export default function DatasetLibraryStudio() {
         </section>
       </div>
     </AppLayout>
+  );
+}
+
+function toggleValue<T>(values: readonly T[], value: T): T[] {
+  return values.includes(value)
+    ? values.filter((current) => current !== value)
+    : [...values, value];
+}
+
+function MetadataFilter<T extends string>({
+  label,
+  options,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  options: readonly T[];
+  selected: readonly T[];
+  onToggle: (value: T) => void;
+}) {
+  return (
+    <fieldset className="min-w-0">
+      <legend className="text-xs font-bold text-slate-800">{label}</legend>
+      <div className="mt-2 flex min-w-0 flex-wrap gap-2">
+        {options.map((option) => {
+          const isSelected = selected.includes(option);
+          return (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={isSelected}
+              onClick={() => onToggle(option)}
+              className={`min-h-11 max-w-full rounded-full border px-3 py-2 text-left text-xs font-bold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300 ${
+                isSelected
+                  ? "border-purple-300 bg-purple-100 text-purple-950"
+                  : "border-white/95 bg-white/70 text-slate-800 hover:border-purple-200 hover:bg-white/90"
+              }`}
+            >
+              <span className="break-words">{option}</span>
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
   );
 }
 
