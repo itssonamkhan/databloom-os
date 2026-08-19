@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -13,6 +14,7 @@ import LevelUpCelebration, {
 } from "@/components/effects/LevelUpCelebration";
 import { getCurrentLevel, levels } from "@/lib/levels";
 import {
+  clearXP,
   loadLastCelebratedLevel,
   loadXP,
   saveLastCelebratedLevel,
@@ -24,6 +26,7 @@ import {
   ACHIEVEMENT_REWARD_EVENT,
   type AchievementRewardEventDetail,
 } from "@/lib/unlockedAchievements";
+import { createClient } from "@/lib/supabase/client";
 
 
 type ProgressContextType = {
@@ -44,13 +47,24 @@ function loadLastCelebratedLevelIndex() {
   return savedLevelName ? getLevelIndex(savedLevelName) : -1;
 }
 
+const LAST_CELEBRATED_LEVEL_STORAGE_KEY = "databloom-last-celebrated-level";
+
+function clearLocalProgress() {
+  if (typeof window === "undefined") return;
+
+  try {
+    clearXP();
+    window.localStorage.removeItem(LAST_CELEBRATED_LEVEL_STORAGE_KEY);
+  } catch {
+    // Progress state still resets if browser storage is unavailable.
+  }
+}
+
 
 const ProgressContext =
   createContext<ProgressContextType | undefined>(
     undefined
   );
-
-
 
 export function ProgressProvider({
   children,
@@ -61,6 +75,11 @@ export function ProgressProvider({
 
   const [mounted,setMounted] =
     useState(false);
+
+  const [authUserId, setAuthUserId] =
+    useState<string | null>(null);
+  const authUserIdRef = useRef<string | null>(null);
+  const skipNextLocalSaveRef = useRef(false);
 
 
   const [xp,setXP] =
@@ -80,29 +99,83 @@ export function ProgressProvider({
 
 
 
-  useEffect(()=>{
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
 
-    const savedXP =
-      loadXP();
-
-
-    setXP(savedXP);
-
-
-    const savedLevel = getCurrentLevel(savedXP);
-
-    setCurrentLevelName(savedLevel.name);
-
-    const savedLevelIndex = getLevelIndex(savedLevel.name);
-    if (savedLevelIndex > loadLastCelebratedLevelIndex()) {
-      saveLastCelebratedLevel(savedLevel.name);
+    function applyLocalProgress() {
+      const savedXP = loadXP();
+      setXP(savedXP);
+      setCurrentLevelName(getCurrentLevel(savedXP).name);
     }
 
+    async function syncProfileProgress(userId: string) {
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("xp, level")
+        .eq("id", userId)
+        .maybeSingle();
 
+      if (!active || authUserIdRef.current !== userId) return;
+
+      if (error || !profile) {
+        setXP(0);
+        setCurrentLevelName(getCurrentLevel(0).name);
+        saveXP(0);
+        return;
+      }
+
+      const profileXP =
+        typeof profile.xp === "number" && Number.isFinite(profile.xp)
+          ? Math.max(0, profile.xp)
+          : 0;
+      const profileLevel =
+        typeof profile.level === "number" && Number.isFinite(profile.level)
+          ? Math.max(1, Math.floor(profile.level))
+          : 1;
+
+      setXP(profileXP);
+      setCurrentLevelName(
+        levels[profileLevel - 1]?.name ?? getCurrentLevel(profileXP).name,
+      );
+      saveXP(profileXP);
+    }
+
+    applyLocalProgress();
     setMounted(true);
 
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const previousUserId = authUserIdRef.current;
+      const userId = session?.user.id ?? null;
+      authUserIdRef.current = userId;
+      setAuthUserId(userId);
 
-  },[]);
+      if (userId) {
+        // Never expose a previous guest/account value while the profile loads.
+        setXP(0);
+        setCurrentLevelName(getCurrentLevel(0).name);
+        // Defer the profile query so it does not run inside Supabase's auth callback.
+        window.setTimeout(() => {
+          void syncProfileProgress(userId);
+        }, 0);
+      } else if (previousUserId) {
+        clearLocalProgress();
+        skipNextLocalSaveRef.current = true;
+        setXP(0);
+        setCurrentLevelName(getCurrentLevel(0).name);
+        setLevelCelebration(null);
+      } else {
+        applyLocalProgress();
+      }
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
 
 
@@ -111,6 +184,10 @@ export function ProgressProvider({
 
     if(!mounted) return;
 
+    if (skipNextLocalSaveRef.current) {
+      skipNextLocalSaveRef.current = false;
+      return;
+    }
 
     saveXP(xp);
 
@@ -141,6 +218,19 @@ export function ProgressProvider({
       const newLevel =
         getCurrentLevel(newXP);
 
+      const newLevelIndex = getLevelIndex(newLevel.name);
+
+      if (authUserId) {
+        void createClient()
+          .from("profiles")
+          .update({
+            xp: newXP,
+            level: newLevelIndex + 1,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", authUserId);
+      }
+
 
 
       if (previousLevel.name !== newLevel.name) {
@@ -151,7 +241,6 @@ export function ProgressProvider({
 
 
         const previousLevelIndex = getLevelIndex(previousLevel.name);
-        const newLevelIndex = getLevelIndex(newLevel.name);
 
         if (
           newLevelIndex > previousLevelIndex &&
@@ -178,7 +267,7 @@ export function ProgressProvider({
 
 
     });
-  }, []);
+  }, [authUserId]);
 
   useEffect(() => {
     function handleAchievementReward(event: Event) {

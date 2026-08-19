@@ -30,16 +30,17 @@ export default function OnboardingGuard({
     () => false,
   );
   const isOnboarding = pathname === "/onboarding";
+  const isLogin = pathname === "/login";
 
   useEffect(() => {
-    if (!completed && !isOnboarding) {
+    if (!completed && !isOnboarding && !isLogin) {
       router.replace("/onboarding");
     } else if (completed && isOnboarding) {
       router.replace("/");
     }
-  }, [completed, isOnboarding, router]);
+  }, [completed, isLogin, isOnboarding, router]);
 
-  if ((!completed && !isOnboarding) || (completed && isOnboarding)) {
+  if ((!completed && !isOnboarding && !isLogin) || (completed && isOnboarding)) {
     return null;
   }
 

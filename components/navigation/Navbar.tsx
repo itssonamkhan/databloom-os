@@ -7,6 +7,7 @@ import {
   Bell,
   Flame,
   Home,
+  LogOut,
   Music2,
   Search,
   UserRound,
@@ -18,6 +19,7 @@ import { useProgress } from "@/context/ProgressContext";
 import { loadStreak, STREAK_UPDATED_EVENT } from "@/lib/streak";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { getBuddyPresentation } from "@/lib/userPreferences";
+import { createClient } from "@/lib/supabase/client";
 
 type SearchItem = {
   title: string;
@@ -326,9 +328,12 @@ export default function Navbar() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [streak, setStreak] = useState(0);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
 
   useEffect(() => {
     const sync = () => setStreak(loadStreak().current);
@@ -338,6 +343,32 @@ export default function Navbar() {
     return () => {
       window.removeEventListener(STREAK_UPDATED_EVENT, sync);
       window.removeEventListener("storage", sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
+    supabaseRef.current = supabase;
+
+    void supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!active) return;
+      setUserEmail(user?.email ?? null);
+      setAuthChecked(true);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!active) return;
+      setUserEmail(session?.user.email ?? null);
+      setAuthChecked(true);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+      supabaseRef.current = null;
     };
   }, []);
 
@@ -451,6 +482,20 @@ export default function Navbar() {
       .getElementById("study-mode")
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
+
+  async function handleLogOut() {
+    const supabase = supabaseRef.current ?? createClient();
+    await supabase.auth.signOut();
+    setUserEmail(null);
+    router.push("/login");
+    router.refresh();
+  }
+
+  const truncatedEmail = userEmail
+    ? userEmail.length > 28
+      ? `${userEmail.slice(0, 25)}…`
+      : userEmail
+    : null;
 
   return (
     <>
@@ -607,6 +652,38 @@ export default function Navbar() {
               </div>
             ) : null}
           </div>
+
+          {authChecked ? (
+            userEmail ? (
+              <>
+                <span
+                  title={userEmail}
+                  className="inline-flex min-h-11 max-w-48 items-center justify-center rounded-xl bg-purple-50 px-3 py-2 text-xs font-black text-purple-800 shadow-sm sm:text-sm"
+                >
+                  <span className="max-w-32 truncate sm:max-w-40">
+                    {truncatedEmail}
+                  </span>
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => void handleLogOut()}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-purple-200 bg-white/80 px-3 py-2 text-xs font-black text-purple-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-50 sm:text-sm"
+                >
+                  <LogOut className="size-4" aria-hidden="true" />
+                  <span>Log Out</span>
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={playClickSound}
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-purple-100 px-3 py-2 text-sm font-black text-purple-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-purple-200"
+              >
+                Log In
+              </Link>
+            )
+          ) : null}
 
           <Link
             href="/profile"
