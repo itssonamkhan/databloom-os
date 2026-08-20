@@ -397,6 +397,78 @@ export const formulaPracticeQuestions: FormulaPracticeQuestion[] = [
   }),
 ];
 
+export const formulaPracticeSessionKey = "databloom-formula-practice-session-v1";
+
+export const formulaPracticeDifficultyOrder: FormulaPracticeDifficulty[] = [
+  "beginner",
+  "intermediate",
+  "advanced",
+];
+
+/** A deliberately small, session-only gate keeps practice progressive without creating learner mastery. */
+export const formulaPracticeUnlockRequirements: Record<FormulaPracticeDifficulty, number> = {
+  beginner: 0,
+  intermediate: 3,
+  advanced: 3,
+};
+
+export type FormulaWorkedExample = {
+  problem: string;
+  concept: string;
+  steps: string[];
+  finalAnswer: string;
+  why: string;
+};
+
+export function getFormulaWorkedExample(formulaId: string): FormulaWorkedExample | null {
+  const formula = formulas.find((item) => item.id === formulaId);
+  if (!formula) return null;
+
+  return {
+    problem: formula.example,
+    concept: `${formula.name}: ${formula.purpose}`,
+    steps: formula.howToUse,
+    finalAnswer: formula.syntax,
+    why: `This is correct because ${formula.purpose.charAt(0).toLowerCase()}${formula.purpose.slice(1)}`,
+  };
+}
+
+export function getUnlockedFormulaDifficulties(
+  completedQuestionIds: ReadonlySet<string>,
+): Set<FormulaPracticeDifficulty> {
+  const completedByDifficulty = formulaPracticeDifficultyOrder.reduce(
+    (counts, difficulty) => {
+      counts[difficulty] = formulaPracticeQuestions.filter(
+        (item) => item.difficulty === difficulty && completedQuestionIds.has(item.id),
+      ).length;
+      return counts;
+    },
+    {} as Record<FormulaPracticeDifficulty, number>,
+  );
+
+  const unlocked = new Set<FormulaPracticeDifficulty>(["beginner"]);
+  if (completedByDifficulty.beginner >= formulaPracticeUnlockRequirements.intermediate) {
+    unlocked.add("intermediate");
+  }
+  if (completedByDifficulty.intermediate >= formulaPracticeUnlockRequirements.advanced) {
+    unlocked.add("advanced");
+  }
+  return unlocked;
+}
+
+export function getProgressiveFormulaPracticeQuestions(
+  completedQuestionIds: ReadonlySet<string>,
+): FormulaPracticeQuestion[] {
+  const unlocked = getUnlockedFormulaDifficulties(completedQuestionIds);
+  return formulaPracticeQuestions
+    .filter((item) => item.difficulty && unlocked.has(item.difficulty))
+    .sort(
+      (a, b) =>
+        formulaPracticeDifficultyOrder.indexOf(a.difficulty ?? "beginner") -
+        formulaPracticeDifficultyOrder.indexOf(b.difficulty ?? "beginner"),
+    );
+}
+
 export type FormulaPracticeValidationIssue = {
   questionId?: string;
   message: string;
