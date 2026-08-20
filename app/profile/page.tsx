@@ -232,7 +232,7 @@ export default function ProfilePage() {
       <BackgroundDecorations />
 
       <div className="relative z-10 mx-auto max-w-6xl space-y-7">
-        <section className="relative overflow-hidden rounded-[2.25rem] border border-white/90 bg-white/70 p-6 shadow-[0_24px_70px_rgba(126,34,206,0.14)] backdrop-blur-xl sm:p-9">
+        <section className="databloom-phase3-surface relative overflow-hidden rounded-[2.25rem] border border-white/90 bg-white/70 p-6 shadow-[0_24px_70px_rgba(126,34,206,0.14)] backdrop-blur-xl sm:p-9">
           <div
             aria-hidden="true"
             className="absolute -right-10 -top-12 size-48 rounded-full bg-pink-200/40 blur-3xl"
@@ -441,7 +441,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[2rem] border border-white/90 bg-gradient-to-br from-purple-100/80 via-pink-50 to-blue-100/75 p-6 shadow-[0_20px_55px_rgba(76,29,149,0.10)] sm:p-7">
+          <div className="databloom-phase3-gradient-surface relative overflow-hidden rounded-[2rem] border border-white/90 bg-gradient-to-br from-purple-100/80 via-pink-50 to-blue-100/75 p-6 shadow-[0_20px_55px_rgba(76,29,149,0.10)] sm:p-7">
             <span
               aria-hidden="true"
               className="absolute right-5 top-4 text-4xl"
@@ -689,6 +689,7 @@ function ProfileCard({
   return (
     <article
       className={`
+        databloom-profile-card
         relative
         overflow-hidden
         rounded-[1.75rem]
