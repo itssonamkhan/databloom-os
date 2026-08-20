@@ -8,6 +8,7 @@ import { formulas } from "@/lib/formulas";
 import {
   formulaPracticeQuestions,
   formulaPracticeSessionKey,
+  getFormulaPracticeAssessmentAlignment,
   getFormulaWorkedExample,
   getProgressiveFormulaPracticeQuestions,
   validateFormulaPracticeAnswer,
@@ -62,6 +63,7 @@ export default function PracticePage({ params }: Props) {
     "formula-comparison",
   ].includes(currentQuestion.type);
   const workedExample = getFormulaWorkedExample(formula.id);
+  const assessmentAlignment = getFormulaPracticeAssessmentAlignment(formula.id);
   const nextQuestion = currentPosition >= 0 ? progressiveQuestions[currentPosition + 1] : undefined;
   const previousQuestion = currentPosition > 0 ? progressiveQuestions[currentPosition - 1] : undefined;
   const beginnerCompleted = progressiveQuestions.filter(
@@ -119,6 +121,11 @@ export default function PracticePage({ params }: Props) {
           <h1 className="mt-2 text-3xl font-bold text-purple-700 sm:text-5xl">📝 Practice</h1>
           <p className="mt-3 text-xl text-gray-800">{formula.name}</p>
           <p className="mt-2 break-words text-sm text-gray-700">{formula.purpose}</p>
+          {assessmentAlignment && (
+            <p className="mt-4 inline-flex max-w-full rounded-full bg-white/70 px-3 py-1 text-sm font-semibold text-purple-800">
+              {assessmentAlignment.label}
+            </p>
+          )}
           <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-purple-800">
             <span className="rounded-full bg-white/70 px-3 py-1">Beginner: {beginnerCompleted} completed</span>
             <span className="rounded-full bg-white/70 px-3 py-1">Intermediate: {intermediateCompleted} completed</span>

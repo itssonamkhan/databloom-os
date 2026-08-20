@@ -420,6 +420,32 @@ export type FormulaWorkedExample = {
   why: string;
 };
 
+export type FormulaPracticeAssessmentAlignment = {
+  studioId: "formula-studio";
+  topicId: string;
+  chapterName: string;
+  label: string;
+};
+
+/**
+ * Formula assessment coverage already uses formula IDs as topic IDs and the
+ * canonical formula category as its chapter. Derive that relationship rather
+ * than duplicating assessment data in every practice question.
+ */
+export function getFormulaPracticeAssessmentAlignment(
+  formulaId: string,
+): FormulaPracticeAssessmentAlignment | null {
+  const formula = formulas.find((item) => item.id === formulaId);
+  if (!formula) return null;
+
+  return {
+    studioId: "formula-studio",
+    topicId: formula.id,
+    chapterName: formula.category,
+    label: `Assessment topic: ${formula.category}`,
+  };
+}
+
 export function getFormulaWorkedExample(formulaId: string): FormulaWorkedExample | null {
   const formula = formulas.find((item) => item.id === formulaId);
   if (!formula) return null;
