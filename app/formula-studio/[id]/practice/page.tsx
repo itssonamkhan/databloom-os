@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { useState, use } from "react";
+import { use, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { formulas } from "@/lib/formulas";
+import {
+  formulaPracticeQuestions,
+  validateFormulaPracticeAnswer,
+} from "@/lib/formulaPracticeQuestions";
 
 type Props = {
   params: Promise<{
@@ -13,147 +17,186 @@ type Props = {
 };
 
 export default function PracticePage({ params }: Props) {
-
   const { id } = use(params);
-
-  const formula =
-    formulas.find((item) => item.id === id);
-  const [showAnswer, setShowAnswer] =
-    useState(false);
+  const formula = formulas.find((item) => item.id === id);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [answer, setAnswer] = useState("");
+  const [checked, setChecked] = useState(false);
 
   if (!formula) {
     notFound();
   }
 
+  const questions = formulaPracticeQuestions.filter((item) => item.formulaId === id);
+
+  if (questions.length === 0) {
+    notFound();
+  }
+
+  const currentQuestion = questions[questionIndex];
+  const isCorrect = checked && validateFormulaPracticeAnswer(currentQuestion, answer);
+  const isSelectionQuestion = [
+    "multiple-choice",
+    "scenario-selection",
+    "formula-comparison",
+  ].includes(currentQuestion.type);
+
+  const checkAnswer = () => {
+    if (answer.trim()) setChecked(true);
+  };
+
+  const resetQuestion = () => {
+    setAnswer("");
+    setChecked(false);
+  };
+
+  const moveToQuestion = (nextIndex: number) => {
+    setQuestionIndex(nextIndex);
+    resetQuestion();
+  };
+
   return (
-
     <AppLayout>
-
-      <div className="max-w-5xl mx-auto space-y-8">
-
+      <div className="mx-auto max-w-5xl space-y-6">
         <Link
           href={`/formula-studio/${formula.id}`}
-          className="
-          inline-flex
-          rounded-xl
-          bg-white
-          px-4
-          py-2
-          shadow
-          font-semibold
-          text-purple-700
-          "
+          className="inline-flex min-h-11 items-center rounded-xl bg-white px-4 py-2 font-semibold text-purple-700 shadow transition hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
         >
           ← Back to Lesson
         </Link>
 
-        <div
-          className="
-          rounded-3xl
-          bg-gradient-to-br
-          from-pink-100
-          to-purple-100
-          p-8
-          shadow-lg
-          "
-        >
-
-          <h1 className="text-5xl font-bold text-purple-700">
-            📝 Practice
-          </h1>
-
-          <p className="mt-3 text-xl text-gray-800">
-            {formula.name}
+        <header className="rounded-3xl bg-gradient-to-br from-pink-100 to-purple-100 p-6 shadow-lg sm:p-8">
+          <p className="text-sm font-semibold uppercase tracking-wide text-purple-700">
+            Formula Studio · Exercise {questionIndex + 1} of {questions.length}
           </p>
+          <h1 className="mt-2 text-3xl font-bold text-purple-700 sm:text-5xl">📝 Practice</h1>
+          <p className="mt-3 text-xl text-gray-800">{formula.name}</p>
+          <p className="mt-2 break-words text-sm text-gray-700">{formula.purpose}</p>
+        </header>
 
-        </div>
-
-        <div className="rounded-3xl bg-white p-8 shadow-lg">
-
-          <h2 className="text-3xl font-bold text-purple-700">
-            Scenario
-          </h2>
-
-          <p className="mt-5 text-gray-800 leading-8">
-            Imagine you are working as a Data Analyst.
-            Which situation below is the best place to use
-            <strong> {formula.name}</strong>?
-          </p>
-
-          <div className="mt-8 rounded-2xl bg-purple-50 p-6">
-
-            <p className="font-semibold text-purple-700">
-              Example Scenario
-            </p>
-
-            <p className="mt-3 text-gray-900">
-              {formula.example}
-            </p>
-
-          </div>
-
-        </div>
-
-        <div className="rounded-3xl bg-yellow-50 p-8 shadow-lg">
-
-          <h2 className="text-3xl font-bold text-yellow-700">
-            💡 Hint
-          </h2>
-
-          <p className="mt-5 text-gray-900">
-            Think about the main purpose of this formula before
-            revealing the answer.
-          </p>
-
-        </div>
-
-        <button
-          onClick={() => setShowAnswer(!showAnswer)}
-          className="
-          rounded-2xl
-          bg-purple-600
-          px-6
-          py-3
-          font-semibold
-          text-white
-          hover:bg-purple-700
-          "
-        >
-          {showAnswer ? "Hide Answer" : "Show Answer"}
-        </button>
-
-        {showAnswer && (
-
-          <div className="rounded-3xl bg-green-100 p-8 shadow-lg">
-
-            <h2 className="text-3xl font-bold text-green-700">
-              ✅ Answer
+        <section className="rounded-3xl bg-white p-6 shadow-lg sm:p-8" aria-labelledby="practice-prompt">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 id="practice-prompt" className="text-2xl font-bold text-purple-700 sm:text-3xl">
+              {isSelectionQuestion ? "Choose the best answer" : "Write your answer"}
             </h2>
+            <span className="rounded-full bg-purple-50 px-3 py-1 text-sm font-semibold text-purple-700">
+              {currentQuestion.difficulty ?? "practice"}
+            </span>
+          </div>
+          <p className="mt-5 break-words leading-8 text-gray-800">{currentQuestion.prompt}</p>
 
-            <p className="mt-5 text-gray-900">
-              {formula.purpose}
-            </p>
-
-            <div className="mt-6 rounded-2xl bg-white p-5">
-
-              <p className="font-semibold text-purple-700">
-                Formula
-              </p>
-
-              <p className="mt-2 font-mono text-gray-900">
-                {formula.syntax}
-              </p>
-
+          {isSelectionQuestion && currentQuestion.options ? (
+            <fieldset className="mt-6 space-y-3">
+              <legend className="sr-only">Answer options</legend>
+              {currentQuestion.options.map((option) => (
+                <label
+                  key={option}
+                  className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 transition focus-within:ring-2 focus-within:ring-purple-400 ${
+                    answer === option
+                      ? "border-purple-300 bg-purple-50 text-purple-900"
+                      : "border-purple-100 bg-white text-gray-800 hover:bg-purple-50"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name={`answer-${currentQuestion.id}`}
+                    value={option}
+                    checked={answer === option}
+                    onChange={(event) => {
+                      setAnswer(event.target.value);
+                      setChecked(false);
+                    }}
+                    className="h-4 w-4 accent-purple-600"
+                  />
+                  <span className="break-words font-mono text-sm sm:text-base">{option}</span>
+                </label>
+              ))}
+            </fieldset>
+          ) : (
+            <div className="mt-6">
+              <label htmlFor="formula-answer" className="text-sm font-semibold text-gray-800">
+                Your formula or value
+              </label>
+              <input
+                id="formula-answer"
+                value={answer}
+                onChange={(event) => {
+                  setAnswer(event.target.value);
+                  setChecked(false);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") checkAnswer();
+                }}
+                placeholder="Type your answer"
+                className="mt-2 min-h-11 w-full rounded-2xl border border-purple-100 bg-purple-50/50 px-4 py-3 font-mono text-gray-900 outline-none transition placeholder:text-gray-500 focus:border-purple-400 focus:ring-2 focus:ring-purple-300"
+              />
             </div>
+          )}
 
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={checkAnswer}
+              disabled={!answer.trim()}
+              className="min-h-11 rounded-2xl bg-purple-600 px-5 py-3 font-semibold text-white shadow transition hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Check Answer
+            </button>
+            {checked && (
+              <button
+                type="button"
+                onClick={resetQuestion}
+                className="min-h-11 rounded-2xl border border-purple-200 bg-white px-5 py-3 font-semibold text-purple-700 transition hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              >
+                Retry
+              </button>
+            )}
           </div>
 
-        )}
+          {checked && (
+            <div
+              role="status"
+              className={`mt-6 rounded-2xl border p-5 ${
+                isCorrect
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                  : "border-rose-200 bg-rose-50 text-rose-900"
+              }`}
+            >
+              <p className="font-bold">{isCorrect ? "✅ Correct" : "Not quite yet"}</p>
+              <p className="mt-2 break-words">{currentQuestion.explanation}</p>
+              {!isCorrect && currentQuestion.acceptedAnswers && (
+                <p className="mt-3 break-words text-sm font-medium">Try again with the expected formula or value.</p>
+              )}
+            </div>
+          )}
+        </section>
 
+        <section className="rounded-3xl bg-purple-50 p-6 shadow-lg sm:p-8">
+          <h2 className="text-xl font-bold text-purple-700">Formula context</h2>
+          <p className="mt-3 break-words text-gray-800">{formula.example}</p>
+          <p className="mt-3 break-words font-mono text-sm text-gray-900">{formula.syntax}</p>
+        </section>
+
+        <nav className="flex flex-wrap justify-between gap-3" aria-label="Practice exercises">
+          <button
+            type="button"
+            onClick={() => moveToQuestion(questionIndex - 1)}
+            disabled={questionIndex === 0}
+            className="min-h-11 rounded-2xl border border-purple-200 bg-white px-5 py-3 font-semibold text-purple-700 transition hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            ← Previous
+          </button>
+          {questionIndex < questions.length - 1 && (
+            <button
+              type="button"
+              onClick={() => moveToQuestion(questionIndex + 1)}
+              className="min-h-11 rounded-2xl bg-purple-600 px-5 py-3 font-semibold text-white shadow transition hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            >
+              Next Exercise →
+            </button>
+          )}
+        </nav>
       </div>
-
     </AppLayout>
-
   );
-
 }
