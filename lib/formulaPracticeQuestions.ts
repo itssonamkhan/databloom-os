@@ -1,4 +1,5 @@
 import { formulas } from "@/lib/formulas";
+import { STUDY_ACTIVITY_EVENT } from "@/lib/studyActivity";
 
 export const formulaPracticeQuestionTypes = [
   "multiple-choice",
@@ -426,6 +427,52 @@ export type FormulaPracticeAssessmentAlignment = {
   chapterName: string;
   label: string;
 };
+
+export type FormulaPracticeAnalyticsAction =
+  | "practice-started"
+  | "exercise-attempted"
+  | "answer-result"
+  | "worked-example-viewed"
+  | "practice-completed";
+
+/**
+ * Uses the existing study-activity event channel. AnalyticsHistoryTracker
+ * observes this event and refreshes the existing snapshot; no event payload
+ * or new storage key is introduced here.
+ */
+export function emitFormulaPracticeAnalyticsEvent({
+  action,
+  formulaId,
+  difficulty,
+  questionType,
+  result,
+}: {
+  action: FormulaPracticeAnalyticsAction;
+  formulaId: string;
+  difficulty?: FormulaPracticeDifficulty;
+  questionType?: FormulaPracticeQuestionType;
+  result?: "correct" | "incorrect";
+}): void {
+  if (typeof window === "undefined") return;
+  const alignment = getFormulaPracticeAssessmentAlignment(formulaId);
+
+  window.dispatchEvent(
+    new CustomEvent(STUDY_ACTIVITY_EVENT, {
+      detail: {
+        kind: "practice",
+        source: `formula-practice:${formulaId}`,
+        action,
+        studio: alignment?.studioId ?? "formula-studio",
+        formulaId,
+        topicId: alignment?.topicId ?? formulaId,
+        chapter: alignment?.chapterName,
+        difficulty,
+        questionType,
+        result,
+      },
+    }),
+  );
+}
 
 /**
  * Formula assessment coverage already uses formula IDs as topic IDs and the

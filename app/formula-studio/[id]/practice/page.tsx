@@ -8,6 +8,7 @@ import { formulas } from "@/lib/formulas";
 import {
   formulaPracticeQuestions,
   formulaPracticeSessionKey,
+  emitFormulaPracticeAnalyticsEvent,
   getFormulaPracticeAssessmentAlignment,
   getFormulaWorkedExample,
   getProgressiveFormulaPracticeQuestions,
@@ -42,6 +43,17 @@ export default function PracticePage({ params }: Props) {
       // A session-only convenience must never prevent practice from opening.
     }
   }, []);
+
+  useEffect(() => {
+    const question = formulaPracticeQuestions.find((item) => item.formulaId === id);
+    if (!question) return;
+    emitFormulaPracticeAnalyticsEvent({
+      action: "practice-started",
+      formulaId: id,
+      difficulty: question.difficulty,
+      questionType: question.type,
+    });
+  }, [id]);
 
   if (!formula) {
     notFound();
@@ -84,11 +96,34 @@ export default function PracticePage({ params }: Props) {
 
   const checkAnswer = () => {
     if (!answer.trim() || !currentIsUnlocked) return;
+    const correct = validateFormulaPracticeAnswer(currentQuestion, answer);
+    emitFormulaPracticeAnalyticsEvent({
+      action: "exercise-attempted",
+      formulaId: formula.id,
+      difficulty: currentQuestion.difficulty,
+      questionType: currentQuestion.type,
+    });
+    emitFormulaPracticeAnalyticsEvent({
+      action: "answer-result",
+      formulaId: formula.id,
+      difficulty: currentQuestion.difficulty,
+      questionType: currentQuestion.type,
+      result: correct ? "correct" : "incorrect",
+    });
     setChecked(true);
-    if (validateFormulaPracticeAnswer(currentQuestion, answer)) {
+    if (correct) {
       const next = new Set(completedQuestionIds);
+      const newlyCompleted = !completedQuestionIds.has(currentQuestion.id);
       next.add(currentQuestion.id);
       persistCompleted(next);
+      if (newlyCompleted) {
+        emitFormulaPracticeAnalyticsEvent({
+          action: "practice-completed",
+          formulaId: formula.id,
+          difficulty: currentQuestion.difficulty,
+          questionType: currentQuestion.type,
+        });
+      }
     }
   };
 
@@ -242,7 +277,20 @@ export default function PracticePage({ params }: Props) {
                   <h2 id="worked-example" className="text-2xl font-bold text-amber-800">📚 Worked example</h2>
                   <button
                     type="button"
-                    onClick={() => setShowWorkedExample((visible) => !visible)}
+                    onClick={() => {
+                      setShowWorkedExample((visible) => {
+                        const nextVisible = !visible;
+                        if (nextVisible) {
+                          emitFormulaPracticeAnalyticsEvent({
+                            action: "worked-example-viewed",
+                            formulaId: formula.id,
+                            difficulty: currentQuestion.difficulty,
+                            questionType: currentQuestion.type,
+                          });
+                        }
+                        return nextVisible;
+                      });
+                    }}
                     className="min-h-11 rounded-2xl border border-amber-200 bg-white px-4 py-2 font-semibold text-amber-800 transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
                     aria-expanded={showWorkedExample}
                   >
