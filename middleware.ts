@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+const VISITOR_COOKIE_NAME = "databloom_visitor_id";
+const VISITOR_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
 function getSupabaseConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -15,11 +18,26 @@ function getSupabaseConfig() {
   return { url, key };
 }
 
+function ensureVisitorCookie(request: NextRequest, response: NextResponse) {
+  if (request.cookies.get(VISITOR_COOKIE_NAME)) return;
+
+  response.cookies.set(VISITOR_COOKIE_NAME, crypto.randomUUID(), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: VISITOR_COOKIE_MAX_AGE,
+  });
+}
+
 export async function middleware(request: NextRequest) {
   const config = getSupabaseConfig();
   let supabaseResponse = NextResponse.next({ request });
 
-  if (!config) return supabaseResponse;
+  if (!config) {
+    ensureVisitorCookie(request, supabaseResponse);
+    return supabaseResponse;
+  }
 
   const supabase = createServerClient(config.url, config.key, {
     cookies: {
@@ -45,6 +63,7 @@ export async function middleware(request: NextRequest) {
   });
 
   await supabase.auth.getUser();
+  ensureVisitorCookie(request, supabaseResponse);
 
   return supabaseResponse;
 }

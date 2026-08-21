@@ -4,6 +4,7 @@ import { ProgressProvider } from "@/context/ProgressContext";
 import { StudyMusicProvider } from "@/context/StudyMusicContext";
 import OnboardingGuard from "@/components/onboarding/OnboardingGuard";
 import AnalyticsHistoryTracker from "@/components/analytics/AnalyticsHistoryTracker";
+import AnonymousVisitorTracker from "@/components/analytics/AnonymousVisitorTracker";
 import {
   DATABLOOM_THEME_ATTRIBUTE,
   defaultUserPreferences,
@@ -49,6 +50,8 @@ export default function RootLayout({
       </head>
 
       <body>
+
+        <AnonymousVisitorTracker />
 
         <ProgressProvider>
 
