@@ -69,6 +69,27 @@ function LoginForm() {
     }
   }
 
+  async function handleGoogleSignIn() {
+    setIsLoading(true);
+    setMessage("");
+    setErrorMessage("");
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) setErrorMessage(error.message);
+    } catch {
+      setErrorMessage("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <main
       data-databloom-page
@@ -118,6 +139,21 @@ function LoginForm() {
             Sign Up
           </button>
         </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={isLoading}
+          className="mb-6 flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-5 py-3 font-black text-[var(--databloom-text-primary)] shadow-sm transition hover:bg-[var(--databloom-accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--databloom-focus)] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span
+            aria-hidden="true"
+            className="grid size-6 place-items-center rounded-full bg-white text-sm font-black text-slate-700 shadow-sm"
+          >
+            G
+          </span>
+          Continue with Google
+        </button>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
