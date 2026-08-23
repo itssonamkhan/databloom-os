@@ -1,6 +1,6 @@
 import type { PowerBIDifficulty, PowerBILesson } from "@/lib/powerBILessons";
 
-export type DAXFormula = { id: string; name: string; category: string; difficulty: PowerBIDifficulty; purpose: string; syntax: string; explanation: string; example: string; memoryTrick: string; commonMistake: string; };
+export type DAXFormula = { id: string; name: string; category: string; difficulty: PowerBIDifficulty; purpose: string; definition?: string; syntax: string; explanation: string; example: string; memoryTrick: string; commonMistake: string; };
 const daxExplanations: Record<string, string> = {
   sum: "SUM adds the values in Revenue within the current filter context, so the result changes when a report is filtered by date, region, or product.",
   sumx: "SUMX evaluates Quantity multiplied by UnitPrice for each Sales row and then adds those row-level results, which is useful when the total is not stored in one column.",
@@ -22,7 +22,28 @@ const daxExplanations: Record<string, string> = {
   totalytd: "TOTALYTD accumulates an expression from the start of the year through the latest date in the current date context.",
   sameperiodlastyear: "SAMEPERIODLASTYEAR shifts the current date set back one year, enabling a like-for-like prior-year comparison when a marked date table is used.",
 };
-const dax = (id:string,name:string,category:string,difficulty:PowerBIDifficulty,purpose:string,syntax:string,example:string):DAXFormula => ({id,name,category,difficulty,purpose,syntax,example,explanation:daxExplanations[id] ?? `${name} ${purpose.toLowerCase()} It is most useful when the model relationships and field types are already correct.`,memoryTrick:`${name}: ${purpose}`,commonMistake:"Using the formula before checking filter context, relationships, or data types."});
+const daxDefinitions: Record<string, string> = {
+  sum: "SUM is a DAX aggregation function that adds the values in a numeric column or expression.",
+  sumx: "SUMX is a DAX iterator that evaluates an expression for each row and then adds the results.",
+  average: "AVERAGE is a DAX aggregation function that returns the arithmetic mean of numeric values.",
+  count: "COUNT is a DAX aggregation function that counts the number of non-blank numeric values in a column.",
+  countrows: "COUNTROWS is a DAX aggregation function that counts the rows in a table or table expression.",
+  distinctcount: "DISTINCTCOUNT is a DAX aggregation function that counts unique non-blank values in a column.",
+  calculate: "CALCULATE is a DAX function that evaluates an expression after changing its filter context.",
+  filter: "FILTER is a DAX function that returns a table containing only the rows that meet a specified condition.",
+  all: "ALL is a DAX function that removes filters from a table or column so calculations can use a broader context.",
+  related: "RELATED is a DAX function that retrieves a value from a related table when a matching relationship and row context exist.",
+  divide: "DIVIDE is a DAX arithmetic function that divides two expressions and safely handles a zero or blank denominator.",
+  if: "IF is a DAX logical function that returns one result when a condition is true and another when it is false.",
+  switch: "SWITCH is a DAX logical function that returns the result for the first matching expression or condition.",
+  date: "DATE is a DAX date function that constructs a date from year, month, and day numbers.",
+  year: "YEAR is a DAX date function that extracts the year number from a date.",
+  month: "MONTH is a DAX date function that extracts the month number from a date.",
+  today: "TODAY is a DAX date function that returns the current date.",
+  totalytd: "TOTALYTD is a DAX time-intelligence function that evaluates an expression from the start of the year through the current date context.",
+  sameperiodlastyear: "SAMEPERIODLASTYEAR is a DAX time-intelligence function that shifts a date context back by one year.",
+};
+const dax = (id:string,name:string,category:string,difficulty:PowerBIDifficulty,purpose:string,syntax:string,example:string):DAXFormula => ({id,name,category,difficulty,purpose,definition:daxDefinitions[id],syntax,example,explanation:daxExplanations[id] ?? `${name} ${purpose.toLowerCase()} It is most useful when the model relationships and field types are already correct.`,memoryTrick:`${name}: ${purpose}`,commonMistake:"Using the formula before checking filter context, relationships, or data types."});
 export const daxFormulas:DAXFormula[] = [
   dax("sum","SUM","Aggregation","Beginner","Adds every value in one numeric column.","SUM(Sales[Revenue])","Total Revenue = SUM(Sales[Revenue])"),
   dax("sumx","SUMX","Aggregation","Intermediate","Evaluates an expression row by row, then adds the results.","SUMX(table, expression)","Revenue = SUMX(Sales, Sales[Quantity] * Sales[UnitPrice])"),
@@ -45,6 +66,6 @@ export const daxFormulas:DAXFormula[] = [
   dax("sameperiodlastyear","SAMEPERIODLASTYEAR","Time Intelligence","Advanced","Shifts the current date period back one year.","SAMEPERIODLASTYEAR(dates)","Revenue LY = CALCULATE([Revenue], SAMEPERIODLASTYEAR('Date'[Date]))"),
 ];
 export const daxCategories = Array.from(new Set(daxFormulas.map((item) => item.category)));
-export const daxToLesson = (formula:DAXFormula):PowerBILesson => ({id:`dax-${formula.id}`,title:formula.name,icon:"ƒx",category:`DAX · ${formula.category}`,difficulty:formula.difficulty,description:formula.purpose,explanation:formula.explanation,steps:["Create or select a measure.",`Enter ${formula.syntax}.`,"Replace example names with fields from your model.","Check the result under more than one filter."],example:formula.example,memoryTrick:formula.memoryTrick,whenToUse:[formula.purpose,"When a report needs a reusable model calculation."],commonMistakes:[formula.commonMistake,"Creating a calculated column when a measure is more appropriate."],interviewQuestions:[`What does ${formula.name} return?`,`How does filter context affect ${formula.name}?`],practiceTask:`Choose the correct DAX pattern for this purpose: ${formula.purpose}`,acceptedAnswers:[formula.name,formula.syntax,formula.example],hint:`The formula name is ${formula.name}.`,xpReward:formula.difficulty === "Beginner" ? 20 : formula.difficulty === "Intermediate" ? 30 : 40,relatedLessons:[]});
+export const daxToLesson = (formula:DAXFormula):PowerBILesson => ({id:`dax-${formula.id}`,title:formula.name,icon:"ƒx",category:`DAX · ${formula.category}`,difficulty:formula.difficulty,description:formula.purpose,definition:formula.definition,explanation:formula.explanation,syntax:formula.syntax,steps:["Create or select a measure.",`Enter ${formula.syntax}.`,"Replace example names with fields from your model.","Check the result under more than one filter."],example:formula.example,memoryTrick:formula.memoryTrick,whenToUse:[formula.purpose,"When a report needs a reusable model calculation."],commonMistakes:[formula.commonMistake,"Creating a calculated column when a measure is more appropriate."],interviewQuestions:[`What does ${formula.name} return?`,`How does filter context affect ${formula.name}?`],practiceTask:`Choose the correct DAX pattern for this purpose: ${formula.purpose}`,acceptedAnswers:[formula.name,formula.syntax,formula.example],hint:`The formula name is ${formula.name}.`,xpReward:formula.difficulty === "Beginner" ? 20 : formula.difficulty === "Intermediate" ? 30 : 40,relatedLessons:[]});
 export const daxLessons = daxFormulas.map(daxToLesson);
 export const getDAXLesson = (id:string) => daxLessons.find((item) => item.id === id);

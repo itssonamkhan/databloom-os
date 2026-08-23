@@ -2,7 +2,7 @@ export type PowerBIDifficulty = "Beginner" | "Intermediate" | "Advanced";
 
 export type PowerBILesson = {
   id: string; title: string; icon: string; category: string;
-  difficulty: PowerBIDifficulty; description: string; explanation: string;
+  difficulty: PowerBIDifficulty; description: string; definition?: string; syntax?: string; explanation: string;
   steps: string[]; example: string; memoryTrick: string; whenToUse: string[];
   commonMistakes: string[]; interviewQuestions: string[]; practiceTask: string;
   acceptedAnswers: string[]; hint: string; xpReward: number; relatedLessons: string[];
@@ -52,10 +52,53 @@ const powerBIContent: Record<string, { example: string; explanation: string }> =
   "dashboard-storytelling": { example: "Lead with Revenue and Margin, show the regional trend, then end with the category detail that explains the variance.", explanation: "A dashboard story connects context, evidence, and action so the viewer knows what to investigate next." },
 };
 
+const powerBIDefinitions: Record<string, string> = {
+  "power-bi-interface": "The Power BI interface is the set of views and panes used to build, inspect, filter, and model reports.",
+  "import-excel-csv": "Importing Excel and CSV files connects tabular file data to Power BI so it can be prepared and analyzed.",
+  "data-types": "Data types tell Power BI whether a field contains text, numbers, dates, currency, or another kind of value.",
+  "power-query-overview": "Power Query is Power BI's data-preparation layer for connecting to sources and applying repeatable transformations.",
+  "loading-data": "Loading data makes a prepared Power Query result available in the Power BI model for relationships, calculations, and visuals.",
+  "remove-duplicates": "Removing duplicates eliminates repeated records according to selected columns so counts and measures reflect genuine entities.",
+  "handle-null-values": "Handling null values is the process of deciding how missing or unknown data should be identified, retained, replaced, or excluded.",
+  "split-columns": "Splitting columns separates one field into multiple fields using a delimiter, character position, or another rule.",
+  "merge-columns": "Merging columns combines values from multiple fields into one field, usually to create a readable label or key.",
+  "replace-values": "Replacing values changes a known label, code, or placeholder into a consistent value throughout a column.",
+  "change-data-types": "Changing data types converts a field into the format Power BI needs for accurate sorting, calculations, and filtering.",
+  "conditional-columns": "A conditional column creates a new field by assigning values according to one or more if-then business rules.",
+  "append-queries": "Appending queries stacks rows from compatible tables or queries into one larger table.",
+  "merge-queries": "Merging queries joins columns from two queries by matching values in one or more key fields.",
+  "tables-relationships": "Power BI table relationships define how tables connect so filters and calculations can work across the data model.",
+  "one-to-many": "A one-to-many relationship connects one unique dimension row to many related fact rows.",
+  "star-schema": "A star schema is a model design with a central fact table connected to descriptive dimension tables.",
+  "fact-dimension": "Fact and dimension tables separate measurable business events from the descriptive attributes used to analyze them.",
+  "date-table": "A date table is a continuous calendar table that provides a consistent time axis for filtering, grouping, and time intelligence.",
+  "active-inactive-relationships": "Active and inactive relationships are model paths that determine which related date or lookup field filters by default or only when requested.",
+  cardinality: "Cardinality describes how many matching values can exist on each side of a relationship, such as one-to-many or many-to-many.",
+  "filter-direction": "Filter direction controls how selections and filter context travel between related tables in a Power BI model.",
+  "bar-chart": "A bar chart compares values across categories by using the length of each bar against a common baseline.",
+  "line-chart": "A line chart shows how a measure changes across an ordered sequence, commonly over time.",
+  "pie-donut-chart": "A pie or donut chart shows how a small set of categories contributes to a whole.",
+  "table-matrix": "A table displays detailed rows and values, while a matrix adds grouped hierarchies and expandable summaries.",
+  "kpi-card": "A KPI card highlights one important measure, often alongside a target or status comparison.",
+  slicer: "A slicer is an interactive report control that lets viewers filter visuals by selecting field values.",
+  map: "A map visual places measures or categories on geographic locations to reveal spatial patterns.",
+  "combo-chart": "A combo chart combines column and line marks so related measures can be compared on one shared category axis.",
+  "drill-through": "Drill-through is a navigation feature that opens a detail page filtered to the context selected on a summary page.",
+  tooltips: "Tooltips are temporary details shown when a viewer points to a visual element without changing the main report layout.",
+  layout: "Report layout is the deliberate arrangement of visuals, whitespace, and sections that creates a clear reading order.",
+  "color-hierarchy": "Color hierarchy uses consistent emphasis and status colors to guide attention and communicate what matters.",
+  "choosing-right-chart": "Choosing the right chart means selecting a visual form that matches the question, such as comparison, trend, composition, or relationship.",
+  "kpi-placement": "KPI placement is the practice of positioning headline measures where viewers will see and understand them first.",
+  "visual-consistency": "Visual consistency applies shared formatting, spacing, typography, and interaction conventions across a report.",
+  "mobile-layout": "A mobile layout is a report arrangement optimized for a narrow portrait screen and its most important interactions.",
+  "dashboard-storytelling": "Dashboard storytelling organizes context, evidence, and insight so a viewer can move from a business question to an action.",
+};
+
 function lesson(seed: Seed): PowerBILesson {
   const title = seed.title;
   return {
     ...seed,
+    definition: powerBIDefinitions[seed.id],
     steps: seed.steps ?? [`Open the relevant view in Power BI Desktop.`, `Select the table, field, or visual you want to work with.`, `Apply ${title.toLowerCase()} and review the result.`, "Check that totals, labels, and filters still answer the business question."],
     example: seed.example ?? powerBIContent[seed.id]?.example ?? `A sales analyst uses ${title.toLowerCase()} while preparing a monthly revenue dashboard for regional managers.`,
     explanation: seed.explanation ?? powerBIContent[seed.id]?.explanation ?? `${title} is a practical Power BI skill that helps you turn raw business data into a trustworthy, easy-to-read report.`,
