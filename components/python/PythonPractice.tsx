@@ -53,6 +53,23 @@ type Feedback = {
   message: string;
 } | null;
 
+const expectedResultByLessonId: Record<string, string> = {
+  "print-output": "Hello, DataBloom!",
+  variables: "total_sales = 5400",
+  "data-types": "<class 'float'>",
+  strings: "NORTH",
+  numbers: "3750",
+  booleans: "True",
+  lists: "['North', 'South']",
+  tuples: "('Jan', 'Feb')",
+  dictionaries: "{'region': 'North'}",
+  sets: "A unique set containing the values from regions",
+  "numpy-arrays": "array([1250,  675,  980])",
+  "numpy-indexing": "array([1250])",
+  "numpy-vectorization": "array([2500, 1350, 1960])",
+  "numpy-aggregations": "The mean of the supplied sales array",
+};
+
 export default function PythonPractice({
   lesson,
   nextLesson,
@@ -63,6 +80,7 @@ export default function PythonPractice({
   const { addXP } = useProgress();
   const [answer, setAnswer] = useState("");
   const [showHint, setShowHint] = useState(false);
+  const [showSolution, setShowSolution] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [completed, setCompleted] = useState(() =>
     loadPythonProgress().completedPracticeIds.includes(lesson.id),
@@ -96,6 +114,7 @@ export default function PythonPractice({
 
     if (!isAcceptedPythonAnswer(answer, lesson.acceptedAnswers)) {
       playNotificationSound();
+      setShowSolution(false);
       setFeedback({
         tone: "incorrect",
         message:
@@ -126,6 +145,7 @@ export default function PythonPractice({
     playClickSound();
     setAnswer("");
     setShowHint(false);
+    setShowSolution(false);
     setFeedback(null);
   }
 
@@ -212,6 +232,7 @@ export default function PythonPractice({
               onChange={(event) => {
                 setAnswer(event.target.value);
                 setFeedback(null);
+                setShowSolution(false);
               }}
               rows={8}
               spellCheck={false}
@@ -247,11 +268,51 @@ export default function PythonPractice({
             >
               <RotateCcw size={18} aria-hidden="true" /> Reset
             </button>
+            {feedback?.tone === "incorrect" ? (
+              <button
+                type="button"
+                onClick={() => setShowSolution(true)}
+                className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-5 py-3 font-bold text-blue-900 transition hover:bg-blue-100"
+              >
+                I&apos;m stuck — show solution
+              </button>
+            ) : null}
           </div>
 
           {showHint ? (
             <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 leading-7 text-amber-950">
               <strong>Hint:</strong> {lesson.hint}
+            </div>
+          ) : null}
+
+          {showSolution ? (
+            <div
+              className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-blue-950"
+              role="region"
+              aria-label="Python practice solution"
+            >
+              <p className="font-black">Question solution</p>
+              <p className="mt-3 font-bold">Correct Python answer:</p>
+              <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded-xl bg-slate-950 p-4 font-mono text-sm leading-7 text-emerald-200">
+                {lesson.acceptedAnswers[0]}
+              </pre>
+              <p className="mt-4 font-bold">Why it works:</p>
+              <p className="mt-1 leading-7">{lesson.explanation}</p>
+              <p className="mt-4 font-bold">Worked steps:</p>
+              <ol className="mt-1 list-decimal space-y-1 pl-5 leading-7">
+                <li>Identify the Python construct requested by the practice task.</li>
+                <li>Use the names, values, indentation, and punctuation shown in the answer.</li>
+                <li>Compare your attempt with the accepted answer, then retry it yourself.</li>
+              </ol>
+              {expectedResultByLessonId[lesson.id] ? (
+                <p className="mt-4">
+                  <span className="font-bold">Expected result:</span>{" "}
+                  {expectedResultByLessonId[lesson.id]}
+                </p>
+              ) : null}
+              <p className="mt-4 text-sm font-bold">
+                Viewing the solution does not complete this practice, award XP, or change progression.
+              </p>
             </div>
           ) : null}
 
