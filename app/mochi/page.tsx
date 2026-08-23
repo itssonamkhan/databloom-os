@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import AppLayout from "@/components/layout/AppLayout";
 import MochiAssistantCard from "@/components/mochi/MochiAssistantCard";
+import MochiChat from "@/components/mochi/MochiChat";
 import MochiMascot from "@/components/mochi/MochiMascot";
 import {
   addMochiHeart,
@@ -57,6 +58,8 @@ export default function MochiPage() {
         </div>
 
         <MochiAssistantCard />
+
+        <MochiChat />
 
         <section className="rounded-3xl bg-white/70 p-6 shadow-lg">
           <h2 className="text-2xl font-bold text-purple-700">Ask {buddy.name} {buddy.emoji}</h2>
