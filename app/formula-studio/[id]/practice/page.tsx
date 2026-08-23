@@ -27,6 +27,8 @@ export default function PracticePage({ params }: Props) {
   const formula = formulas.find((item) => item.id === id);
   const [answer, setAnswer] = useState("");
   const [checked, setChecked] = useState(false);
+  const [showHint, setShowHint] = useState(false);
+  const [showSolution, setShowSolution] = useState(false);
   const [showWorkedExample, setShowWorkedExample] = useState(false);
   const [completedQuestionIds, setCompletedQuestionIds] = useState<Set<string>>(new Set());
 
@@ -111,6 +113,7 @@ export default function PracticePage({ params }: Props) {
       result: correct ? "correct" : "incorrect",
     });
     setChecked(true);
+    setShowSolution(false);
     if (correct) {
       const next = new Set(completedQuestionIds);
       const newlyCompleted = !completedQuestionIds.has(currentQuestion.id);
@@ -130,6 +133,8 @@ export default function PracticePage({ params }: Props) {
   const resetQuestion = () => {
     setAnswer("");
     setChecked(false);
+    setShowHint(false);
+    setShowSolution(false);
     setShowWorkedExample(false);
   };
 
@@ -196,6 +201,31 @@ export default function PracticePage({ params }: Props) {
               </div>
               <p className="mt-5 break-words leading-8 text-gray-800">{currentQuestion.prompt}</p>
 
+              <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4 sm:p-5">
+                <p className="font-semibold text-blue-900">{currentQuestion.context.title}</p>
+                <div className="mt-3 max-w-full overflow-x-auto rounded-xl border border-blue-100 bg-white">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="bg-blue-900 text-white">
+                      <tr>
+                        {currentQuestion.context.columns.map((column) => (
+                          <th key={column} className="whitespace-nowrap px-3 py-2 font-semibold">{column}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-blue-100">
+                      {currentQuestion.context.rows.map((row, rowIndex) => (
+                        <tr key={`${currentQuestion.id}-context-${rowIndex}`}>
+                          {row.map((cell, cellIndex) => (
+                            <td key={`${currentQuestion.id}-context-${rowIndex}-${cellIndex}`} className="whitespace-nowrap px-3 py-2 text-gray-800">{cell || "—"}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {currentQuestion.context.note ? <p className="mt-3 text-sm leading-6 text-blue-900">{currentQuestion.context.note}</p> : null}
+              </div>
+
               {isSelectionQuestion && currentQuestion.options ? (
                 <fieldset className="mt-6 space-y-3">
                   <legend className="sr-only">Answer options</legend>
@@ -216,6 +246,7 @@ export default function PracticePage({ params }: Props) {
                         onChange={(event) => {
                           setAnswer(event.target.value);
                           setChecked(false);
+                          setShowSolution(false);
                         }}
                         className="h-4 w-4 accent-purple-600"
                       />
@@ -232,6 +263,7 @@ export default function PracticePage({ params }: Props) {
                     onChange={(event) => {
                       setAnswer(event.target.value);
                       setChecked(false);
+                      setShowSolution(false);
                     }}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") checkAnswer();
@@ -251,6 +283,14 @@ export default function PracticePage({ params }: Props) {
                 >
                   Check Answer
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setShowHint((visible) => !visible)}
+                  className="min-h-11 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 font-semibold text-amber-900 transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  aria-expanded={showHint}
+                >
+                  💡 {showHint ? "Hide hint" : "Show hint"}
+                </button>
                 {checked && (
                   <button
                     type="button"
@@ -260,7 +300,22 @@ export default function PracticePage({ params }: Props) {
                     Retry
                   </button>
                 )}
+                {checked && !isCorrect && (
+                  <button
+                    type="button"
+                    onClick={() => setShowSolution(true)}
+                    className="min-h-11 rounded-2xl border border-blue-200 bg-blue-50 px-5 py-3 font-semibold text-blue-900 transition hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    I don&apos;t know — Show solution
+                  </button>
+                )}
               </div>
+
+              {showHint ? (
+                <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-5 leading-7 text-amber-950">
+                  <strong>Hint:</strong> {currentQuestion.hint}
+                </div>
+              ) : null}
 
               {checked && (
                 <div role="status" className={`mt-6 rounded-2xl border p-5 ${isCorrect ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-rose-200 bg-rose-50 text-rose-900"}`}>
@@ -269,6 +324,24 @@ export default function PracticePage({ params }: Props) {
                   {!isCorrect && currentQuestion.acceptedAnswers && <p className="mt-3 break-words text-sm font-medium">Retry with the expected formula or value.</p>}
                 </div>
               )}
+
+              {showSolution ? (
+                <div className="mt-5 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-blue-950" role="region" aria-label="Question solution">
+                  <p className="font-bold">Question solution</p>
+                  <p className="mt-3 font-semibold">Correct answer:</p>
+                  <p className="mt-1 break-words rounded-xl bg-white/80 p-3 font-mono text-sm">{currentQuestion.solution.canonicalAnswer}</p>
+                  <p className="mt-4 font-semibold">Why it works:</p>
+                  <p className="mt-1 break-words leading-7">{currentQuestion.solution.explanation}</p>
+                  <p className="mt-4 font-semibold">Worked steps:</p>
+                  <ol className="mt-1 list-decimal space-y-1 pl-5 leading-7">
+                    {currentQuestion.solution.steps.map((step) => <li key={step}>{step}</li>)}
+                  </ol>
+                  {currentQuestion.solution.expectedResult ? (
+                    <p className="mt-4"><span className="font-semibold">Expected result:</span> {currentQuestion.solution.expectedResult}</p>
+                  ) : null}
+                  <p className="mt-4 text-sm font-semibold">Viewing the solution teaches the answer but does not mark this exercise complete or award XP.</p>
+                </div>
+              ) : null}
             </section>
 
             {workedExample && (

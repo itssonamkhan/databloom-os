@@ -17,6 +17,20 @@ export type FormulaPracticeDifficulty =
   | "intermediate"
   | "advanced";
 
+export type FormulaPracticeContext = {
+  title: string;
+  columns: string[];
+  rows: string[][];
+  note?: string;
+};
+
+export type FormulaPracticeSolution = {
+  canonicalAnswer: string;
+  explanation: string;
+  steps: string[];
+  expectedResult?: string;
+};
+
 export type FormulaPracticeQuestion = {
   id: string;
   formulaId: string;
@@ -26,12 +40,20 @@ export type FormulaPracticeQuestion = {
   acceptedAnswers?: string[];
   correctOption?: string;
   explanation: string;
+  hint: string;
+  context: FormulaPracticeContext;
+  solution: FormulaPracticeSolution;
   difficulty?: FormulaPracticeDifficulty;
 };
 
+type FormulaPracticeQuestionDraft = Omit<
+  FormulaPracticeQuestion,
+  "id" | "hint" | "context" | "solution"
+>;
+
 const question = (
-  item: Omit<FormulaPracticeQuestion, "id"> & { id?: string },
-): FormulaPracticeQuestion => ({
+  item: FormulaPracticeQuestionDraft & { id?: string },
+) => ({
   ...item,
   id: item.id ?? `${item.formulaId}-practice-1`,
 });
@@ -41,7 +63,9 @@ const question = (
  * records by ID. They do not duplicate formula content or create learning
  * completion state.
  */
-export const formulaPracticeQuestions: FormulaPracticeQuestion[] = [
+const baseFormulaPracticeQuestions: Array<
+  FormulaPracticeQuestionDraft & { id: string }
+> = [
   question({
     formulaId: "sum",
     type: "formula-writing",
@@ -398,6 +422,374 @@ export const formulaPracticeQuestions: FormulaPracticeQuestion[] = [
   }),
 ];
 
+const tableContext = (
+  title: string,
+  columns: string[],
+  rows: string[][],
+  note?: string,
+): FormulaPracticeContext => ({ title, columns, rows, note });
+
+const numericWorksheet = tableContext(
+  "Representative worksheet values",
+  ["A", "B", "C", "D", "E", "F", "G", "H"],
+  [
+    ["18.376", "1250", "Open", "2026-04-15", "E-1001", "88", "19.99", "Laptop"],
+    ["22.1", "675", "Closed", "2026-05-02", "E-1002", "92", "7.45", "Mouse"],
+    ["9.5", "980", "Open", "2026-06-18", "E-1003", "76", "12.5", "Tablet"],
+    ["31.25", "1440", "Open", "2026-07-11", "E-1004", "95", "25.0", "Monitor"],
+    ["12.0", "750", "Open", "2026-08-09", "E-1005", "81", "5.25", "Keyboard"],
+  ],
+  "The displayed rows are representative values; apply the requested formula to the full range named in the question.",
+);
+
+const conditionalWorksheet = tableContext(
+  "Sales target scenario",
+  ["A", "B", "C"],
+  [
+    ["SO-1001", "North", "65000"],
+    ["SO-1002", "West", "42000"],
+    ["SO-1003", "South", "51500"],
+  ],
+  "C2 is 65000, so the first row is the worked example for the Target/Below target rule.",
+);
+
+const countWorksheet = tableContext(
+  "Mixed values for counting",
+  ["A", "B", "D"],
+  [
+    ["12", "Open", "Aisha"],
+    ["18", "Closed", ""],
+    ["21", "Open", "Meera"],
+    ["n/a", "Open", "42"],
+  ],
+  "This small range intentionally mixes numbers, text, blanks, and labels so the counting rule is observable.",
+);
+
+const statusWorksheet = tableContext(
+  "Status and revenue criteria",
+  ["A", "B", "C"],
+  [
+    ["West", "Open", "12500"],
+    ["West", "Closed", "9000"],
+    ["North", "Open", "15500"],
+    ["West", "Open", "21000"],
+  ],
+  "For COUNTIFS, rows 2 and 5 are West with revenue greater than 10000.",
+);
+
+const lookupWorksheet = tableContext(
+  "Employee lookup table",
+  ["A", "B", "C", "D", "E"],
+  [
+    ["E-1001", "Aisha Khan", "72000", "Sales", "E-1003"],
+    ["E-1002", "Rohan Mehta", "68000", "Operations", ""],
+    ["E-1003", "Meera Iyer", "75500", "Finance", ""],
+    ["E-1004", "Arjun Das", "81000", "Marketing", ""],
+  ],
+  "E2 contains E-1003. A is the lookup array, C is salary, and D is department.",
+);
+
+const departmentLookupWorksheet = tableContext(
+  "Employee department lookup",
+  ["A", "B", "C", "E"],
+  [
+    ["E-1001", "Aisha Khan", "Sales", "E-1003"],
+    ["E-1002", "Rohan Mehta", "Operations", ""],
+    ["E-1003", "Meera Iyer", "Finance", ""],
+    ["E-1004", "Arjun Das", "Marketing", ""],
+  ],
+  "E2 contains E-1003. MATCH locates it in A2:A100 and INDEX returns the department from C2:C100.",
+);
+
+const indexWorksheet = tableContext(
+  "A2:F20 representative range",
+  ["A", "B", "C", "D", "E", "F"],
+  [
+    ["North", "Laptop", "Software", "2", "1250", "2026-04-15"],
+    ["West", "Mouse", "Hardware", "3", "675", "2026-05-02"],
+    ["South", "Tablet", "Hardware", "1", "980", "2026-06-18"],
+    ["East", "Monitor", "Hardware", "4", "1440", "2026-07-11"],
+    ["North", "Keyboard", "Hardware", "5", "750", "2026-08-09"],
+  ],
+  "Five representative rows are shown so relative row 5 and column 3 can be checked directly.",
+);
+
+const matchWorksheet = tableContext(
+  "Product lookup list",
+  ["A", "H"],
+  [
+    ["Laptop", "Tablet"],
+    ["Mouse", ""],
+    ["Tablet", ""],
+    ["Monitor", ""],
+  ],
+  "H2 contains Tablet; MATCH should return its exact position in A2:A100.",
+);
+
+const nameWorksheet = tableContext(
+  "Name fields",
+  ["A", "B"],
+  [
+    ["Aisha", "Khan"],
+    ["Rohan", "Mehta"],
+    ["Meera", "Iyer"],
+    ["Arjun", "Das"],
+    ["", ""],
+  ],
+  "A2 and B2 are the first-name and last-name inputs for the joining exercises.",
+);
+
+const textWorksheet = tableContext(
+  "Text and code values",
+  ["A", "B", "C", "D"],
+  [
+    ["Aisha", "ABC-1042", "  Aisha   Khan ", "2026-04-15"],
+    ["Rohan", "MOU-2081", "Meera Iyer", "2026-05-02"],
+    ["Meera", "TAB-3300", "Arjun Das", "2026-06-18"],
+    ["Arjun", "XYZ-4521", "Sana Ali", "2026-07-11"],
+  ],
+  "The values in B2, C2, and D2 are the concrete inputs for the text/date exercises.",
+);
+
+const lenWorksheet = tableContext(
+  "Text length input",
+  ["A", "B", "C"],
+  [["Aisha", "ABC-1042", "Customer Name"]],
+  "C2 contains Customer Name, so LEN can be checked without hidden whitespace.",
+);
+
+const trimWorksheet = tableContext(
+  "Text cleanup input",
+  ["A", "B", "C"],
+  [["Aisha", "ABC-1042", "  Aisha   Khan "]],
+  "C2 contains leading, internal, and trailing whitespace for the TRIM exercise.",
+);
+
+const scoreWorksheet = tableContext(
+  "Scores and amounts",
+  ["E", "F", "G"],
+  [
+    ["12", "88", "19.99"],
+    ["7", "92", "7.45"],
+    ["15", "76", "12.5"],
+    ["5", "95", "25.0"],
+  ],
+  "E, F, and G provide numeric values for minimum, maximum, and rounding examples.",
+);
+
+const dateWorksheet = tableContext(
+  "Date values",
+  ["A", "D"],
+  [
+    ["2026-04-15", "2026-04-15"],
+    ["2026-05-02", "2026-05-02"],
+    ["2026-06-18", "2026-06-18"],
+  ],
+  "D2 is 15 April 2026; date functions use that value for the expected result.",
+);
+
+const dynamicWorksheet = tableContext(
+  "Dynamic-array source range",
+  ["A", "B", "C"],
+  [
+    ["Aisha", "West", "Open"],
+    ["Rohan", "North", "Closed"],
+    ["Meera", "West", "Open"],
+    ["Arjun", "East", "Open"],
+    ["Aisha", "West", "Open"],
+  ],
+  "The prompt names the full source range; these rows make the filter, sort, and unique results concrete without creating a large sheet.",
+);
+
+const vstackWorksheet = tableContext(
+  "Two compatible row blocks",
+  ["A", "B", "C"],
+  [
+    ["A2", "North", "Laptop"],
+    ["A3", "West", "Mouse"],
+    ["A20", "South", "Tablet"],
+    ["A21", "East", "Monitor"],
+  ],
+  "Rows labelled A2–A3 represent the first block; rows labelled A20–A21 represent the second block that should appear below it.",
+);
+
+const standaloneContext = tableContext(
+  "Formula input scenario",
+  ["Input", "Expected rule"],
+  [["12.31", "Round upward to one decimal"], ["7", "Double with LAMBDA"]],
+  "This exercise is self-contained and does not require a worksheet range.",
+);
+
+const formulaContextById: Record<string, FormulaPracticeContext> = {
+  sum: numericWorksheet,
+  if: conditionalWorksheet,
+  count: countWorksheet,
+  counta: countWorksheet,
+  countif: statusWorksheet,
+  countifs: statusWorksheet,
+  min: scoreWorksheet,
+  max: scoreWorksheet,
+  round: numericWorksheet,
+  roundup: standaloneContext,
+  rounddown: numericWorksheet,
+  xlookup: lookupWorksheet,
+  index: indexWorksheet,
+  match: matchWorksheet,
+  "index-match": departmentLookupWorksheet,
+  left: textWorksheet,
+  right: textWorksheet,
+  mid: textWorksheet,
+  len: lenWorksheet,
+  trim: trimWorksheet,
+  text: dateWorksheet,
+  concat: nameWorksheet,
+  concatenate: nameWorksheet,
+  textjoin: nameWorksheet,
+  today: standaloneContext,
+  now: standaloneContext,
+  year: dateWorksheet,
+  month: dateWorksheet,
+  day: dateWorksheet,
+  edate: dateWorksheet,
+  eomonth: dateWorksheet,
+  filter: dynamicWorksheet,
+  sort: dynamicWorksheet,
+  unique: dynamicWorksheet,
+  sortby: statusWorksheet,
+  sequence: standaloneContext,
+  let: numericWorksheet,
+  lambda: standaloneContext,
+  take: indexWorksheet,
+  choosecols: indexWorksheet,
+  hstack: dynamicWorksheet,
+  vstack: vstackWorksheet,
+};
+
+const hintByFormulaId: Record<string, string> = {
+  sum: "Add the numeric values in the requested range; SUM takes one range argument.",
+  if: "Identify the test first, then the value returned when it is TRUE and when it is FALSE.",
+  count: "COUNT includes numeric cells only; text and blanks are ignored.",
+  counta: "COUNTA counts any cell that is not empty, including text and numbers.",
+  countif: "Use one criteria range and match the exact status requested.",
+  countifs: "Pair each criteria range with its condition; both conditions must be true for a row.",
+  min: "Choose the function that returns the smallest numeric value.",
+  max: "Choose the function that returns the largest numeric value.",
+  round: "The second argument controls how many decimal places remain.",
+  roundup: "This policy always moves the value upward at the requested precision.",
+  rounddown: "Use the rounding function that never increases the amount.",
+  xlookup: "Map the lookup value to the key column, then return the parallel salary column with a fallback.",
+  index: "INDEX takes a range followed by a relative row number and column number.",
+  match: "Use exact-match mode so the position is returned only for the requested product.",
+  "index-match": "MATCH locates the employee row; INDEX returns the department from that same row.",
+  left: "Use the text function that reads from the beginning and specify three characters.",
+  right: "Use the text function that reads from the end and specify four characters.",
+  mid: "MID needs the source, starting character position, and number of characters.",
+  len: "The required function counts characters rather than numeric values.",
+  trim: "Look for the function that removes extra leading, trailing, and repeated spaces.",
+  text: "TEXT applies a display mask to the date; the mask needs year and month tokens.",
+  concat: "Pass the first name, a literal space, and the last name as separate arguments.",
+  concatenate: "The legacy function takes each text fragment as a separate argument.",
+  textjoin: "Choose a delimiter, tell Excel to ignore blanks, then supply the source range.",
+  today: "TODAY returns the current date without a time component.",
+  now: "NOW returns both the current date and the current time.",
+  year: "Extract only the year component from the supplied date.",
+  month: "Extract the month number, which is between 1 and 12.",
+  day: "Extract the day-of-month component from the date.",
+  edate: "Shift the date by three calendar months rather than adding a fixed number of days.",
+  eomonth: "Use a zero-month offset and return the final day of that month.",
+  filter: "Return the source rows whose status test evaluates TRUE.",
+  sort: "Sort the source array by its second column and use ascending order.",
+  unique: "The required function spills one copy of each distinct customer name.",
+  sortby: "Sort the whole table by the revenue column, using descending order.",
+  sequence: "Specify rows, columns, starting value, and step for a vertical 1–12 array.",
+  let: "Name the SUM result once, then reuse that name in the 10% uplift calculation.",
+  lambda: "LAMBDA declares its parameter before the expression that doubles it.",
+  take: "TAKE selects rows from the top when the row count is positive.",
+  choosecols: "Project columns 1, 3, and 6 from the source array.",
+  hstack: "Place the two one-column arrays next to one another.",
+  vstack: "Place the second block directly below the first block.",
+};
+
+const expectedResultByFormulaId: Record<string, string> = {
+  sum: "5,095",
+  if: "Target",
+  count: "3 numeric cells",
+  counta: "3 non-empty cells",
+  countif: "3 Open rows",
+  countifs: "2 rows",
+  min: "5",
+  max: "95",
+  round: "18.38",
+  roundup: "12.4",
+  rounddown: "19.9",
+  xlookup: "75,500",
+  index: "Hardware",
+  match: "3",
+  "index-match": "Finance",
+  left: "ABC",
+  right: "1042",
+  mid: "-1042",
+  len: "13 characters",
+  trim: "Aisha Khan",
+  text: "2026-04",
+  concat: "Aisha Khan",
+  concatenate: "Aisha Khan",
+  textjoin: "Aisha, Rohan, Meera, Arjun",
+  year: "2026",
+  month: "4",
+  day: "15",
+  edate: "2026-07-15",
+  eomonth: "2026-04-30",
+  filter: "The Open rows: Aisha, Meera, and Arjun",
+  sort: "Rows ordered East, North, West, West, West by column B",
+  unique: "Aisha, Rohan, Meera, Arjun",
+  sortby: "Rows ordered by revenue from largest to smallest",
+  sequence: "1, 2, 3, …, 12",
+  let: "5,604.5",
+  lambda: "For input 7, the result is 14",
+  take: "The first five rows of A2:D100",
+  choosecols: "Columns A, C, and F",
+  hstack: "A and C appear side by side",
+  vstack: "The A2:C10 block followed by A20:C28",
+};
+
+function enrichFormulaPracticeQuestion(
+  item: FormulaPracticeQuestionDraft & { id: string },
+): FormulaPracticeQuestion {
+  const formula = formulas.find((entry) => entry.id === item.formulaId);
+  if (!formula) {
+    throw new Error(`Formula practice references unknown formula: ${item.formulaId}`);
+  }
+
+  const context = formulaContextById[item.formulaId];
+  const hint = hintByFormulaId[item.formulaId];
+  if (!context || !hint) {
+    throw new Error(`Formula practice support is incomplete for ${item.formulaId}`);
+  }
+
+  const canonicalAnswer = item.correctOption ?? item.acceptedAnswers?.[0] ?? "";
+  return {
+    ...item,
+    hint,
+    context,
+    solution: {
+      canonicalAnswer,
+      explanation: item.explanation,
+      steps: [
+        `Read the supplied ${context.title.toLowerCase()} for the cells or values named in the question.`,
+        `Apply ${formula.name} to the requested input using the arguments described in the prompt.`,
+        ...formula.howToUse.slice(0, 2),
+      ],
+      expectedResult: expectedResultByFormulaId[item.formulaId],
+    },
+  };
+}
+
+export const formulaPracticeQuestions: FormulaPracticeQuestion[] =
+  baseFormulaPracticeQuestions.map((item) =>
+    enrichFormulaPracticeQuestion(item),
+  );
+
 export const formulaPracticeSessionKey = "databloom-formula-practice-session-v1";
 
 export const formulaPracticeDifficultyOrder: FormulaPracticeDifficulty[] = [
@@ -586,6 +978,15 @@ export function validateFormulaPracticeQuestions(
     }
     if (!item.explanation.trim()) {
       issues.push({ questionId: item.id, message: "Practice question explanation is empty." });
+    }
+    if (!item.hint.trim()) {
+      issues.push({ questionId: item.id, message: "Practice question hint is empty." });
+    }
+    if (!item.context.title.trim() || item.context.columns.length === 0 || item.context.rows.length === 0) {
+      issues.push({ questionId: item.id, message: "Practice question context is incomplete." });
+    }
+    if (!item.solution.canonicalAnswer.trim() || !item.solution.explanation.trim() || item.solution.steps.length === 0) {
+      issues.push({ questionId: item.id, message: "Practice question solution is incomplete." });
     }
 
     if (["multiple-choice", "scenario-selection", "formula-comparison"].includes(item.type)) {
