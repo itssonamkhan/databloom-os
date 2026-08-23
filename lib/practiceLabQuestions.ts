@@ -37,6 +37,19 @@ export type PracticeDifficulty = (typeof practiceDifficulties)[number];
 export type PracticeQuestionType = (typeof practiceQuestionTypes)[number];
 export type PracticeAnswer = string | string[] | Record<string, string>;
 
+export type PracticeQuestionContext = {
+  title: string;
+  columns: string[];
+  rows: string[][];
+  note?: string;
+};
+
+export type PracticeQuestionSolution = {
+  canonicalAnswer: string;
+  steps: string[];
+  expectedResult?: string;
+};
+
 export type PracticeCurriculumReference = {
   studioId: SupportedCurriculumStudioId;
   lessonId: string;
@@ -58,7 +71,8 @@ type PracticeQuestionBase = {
   correctAnswer?: string;
   pairs?: Array<{ left: string; right: string }>;
   orderItems?: string[];
-  context?: string;
+  context?: string | PracticeQuestionContext;
+  solution?: PracticeQuestionSolution;
   curriculum?: PracticeCurriculumReference;
 };
 
@@ -116,7 +130,7 @@ export type PracticeQuestionValidationResult = {
   issues: readonly PracticeQuestionValidationIssue[];
 };
 
-export const practiceQuestions: PracticeQuestion[] = [
+const basePracticeQuestions: PracticeQuestion[] = [
   {
     id: "excel-if-formula",
     curriculum: { studioId: "formula-studio", lessonId: "if" },
@@ -1168,6 +1182,182 @@ export const practiceQuestions: PracticeQuestion[] = [
   },
 ];
 
+const tableContext = (
+  title: string,
+  columns: string[],
+  rows: string[][],
+  note?: string,
+): PracticeQuestionContext => ({ title, columns, rows, note });
+
+const salesWorksheet = tableContext(
+  "Sales worksheet preview",
+  ["OrderID", "Region", "Amount", "Status", "CustomerID"],
+  [
+    ["SO-1001", "North", "1250", "Completed", "C-101"],
+    ["SO-1002", "West", "675", "Pending", "C-102"],
+    ["SO-1003", "West", "980", "Completed", "C-101"],
+    ["SO-1004", "East", "1440", "Completed", "C-103"],
+  ],
+  "Use the named columns in the prompt; the rows are representative inputs for the exercise.",
+);
+
+const productLookup = tableContext(
+  "Products lookup table",
+  ["ID", "Product", "Price"],
+  [
+    ["P-101", "Laptop", "1250"],
+    ["P-102", "Mouse", "675"],
+    ["P-103", "Tablet", "980"],
+  ],
+  "Products[ID] is the key column and Products[Price] is the return column.",
+);
+
+const textImport = tableContext(
+  "Imported customer names",
+  ["A", "B"],
+  [["  Aisha   Khan ", "North"], ["Rohan Mehta", "West"]],
+  "A2 contains extra spaces so the cleaning result is observable.",
+);
+
+const twoWayLookup = tableContext(
+  "Regional price matrix",
+  ["Product", "North", "West", "South"],
+  [["Laptop", "1250", "1300", "1275"], ["Mouse", "25", "27", "24"], ["Tablet", "980", "1010", "995"]],
+  "Use the row key Product and the column header Region to locate the intersection.",
+);
+
+const statusTable = tableContext(
+  "Customer status table",
+  ["Customer", "Status", "Revenue"],
+  [["Aisha", "Active", "1250"], ["Rohan", "Inactive", "675"], ["Meera", "Active", "980"]],
+  "Status is the criterion column for the dynamic filter.",
+);
+
+const ordersSchema = tableContext(
+  "Orders table schema",
+  ["order_id", "customer_id", "region", "amount", "status", "order_date"],
+  [["O-1001", "C-101", "North", "1250", "Completed", "2026-01-05"], ["O-1002", "C-102", "West", "675", "Pending", "2026-01-12"], ["O-1003", "C-101", "West", "980", "Completed", "2026-02-03"]],
+  "The schema and sample rows show the available fields without requiring a live database.",
+);
+
+const customersOrdersSchema = tableContext(
+  "Customers and orders relationship",
+  ["customers.customer_id", "customers.name", "orders.order_id", "orders.customer_id"],
+  [["C-101", "Aisha", "O-1001", "C-101"], ["C-102", "Rohan", "—", "—"]],
+  "The customer on the left has no order, illustrating why LEFT JOIN preserves it.",
+);
+
+const pythonFrame = tableContext(
+  "Pandas DataFrame preview",
+  ["customer", "region", "revenue", "order_value", "date"],
+  [["Aisha", "North", "1250", "1250", "2026-01-05"], ["Rohan", "West", "675", "225", "2026-01-12"], ["Meera", "South", "980", "980", "2026-02-03"]],
+  "Use these column labels and values when writing the requested pandas expression.",
+);
+
+const pythonMergeFrames = tableContext(
+  "DataFrame join keys",
+  ["orders.customer_id", "orders.revenue", "customers.customer_id", "customers.segment"],
+  [["C-101", "1250", "C-101", "Enterprise"], ["C-102", "675", "C-102", "Starter"]],
+  "Both frames share customer_id, which is the explicit merge key.",
+);
+
+const rollingSeries = tableContext(
+  "Time-ordered revenue Series",
+  ["date", "revenue"],
+  [["2026-01-05", "100"], ["2026-01-12", "120"], ["2026-02-03", "90"], ["2026-02-18", "150"]],
+  "The dates are already ordered, so rolling(3) uses each row and the two preceding observations.",
+);
+
+const marginModel = tableContext(
+  "Power BI measure context",
+  ["Measure", "Value"],
+  [["[Revenue]", "100000"], ["[Profit]", "18000"], ["[Discount Rate]", "0.14"]],
+  "The measures are supplied by the model; the task is to choose the safe DAX expression or interpretation.",
+);
+
+const dateModel = tableContext(
+  "Power BI date model",
+  ["Date", "Year", "Month"],
+  [["2026-01-05", "2026", "January"], ["2026-02-03", "2026", "February"]],
+  "A complete marked date table provides reusable calendar attributes for time intelligence.",
+);
+
+const errorPreview = tableContext(
+  "Power Query conversion preview",
+  ["Raw value", "Attempted type"],
+  [["1250", "Number"], ["N/A", "Number error"], ["980", "Number"]],
+  "Inspect the N/A record before deciding whether to replace, remove, or route it for review.",
+);
+
+const growthEvidence = tableContext(
+  "Business growth evidence",
+  ["Metric", "Prior", "Current"],
+  [["Revenue", "100", "120"], ["Visitors", "200", "240"]],
+  "Growth rate is the change divided by the prior-period value.",
+);
+
+const funnelEvidence = tableContext(
+  "Funnel evidence",
+  ["Stage", "Count"],
+  [["Visitors", "200"], ["Purchases", "10"]],
+  "Conversion rate is purchases divided by visitors.",
+);
+
+const contextByQuestionId: Record<string, PracticeQuestionContext> = {
+  "excel-if-formula": salesWorksheet,
+  "excel-xlookup-blank": productLookup,
+  "excel-sumifs-by-region": salesWorksheet,
+  "excel-text-cleaning": textImport,
+  "excel-index-match-two-way": twoWayLookup,
+  "excel-dynamic-filter": statusTable,
+  "sql-region-aggregate": ordersSchema,
+  "sql-left-join": customersOrdersSchema,
+  "sql-where-filter": ordersSchema,
+  "sql-count-distinct-customers": ordersSchema,
+  "sql-window-running-total": ordersSchema,
+  "python-filter-revenue": pythonFrame,
+  "python-groupby-blank": pythonFrame,
+  "python-select-column": pythonFrame,
+  "python-fill-missing-values": pythonFrame,
+  "python-merge-dataframes": pythonMergeFrames,
+  "python-groupby-multi-agg": pythonFrame,
+  "python-time-aware-rolling": rollingSeries,
+  "powerbi-margin-card": marginModel,
+  "powerbi-margin-dax": marginModel,
+  "powerbi-date-table": dateModel,
+  "powerquery-remove-errors": errorPreview,
+  "business-revenue-growth": growthEvidence,
+  "business-funnel-conversion": funnelEvidence,
+};
+
+function canonicalPracticeAnswer(question: PracticeQuestion): string {
+  if (question.type === "Match the Columns") {
+    return (question.pairs ?? []).map((pair) => `${pair.left} → ${pair.right}`).join("; ");
+  }
+  if (question.type === "Drag & Drop Ordering") return question.orderItems?.join(" → ") ?? "";
+  return question.correctAnswer ?? question.acceptedAnswers?.[0] ?? "";
+}
+
+function enrichPracticeQuestion(question: PracticeQuestion): PracticeQuestion {
+  const context = question.context ?? contextByQuestionId[question.id];
+  return {
+    ...question,
+    context,
+    solution: {
+      canonicalAnswer: canonicalPracticeAnswer(question),
+      steps: [
+        "Read the supplied context and identify the field, rule, or relationship named in the prompt.",
+        "Apply the relevant technique using the answer shape requested by this question.",
+        question.explanation,
+      ],
+    },
+  };
+}
+
+export const practiceQuestions: PracticeQuestion[] = basePracticeQuestions.map(
+  enrichPracticeQuestion,
+);
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -1230,6 +1420,42 @@ export function validatePracticeQuestion(
   for (const field of ["topic", "title", "prompt", "hint", "explanation"]) {
     if (!isNonEmptyString(value[field])) {
       addMissingFieldIssue(issues, questionId, index, field);
+    }
+  }
+
+  if (!isRecord(value.solution) || !isNonEmptyString(value.solution.canonicalAnswer)) {
+    issues.push({
+      code: "missing-answer",
+      field: "solution",
+      index,
+      questionId,
+      message: "Every question requires a canonical solution answer",
+    });
+  } else if (!isStringArray(value.solution.steps)) {
+    issues.push({
+      code: "missing-field",
+      field: "solution.steps",
+      index,
+      questionId,
+      message: "Every solution requires at least one worked step",
+    });
+  }
+
+  if (value.context !== undefined && typeof value.context !== "string") {
+    if (
+      !isRecord(value.context) ||
+      !isNonEmptyString(value.context.title) ||
+      !isStringArray(value.context.columns) ||
+      !Array.isArray(value.context.rows) ||
+      !value.context.rows.every((row) => isStringArray(row))
+    ) {
+      issues.push({
+        code: "invalid-value",
+        field: "context",
+        index,
+        questionId,
+        message: "Structured context requires a title, columns, and non-empty rows",
+      });
     }
   }
 

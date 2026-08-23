@@ -178,6 +178,7 @@ export default function PracticeLabHub() {
   const [answer, setAnswer] = useState<PracticeAnswer>("");
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [showHint, setShowHint] = useState(false);
+  const [showSolution, setShowSolution] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [completion, setCompletion] = useState<PracticeHistoryEntry | null>(null);
   const [note, setNote] = useState("");
@@ -218,6 +219,7 @@ export default function PracticeLabHub() {
       setAnswer(answerForQuestion(currentQuestion));
       setFeedback(null);
       setShowHint(false);
+      setShowSolution(false);
       setNote(state.notes[currentQuestion.id] ?? "");
       setNoteStatus("");
     });
@@ -314,6 +316,7 @@ export default function PracticeLabHub() {
     const result = recordPracticeAttempt(currentQuestion.id, correct);
     if (!result.saved) return;
     sync();
+    setShowSolution(false);
 
     if (!correct) {
       playNotificationSound();
@@ -403,6 +406,8 @@ export default function PracticeLabHub() {
           feedback={feedback}
           showHint={showHint}
           setShowHint={setShowHint}
+          showSolution={showSolution}
+          setShowSolution={setShowSolution}
           elapsedSeconds={elapsedSeconds}
           favorite={state.favoriteQuestionIds.includes(currentQuestion.id)}
           note={note}
@@ -685,7 +690,7 @@ export default function PracticeLabHub() {
   );
 }
 
-function PracticeSession({ session, question, answer, setAnswer, feedback, showHint, setShowHint, elapsedSeconds, favorite, note, setNote, noteStatus, onSaveNote, onToggleFavorite, onCheck, onNext, onLeave, draggedIndex, setDraggedIndex }: {
+function PracticeSession({ session, question, answer, setAnswer, feedback, showHint, setShowHint, showSolution, setShowSolution, elapsedSeconds, favorite, note, setNote, noteStatus, onSaveNote, onToggleFavorite, onCheck, onNext, onLeave, draggedIndex, setDraggedIndex }: {
   session: ActivePracticeSession;
   question: PracticeQuestion;
   answer: PracticeAnswer;
@@ -693,6 +698,8 @@ function PracticeSession({ session, question, answer, setAnswer, feedback, showH
   feedback: Feedback;
   showHint: boolean;
   setShowHint: (value: boolean) => void;
+  showSolution: boolean;
+  setShowSolution: (value: boolean) => void;
   elapsedSeconds: number;
   favorite: boolean;
   note: string;
@@ -731,14 +738,16 @@ function PracticeSession({ session, question, answer, setAnswer, feedback, showH
       </header>
 
       <section className="min-w-0 rounded-[2rem] border border-purple-100 bg-white p-6 shadow-lg sm:p-8">
-        {question.context ? <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50 p-5"><p className="text-sm font-black uppercase tracking-wider text-blue-800">Dashboard / case context</p><p className="mt-2 font-semibold leading-7 text-slate-800">{question.context}</p></div> : null}
+        {question.context ? <QuestionContext context={question.context} /> : null}
         <QuestionInput question={question} answer={answer} setAnswer={setAnswer} disabled={feedback?.correct === true} draggedIndex={draggedIndex} setDraggedIndex={setDraggedIndex} />
         <div className="mt-6 flex flex-wrap gap-3">
           <button type="button" onClick={onCheck} disabled={feedback?.correct === true} className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-purple-700 px-6 font-black text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:bg-emerald-600"><CheckCircle2 size={19} aria-hidden="true" /> {feedback?.correct ? "Correct" : "Check answer"}</button>
           <button type="button" onClick={() => { playClickSound(); setShowHint(!showHint); }} className="inline-flex min-h-12 items-center gap-2 rounded-2xl border border-amber-300 bg-amber-50 px-5 font-black text-amber-900"><Lightbulb size={19} aria-hidden="true" /> {showHint ? "Hide hint" : "Hint"}</button>
+          {feedback?.correct === false ? <button type="button" onClick={() => setShowSolution(true)} className="inline-flex min-h-12 items-center gap-2 rounded-2xl border border-blue-200 bg-blue-50 px-5 font-black text-blue-900">I&apos;m stuck — show solution</button> : null}
           {!feedback?.correct ? <button type="button" onClick={() => setAnswer(answerForQuestion(question))} className="inline-flex min-h-12 items-center gap-2 rounded-2xl border border-slate-300 bg-white px-5 font-black text-slate-700"><RotateCcw size={18} aria-hidden="true" /> Reset</button> : null}
         </div>
         {showHint ? <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-5 leading-7 text-amber-950"><strong>Hint:</strong> {question.hint}</div> : null}
+        {showSolution && question.solution ? <div className="mt-5 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-blue-950" role="region" aria-label="Practice solution"><p className="font-black">Question solution</p><p className="mt-3 font-bold">Correct answer:</p><p className="mt-1 break-words rounded-xl bg-white/80 p-3 font-mono text-sm">{question.solution.canonicalAnswer}</p><p className="mt-4 font-bold">Worked steps:</p><ol className="mt-1 list-decimal space-y-1 pl-5 leading-7">{question.solution.steps.map((step) => <li key={step}>{step}</li>)}</ol><p className="mt-4 text-sm font-bold">Reviewing the solution does not mark this challenge correct, award XP, or advance the session.</p></div> : null}
         {feedback ? <div role="status" aria-live="polite" className={`mt-5 rounded-2xl border p-5 ${feedback.correct ? "border-emerald-300 bg-emerald-50 text-emerald-950" : "border-rose-300 bg-rose-50 text-rose-950"}`}><p className="font-black">{feedback.message}</p><p className="mt-2 leading-7"><strong>Explanation:</strong> {question.explanation}</p>{feedback.correct ? <button type="button" onClick={onNext} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 font-black text-white">{session.currentIndex === session.questionIds.length - 1 ? "View results" : "Next challenge"}<ArrowRight size={18} aria-hidden="true" /></button> : <p className="mt-3 font-bold">Edit your answer above and check again.</p>}</div> : null}
       </section>
 
@@ -751,6 +760,13 @@ function PracticeSession({ session, question, answer, setAnswer, feedback, showH
       </section>
     </div>
   );
+}
+
+function QuestionContext({ context }: { context: NonNullable<PracticeQuestion["context"]> }) {
+  if (typeof context === "string") {
+    return <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50 p-5"><p className="text-sm font-black uppercase tracking-wider text-blue-800">Question context</p><p className="mt-2 whitespace-pre-wrap font-semibold leading-7 text-slate-800">{context}</p></div>;
+  }
+  return <div className="mb-6 min-w-0 rounded-2xl border border-blue-100 bg-blue-50 p-5"><p className="text-sm font-black uppercase tracking-wider text-blue-800">{context.title}</p><div className="mt-3 max-w-full overflow-x-auto rounded-xl border border-blue-100 bg-white"><table className="min-w-full text-left text-sm"><thead className="bg-slate-900 text-white"><tr>{context.columns.map((column) => <th key={column} className="whitespace-nowrap px-3 py-2 font-bold">{column}</th>)}</tr></thead><tbody className="divide-y divide-slate-200">{context.rows.map((row, rowIndex) => <tr key={`context-${rowIndex}`}>{row.map((cell, cellIndex) => <td key={`${rowIndex}-${cellIndex}`} className="whitespace-nowrap px-3 py-2 text-slate-700">{cell || "—"}</td>)}</tr>)}</tbody></table></div>{context.note ? <p className="mt-3 text-sm leading-6 text-slate-700">{context.note}</p> : null}</div>;
 }
 
 function QuestionInput({ question, answer, setAnswer, disabled, draggedIndex, setDraggedIndex }: { question: PracticeQuestion; answer: PracticeAnswer; setAnswer: (answer: PracticeAnswer) => void; disabled: boolean; draggedIndex: number | null; setDraggedIndex: (index: number | null) => void }) {

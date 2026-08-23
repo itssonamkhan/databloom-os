@@ -216,7 +216,7 @@ export default function PythonPractice({
               rows={8}
               spellCheck={false}
               placeholder="# Write your Python answer here"
-              className="w-full rounded-2xl border-2 border-slate-300 bg-slate-950 p-5 font-mono text-sm leading-7 text-emerald-200 outline-none placeholder:text-slate-500 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+              className="python-practice-editor w-full rounded-2xl border-2 border-slate-300 bg-slate-950 p-5 font-mono text-sm leading-7 !text-emerald-200 outline-none placeholder:!text-slate-400 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
             />
           </label>
 

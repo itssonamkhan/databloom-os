@@ -548,6 +548,14 @@ html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   opacity: 1;
 }
 
+/* Python's dark code editor needs a light placeholder on non-Sakura themes;
+   keep this scoped so regular fields and Sakura's approved styling are unchanged. */
+html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
+  .python-practice-editor::placeholder {
+  color: var(--databloom-text-on-accent);
+  opacity: 0.7;
+}
+
 html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
   :where(input, textarea, select)[class*="bg-white"] {
   background-color: var(--databloom-input);
