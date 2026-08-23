@@ -410,6 +410,11 @@ function CardShell({
           <h4 className="mt-3 text-xl font-black text-[var(--databloom-text-heading)]">
             {item.title}
           </h4>
+          {item.definition ? (
+            <p className="mt-3 text-sm leading-6 text-[var(--databloom-text-secondary)]">
+              <span className="font-black text-[var(--databloom-text-heading)]">What is it?</span> {item.definition}
+            </p>
+          ) : null}
         </div>
         <button
           type="button"

@@ -20,6 +20,7 @@ type ExcelToolkitBase = {
   title: string;
   category: ExcelToolkitCategory;
   difficulty: ExcelToolkitDifficulty;
+  definition?: string;
 };
 
 export type ExcelShortcutGroup =
@@ -919,13 +920,85 @@ export const analystSecrets: AnalystSecret[] = [
   },
 ];
 
+const excelToolkitDefinitions: Record<string, string> = {
+  "shortcut-jump-data-edge": "A keyboard shortcut that moves to the next edge of a contiguous data region.",
+  "shortcut-first-cell": "A shortcut that returns the selection to the first cell of a worksheet.",
+  "shortcut-last-used-cell": "A shortcut that jumps to the last cell Excel considers used on a sheet.",
+  "shortcut-go-to": "Go To opens a box for navigating directly to a cell, range, or named object.",
+  "shortcut-extend-data-edge": "A selection shortcut that extends the current selection to the edge of a data region.",
+  "shortcut-select-region": "Select Current Region selects the contiguous block surrounding the active cell.",
+  "shortcut-select-row": "A row-selection shortcut selects every cell across the active worksheet row.",
+  "shortcut-select-column": "A column-selection shortcut selects every cell down the active worksheet column.",
+  "shortcut-edit-cell": "Edit Cell activates the current cell so its existing value or formula can be changed.",
+  "shortcut-fill-down": "Fill Down copies the top cell's value or formula into the selected cells below it.",
+  "shortcut-fill-right": "Fill Right copies the leftmost selected cell into cells to its right.",
+  "shortcut-fill-selection": "Enter into Every Selected Cell writes the same entry to all selected cells at once.",
+  "shortcut-format-cells": "Format Cells opens Excel's dialog for number, alignment, border, fill, and protection settings.",
+  "shortcut-bold": "The Bold shortcut toggles heavier font formatting on the selected cells.",
+  "shortcut-currency-format": "Currency formatting displays numeric values with a currency symbol and monetary decimals.",
+  "shortcut-percent-format": "Percentage formatting displays a decimal value as a percentage with a percent sign.",
+  "shortcut-autosum": "AutoSum inserts a SUM formula that proposes a nearby range to total.",
+  "shortcut-toggle-reference": "Reference toggling cycles a formula reference between relative, absolute, and mixed forms.",
+  "shortcut-show-formulas": "Show Formulas switches a worksheet between displayed results and the formulas behind them.",
+  "shortcut-insert-function": "Insert Function opens Excel's function browser and argument helper.",
+  "shortcut-create-table": "Create Table converts a range into a structured Excel Table with headers and filters.",
+  "shortcut-toggle-filter": "Toggle Filters adds or removes filter controls for a tabular range or table.",
+  "shortcut-open-filter": "Open Filter Menu opens the selected column's sorting and filtering choices.",
+  "shortcut-current-date": "The current-date shortcut inserts today's date as a worksheet value.",
+  "shortcut-save-workbook": "The Save shortcut writes the current workbook changes to its file.",
+  "shortcut-next-sheet": "Next Sheet moves the active view to the worksheet tab after the current one.",
+  "shortcut-previous-sheet": "Previous Sheet moves the active view to the worksheet tab before the current one.",
+  "shortcut-new-sheet": "New Sheet inserts another worksheet into the current workbook.",
+  "trick-flash-fill": "Flash Fill detects a pattern in examples and fills neighboring values without a formula.",
+  "trick-go-to-special": "Go To Special selects cells with a shared property such as blanks, formulas, or constants.",
+  "trick-paste-values": "Paste Values Only copies displayed results without bringing formulas or source formatting.",
+  "trick-text-to-columns": "Text to Columns splits one column into multiple columns using delimiters or fixed positions.",
+  "trick-remove-duplicates": "Remove Duplicates deletes repeated rows according to the columns selected as the comparison key.",
+  "trick-freeze-panes": "Freeze Panes keeps chosen rows or columns visible while the worksheet scrolls.",
+  "trick-quick-analysis": "Quick Analysis is a contextual tool for applying common totals, formatting, charts, or tables to a selection.",
+  "trick-range-to-table": "Convert Range to Table gives a plain cell range structured references, filters, and automatic expansion.",
+  "trick-fill-handle": "The fill handle is the small drag control that copies patterns, formulas, or series into adjacent cells.",
+  "trick-visible-cells": "Select Visible Cells Only excludes hidden or filtered-out cells from a copied selection.",
+  "trick-named-ranges": "A named range assigns a readable name to a cell or range for easier formulas and navigation.",
+  "trick-transpose": "Transpose changes a copied range from rows to columns or from columns to rows.",
+  "alternative-vlookup-xlookup": "VLOOKUP searches the first column of a table, while XLOOKUP supports flexible lookup and return ranges.",
+  "alternative-vlookup-index-match": "VLOOKUP uses a table-column position, while INDEX with MATCH separates the return range from the lookup.",
+  "alternative-concatenate-textjoin": "CONCATENATE joins values, while TEXTJOIN joins values with a delimiter and can ignore empty cells.",
+  "alternative-if-ifs": "Nested IF tests conditions one level at a time, while IFS expresses an ordered list of condition-result pairs.",
+  "alternative-if-switch": "Nested IF evaluates conditions, while SWITCH compares one expression with several exact cases.",
+  "alternative-remove-duplicates-unique": "Remove Duplicates changes a range in place, while UNIQUE returns a dynamic array of distinct values.",
+  "alternative-advanced-filter-filter": "Advanced Filter extracts criteria-based rows, while FILTER returns a formula-driven dynamic array.",
+  "alternative-iserror-iferror": "IF(ISERROR()) tests an expression separately, while IFERROR supplies a fallback around the expression directly.",
+  "alternative-sumproduct-sumifs": "SUMPRODUCT combines arrays arithmetically, while SUMIFS adds one range using explicit criteria ranges.",
+  "alternative-offset-index": "OFFSET returns a movable reference, while INDEX returns a value or reference without volatile recalculation.",
+  "alternative-formulas-power-query": "Cleaning formulas transform cells in place, while Power Query creates repeatable refreshable preparation steps.",
+  "productivity-clean-messy-data": "Profiling messy data is the practice of inspecting structure, nulls, types, duplicates, and anomalies before cleaning.",
+  "productivity-select-blanks": "Selecting blanks safely isolates empty cells without accidentally overwriting populated or formula-driven cells.",
+  "productivity-find-formulas": "Formula auditing locates formulas, constants, references, and errors so workbook logic can be reviewed.",
+  "productivity-keyboard-workflow": "A keyboard-first workflow uses consistent shortcuts to reduce mouse movement and repetitive spreadsheet actions.",
+  "productivity-quick-chart": "Quick chart creation turns a selected range into an initial visualization that can then be refined.",
+  "productivity-structure-data-reports": "Separating data from reports keeps source tables, calculations, and presentation layers maintainable.",
+  "productivity-reduce-repetition": "Reducing repetition replaces repeated manual steps with tables, formulas, queries, or reusable workflows.",
+  "productivity-large-files": "Large-file efficiency means controlling calculation ranges, formats, links, queries, and objects that slow a workbook.",
+  "secret-layer-workbook": "Workbook layering separates raw inputs, calculations, and report outputs into understandable stages.",
+  "secret-no-merged-data": "Avoiding merged cells in datasets preserves a rectangular structure that filters, formulas, and imports can use.",
+  "secret-sheet-names": "Clear sheet names describe a worksheet's role so formulas, navigation, and handoffs are easier to understand.",
+  "secret-use-tables": "An Excel Table is a structured, expanding data range with headers, filters, and structured references.",
+  "secret-limit-volatile": "Limiting volatile formulas reduces unnecessary recalculation whenever any workbook value changes.",
+  "secret-document-assumptions": "Documenting assumptions records definitions, exclusions, rates, time windows, sources, and ownership behind a model.",
+  "secret-consistent-formulas": "Consistent formulas apply the same logic across a calculated region unless a documented exception is intentional.",
+  "secret-maintainable-workbooks": "A maintainable workbook uses understandable stages, bounded inputs, named objects, visible checks, and documented dependencies.",
+  "secret-check-totals-errors": "Reconciliation checks compare totals, row counts, errors, and reasonableness against a trusted expectation.",
+  "secret-optimize-files": "Deliberate file optimization measures the real bottleneck before reducing formulas, ranges, links, styles, or queries.",
+};
+
 export const excelProToolkitItems: ExcelToolkitItem[] = [
   ...excelShortcuts,
   ...excelTricks,
   ...formulaAlternatives,
   ...productivityTips,
   ...analystSecrets,
-];
+].map((item) => ({ ...item, definition: excelToolkitDefinitions[item.id] }));
 
 export function getExcelToolkitSearchValues(item: ExcelToolkitItem) {
   const common = [item.title, item.category, item.difficulty];
