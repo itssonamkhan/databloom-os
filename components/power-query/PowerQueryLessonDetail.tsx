@@ -116,6 +116,11 @@ export default function PowerQueryLessonDetail({
             <div className="max-w-3xl">
               <span className="text-5xl" aria-hidden="true">{lesson.icon}</span>
               <h1 className="mt-4 text-4xl font-black sm:text-5xl">{lesson.title}</h1>
+              {lesson.definition ? (
+                <p className="mt-4 text-base leading-7 text-slate-700">
+                  <span className="font-black">What is it?</span> {lesson.definition}
+                </p>
+              ) : null}
               <p className="mt-4 text-lg leading-8 text-slate-700">{lesson.description}</p>
               <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold">
                 <Badge tone="teal">{lesson.category}</Badge>
