@@ -73,9 +73,7 @@ function formatDate(value: string) {
   });
 }
 
-function errorMessage(status: number | null) {
-  if (status === 401) return "Sign in to view site-wide visitor analytics.";
-  if (status === 403) return "You do not have permission to view visitor analytics.";
+function errorMessage() {
   return "Visitor analytics are temporarily unavailable. Please try again shortly.";
 }
 
@@ -85,6 +83,7 @@ export default function VisitorOverview() {
   const [summary, setSummary] = useState<VisitorSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState<number | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
@@ -103,6 +102,11 @@ export default function VisitorOverview() {
 
         if (!response.ok) {
           setSummary(null);
+          if (response.status === 401 || response.status === 403) {
+            setAccessDenied(true);
+            return;
+          }
+          setAccessDenied(false);
           setErrorStatus(response.status);
           return;
         }
@@ -113,6 +117,7 @@ export default function VisitorOverview() {
           return;
         }
 
+        setAccessDenied(false);
         setSummary(payload);
       } catch {
         if (!controller.signal.aborted) {
@@ -129,6 +134,10 @@ export default function VisitorOverview() {
   }, [period, retryKey]);
 
   const trend = summary?.visitorsOverTime ?? [];
+
+  // Keep the private section out of the document while authorization is
+  // pending; unauthorized users must never see a placeholder for it.
+  if (accessDenied || (loading && !summary)) return null;
 
   return (
     <section
@@ -190,7 +199,7 @@ export default function VisitorOverview() {
           role="alert"
         >
           <p className="font-bold text-[var(--databloom-text-primary)]">
-            {errorMessage(errorStatus)}
+            {errorMessage()}
           </p>
           <button
             type="button"
