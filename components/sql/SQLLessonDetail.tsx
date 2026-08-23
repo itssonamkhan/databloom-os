@@ -108,6 +108,10 @@ export default function SQLLessonDetail({ lesson }: { lesson: SQLLesson }) {
           </div>
         </header>
 
+        {lesson.definition ? <InfoSection title="What is it?" icon={<Lightbulb size={22} />} tone="blue">
+          <p className="leading-8 text-gray-700">{lesson.definition}</p>
+        </InfoSection> : null}
+
         <InfoSection title="Simple explanation" icon={<Lightbulb size={22} />} tone="purple">
           <p className="leading-8 text-gray-700">{lesson.explanation}</p>
         </InfoSection>

@@ -6,6 +6,8 @@ export type Formula = {
 
   purpose: string;
 
+  definition?: string;
+
   syntax: string;
 
   arguments: string[];
@@ -26,6 +28,51 @@ export type Formula = {
     front: string;
     back: string;
   };
+};
+
+const formulaDefinitions: Record<string, string> = {
+  sum: "SUM is an Excel function that adds the numeric values in selected cells or ranges.",
+  if: "IF is a decision function that returns one result when a condition is true and another when it is false.",
+  count: "COUNT is a counting function that counts numeric entries in a range.",
+  counta: "COUNTA is a counting function that counts non-empty cells, including text and numbers.",
+  countif: "COUNTIF is a conditional counting function that counts cells meeting one criterion.",
+  countifs: "COUNTIFS is a conditional counting function that counts rows meeting multiple criteria.",
+  min: "MIN is a summary function that returns the smallest numeric value in a range.",
+  max: "MAX is a summary function that returns the largest numeric value in a range.",
+  round: "ROUND is a number-formatting function that rounds a value to a specified number of digits.",
+  roundup: "ROUNDUP is a rounding function that always moves a value away from zero at the chosen precision.",
+  rounddown: "ROUNDDOWN is a rounding function that always moves a value toward zero at the chosen precision.",
+  xlookup: "XLOOKUP is a lookup function that searches one range and returns the corresponding value from another range.",
+  index: "INDEX is a reference function that returns the value at a specified row and column position.",
+  match: "MATCH is a lookup function that returns the position of a value within a range.",
+  "index-match": "INDEX-MATCH is a lookup pattern that finds a position with MATCH and returns its value with INDEX.",
+  left: "LEFT is a text function that extracts characters from the beginning of a text value.",
+  right: "RIGHT is a text function that extracts characters from the end of a text value.",
+  mid: "MID is a text function that extracts a chosen number of characters from the middle of text.",
+  len: "LEN is a text function that counts the characters in a text value, including spaces.",
+  trim: "TRIM is a text-cleaning function that removes extra spaces while keeping single spaces between words.",
+  text: "TEXT is a formatting function that converts a value into text using a specified number or date format.",
+  concat: "CONCAT is a text-combining function that joins values into one text result.",
+  concatenate: "CONCATENATE is an older text function that joins multiple text values into one string.",
+  textjoin: "TEXTJOIN is a text-combining function that joins values with a delimiter and can ignore empty cells.",
+  today: "TODAY is a date function that returns the current date from the computer's date settings.",
+  now: "NOW is a date-and-time function that returns the current date and time.",
+  year: "YEAR is a date function that extracts the year number from a date.",
+  month: "MONTH is a date function that extracts the month number from a date.",
+  day: "DAY is a date function that extracts the day-of-month number from a date.",
+  edate: "EDATE is a date function that shifts a date by a specified number of whole months.",
+  eomonth: "EOMONTH is a date function that returns the last day of a month offset from a starting date.",
+  filter: "FILTER is a dynamic-array function that returns only rows or columns meeting a condition.",
+  sort: "SORT is a dynamic-array function that returns a range ordered by one or more columns or rows.",
+  unique: "UNIQUE is a dynamic-array function that returns distinct values from a range.",
+  sortby: "SORTBY is a dynamic-array function that orders one range using values from another range.",
+  sequence: "SEQUENCE is a dynamic-array function that generates a spill range of sequential numbers.",
+  let: "LET is a formula function that assigns names to intermediate values inside one formula.",
+  lambda: "LAMBDA is a function that turns a formula into a reusable custom function.",
+  take: "TAKE is a dynamic-array function that returns a chosen number of rows or columns from an array.",
+  choosecols: "CHOOSECOLS is a dynamic-array function that returns selected columns from an array.",
+  hstack: "HSTACK is a dynamic-array function that combines arrays side by side horizontally.",
+  vstack: "VSTACK is a dynamic-array function that combines arrays one below another vertically.",
 };
 
 
@@ -2028,3 +2075,7 @@ export const formulas: Formula[] = [
   }
 },
 ];
+
+formulas.forEach((formula) => {
+  formula.definition = formulaDefinitions[formula.id];
+});

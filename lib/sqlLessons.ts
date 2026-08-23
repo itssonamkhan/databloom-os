@@ -7,6 +7,7 @@ export type SQLLesson = {
   category: string;
   difficulty: SQLDifficulty;
   description: string;
+  definition?: string;
   explanation: string;
   syntax: string;
   example: string;
@@ -50,12 +51,56 @@ type SQLLessonSeed = Pick<
     >
   >;
 
+const sqlDefinitions: Record<string, string> = {
+  select: "SELECT is a SQL statement clause that chooses the columns or expressions returned by a query.",
+  from: "FROM is the SQL clause that identifies the table or source supplying the query's rows.",
+  where: "WHERE is a SQL filtering clause that keeps rows satisfying a condition before grouping.",
+  distinct: "DISTINCT is a SQL modifier that removes duplicate result rows from the selected output.",
+  "order-by": "ORDER BY is a SQL clause that sorts returned rows using one or more expressions.",
+  limit: "LIMIT is a SQL clause that caps how many rows a query returns.",
+  aliases: "An AS alias is a temporary name assigned to a table or column within a query.",
+  and: "AND is a SQL logical operator that requires every joined condition to be true.",
+  or: "OR is a SQL logical operator that accepts a row when at least one condition is true.",
+  not: "NOT is a SQL logical operator that negates a condition or predicate.",
+  in: "IN is a SQL membership operator that tests whether a value matches any item in a list or subquery.",
+  between: "BETWEEN is a SQL range operator that tests whether a value falls between two inclusive boundaries.",
+  like: "LIKE is a SQL pattern-matching operator for comparing text against wildcard patterns.",
+  "is-null": "IS NULL is a SQL predicate that tests whether a column has no value.",
+  count: "COUNT is a SQL aggregate function that counts rows or non-null values.",
+  sum: "SUM is a SQL aggregate function that totals numeric values within the current grouping.",
+  avg: "AVG is a SQL aggregate function that calculates the arithmetic mean of numeric values.",
+  min: "MIN is a SQL aggregate function that returns the lowest value in each query group.",
+  max: "MAX is a SQL aggregate function that returns the highest value in each query group.",
+  "group-by": "GROUP BY is a SQL clause that forms groups so aggregate results can be calculated per category.",
+  having: "HAVING is a SQL filtering clause that keeps or removes groups after aggregation.",
+  "inner-join": "INNER JOIN is a SQL operation that returns rows having matching keys in both joined tables.",
+  "left-join": "LEFT JOIN is a SQL operation that preserves every left-table row and attaches matching right-table data.",
+  "right-join": "RIGHT JOIN is a SQL operation that preserves every right-table row and attaches matching left-table data.",
+  "full-outer-join": "FULL OUTER JOIN is a SQL operation that preserves matched and unmatched rows from both tables.",
+  union: "UNION is a SQL set operation that combines compatible result sets and removes duplicate rows.",
+  "union-all": "UNION ALL is a SQL set operation that combines compatible result sets without removing duplicates.",
+  "case-when": "CASE WHEN is a SQL conditional expression that returns values selected by ordered rules.",
+  subqueries: "A subquery is a SQL query nested inside another query's expression, filter, or source clause.",
+  "common-table-expressions": "A common table expression is a named temporary result defined with WITH for one SQL statement.",
+  "row-number": "ROW_NUMBER is a window function that assigns a sequential number to each row in a window order.",
+  rank: "RANK is a window function that gives tied rows the same rank and leaves gaps after ties.",
+  "dense-rank": "DENSE_RANK is a window function that gives tied rows the same rank without gaps afterward.",
+  lag: "LAG is a window function that reads a value from an earlier row in the ordered window.",
+  lead: "LEAD is a window function that reads a value from a later row in the ordered window.",
+  "partition-by": "PARTITION BY divides a window into independent groups before its window calculation runs.",
+  views: "A view is a stored SQL query presented as a virtual table for reuse.",
+  "stored-procedures": "A stored procedure is a named set of SQL statements saved in the database for execution as a unit.",
+  indexes: "An index is a database lookup structure that can speed searches, joins, and ordered access.",
+  "query-optimization": "Query optimization is the practice of reducing the work and resources needed to produce the same result.",
+};
+
 function makeLesson(seed: SQLLessonSeed): SQLLesson {
   const reward =
     seed.difficulty === "Beginner" ? 20 : seed.difficulty === "Intermediate" ? 30 : 40;
 
   return {
     ...seed,
+    definition: sqlDefinitions[seed.id],
     explanation:
       seed.explanation ??
       `${seed.description} Think of it as one clear instruction in the question you are asking the database.`,

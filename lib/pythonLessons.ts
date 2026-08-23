@@ -7,6 +7,7 @@ export type PythonLesson = {
   category: string;
   difficulty: PythonDifficulty;
   description: string;
+  definition?: string;
   explanation: string;
   syntax: string;
   example: string;
@@ -48,12 +49,71 @@ type Seed = Pick<
     >
   >;
 
+const pythonDefinitions: Record<string, string> = {
+  "print-output": "print is a Python function that writes a value or message to the program's output.",
+  variables: "A variable is a name bound to a value so code can reuse or update that value.",
+  "data-types": "A data type describes what kind of value Python is storing and which operations are valid for it.",
+  strings: "A string is an immutable sequence of characters used to represent text.",
+  numbers: "Python numbers represent numeric values and support arithmetic operations such as addition and division.",
+  booleans: "A boolean is a value with one of two logical states: True or False.",
+  comparisons: "A comparison operator evaluates a relationship between values and produces a boolean result.",
+  "f-strings": "An f-string is a string literal that embeds expressions inside braces for formatted text.",
+  lists: "A list is an ordered, mutable collection that can contain multiple Python values.",
+  tuples: "A tuple is an ordered, immutable collection of Python values.",
+  dictionaries: "A dictionary is a mutable collection that maps unique keys to values.",
+  sets: "A set is an unordered collection that stores each distinct value once.",
+  "if-statements": "An if statement conditionally runs a block of code when its test expression is true.",
+  "for-loops": "A for loop iterates through the items of an iterable and runs a block for each item.",
+  "while-loops": "A while loop repeatedly runs a block while its condition remains true.",
+  functions: "A function is a named, reusable block of code that can accept inputs and return a result.",
+  "lambda-functions": "A lambda function is a small anonymous function written as one expression.",
+  imports: "An import makes definitions from another Python module or package available in the current script.",
+  exceptions: "An exception is a runtime error object that can be caught and handled by a program.",
+  "list-comprehensions": "A list comprehension is a compact expression for creating a list from an iterable, with optional filtering.",
+  "numpy-arrays": "A NumPy array is a typed, multidimensional container designed for efficient numerical computation.",
+  "numpy-indexing": "NumPy indexing selects array elements, rows, columns, or masks by position or condition.",
+  "numpy-vectorization": "Vectorization applies an operation to an entire NumPy array without an explicit Python loop.",
+  "numpy-aggregations": "A NumPy aggregation reduces an array to a summary such as its sum, mean, minimum, or maximum.",
+  "numpy-reshape": "Reshaping changes an array's dimensions while retaining the same underlying values.",
+  "numpy-missing-values": "NumPy missing-value handling identifies NaN entries and calculates summaries that account for them.",
+  "dataframe-basics": "A Pandas DataFrame is a two-dimensional table with labelled rows and columns.",
+  "read-csv": "read_csv is a Pandas function that parses a CSV file into a DataFrame.",
+  "inspect-dataframe": "DataFrame inspection uses summaries and metadata to reveal a table's shape, types, and values.",
+  "selecting-columns": "Column selection chooses one or more named fields from a DataFrame.",
+  "filtering-rows": "Row filtering creates a subset of a DataFrame whose records satisfy a condition.",
+  "loc-iloc": "loc and iloc are Pandas indexers for selecting data by labels and integer positions respectively.",
+  "query-method": "The Pandas query method filters rows using a readable expression evaluated against column names.",
+  "sorting-data": "DataFrame sorting orders records according to one or more column values.",
+  "creating-columns": "Creating a column derives a new DataFrame field from existing values or calculations.",
+  "apply-method": "apply and map are Pandas operations that transform values or rows with supplied functions.",
+  groupby: "GroupBy partitions a DataFrame by keys so each group can be summarized or transformed.",
+  aggregations: "A Pandas aggregation combines many values into one or more summary statistics.",
+  "pivot-tables": "A Pandas pivot table rearranges grouped data into row and column dimensions with an aggregation.",
+  "merging-data": "DataFrame merging combines related tables by matching values in one or more key columns.",
+  "concatenating-data": "DataFrame concatenation appends multiple tables along rows or columns.",
+  "missing-values": "A missing value is an absent or unknown entry that requires an explicit analysis or cleaning choice.",
+  duplicates: "A duplicate is a repeated record or key that represents the same business entity more than once.",
+  "data-types-pandas": "Pandas data types specify how a Series stores and interprets numbers, text, dates, and other values.",
+  "string-cleaning": "String cleaning standardizes text values by removing unwanted characters or normalizing their format.",
+  "datetime-analysis": "Datetime analysis uses date and time values to create calendar features and time-based comparisons.",
+  correlation: "Correlation is a numerical measure of the direction and strength of association between two variables.",
+  "line-charts": "A line chart connects ordered data points to show how a measure changes across a sequence.",
+  "bar-charts": "A bar chart compares category values using the lengths of bars from a common baseline.",
+  histograms: "A histogram groups numeric observations into bins to show a distribution's shape and spread.",
+  "scatter-plots": "A scatter plot displays paired numeric values as points to reveal relationships and patterns.",
+  "seaborn-charts": "Seaborn is a Python visualization library that provides concise statistical charts built around DataFrames.",
+  "chart-labels": "Chart labels and titles are text annotations that identify a visual's measure, categories, and meaning.",
+  "export-csv": "CSV export writes tabular results to a delimited text file for sharing or downstream use.",
+  "eda-workflow": "An exploratory data analysis workflow is a structured process for inspecting, summarizing, and questioning data before conclusions.",
+};
+
 function lesson(seed: Seed): PythonLesson {
   const reward =
     seed.difficulty === "Beginner" ? 20 : seed.difficulty === "Intermediate" ? 30 : 40;
 
   return {
     ...seed,
+    definition: pythonDefinitions[seed.id],
     explanation:
       seed.explanation ??
       `${seed.title} is a practical Python building block. Data analysts use it to turn a clear instruction into repeatable code instead of editing data manually.`,

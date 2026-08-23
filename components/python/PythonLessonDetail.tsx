@@ -151,6 +151,10 @@ export default function PythonLessonDetail({ lesson }: { lesson: PythonLesson })
           </div>
         </header>
 
+        {lesson.definition ? <InfoSection title="What is it?" icon={<Lightbulb size={22} />} tone="cyan">
+          <p className="leading-8 text-slate-700">{lesson.definition}</p>
+        </InfoSection> : null}
+
         <InfoSection title="Simple explanation" icon={<Lightbulb size={22} />} tone="cyan">
           <p className="leading-8 text-slate-700">{lesson.explanation}</p>
         </InfoSection>

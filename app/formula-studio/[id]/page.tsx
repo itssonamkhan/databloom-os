@@ -114,6 +114,13 @@ export default function FormulaDetails({
             {formula.difficulty}
           </span>
 
+          {formula.definition ? (
+            <div className="mt-6 rounded-2xl bg-pink-50 p-5">
+              <h2 className="text-xl font-bold text-pink-700">💡 What is it?</h2>
+              <p className="mt-3 leading-8 text-gray-800">{formula.definition}</p>
+            </div>
+          ) : null}
+
         </div>
 
 
