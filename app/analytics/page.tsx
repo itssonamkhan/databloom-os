@@ -30,6 +30,7 @@ import InsightCard from "@/components/analytics/InsightCard";
 import LearningDistributionChart from "@/components/analytics/LearningDistributionChart";
 import SkillProgressCard from "@/components/analytics/SkillProgressCard";
 import StudyActivityChart from "@/components/analytics/StudyActivityChart";
+import VisitorOverview from "@/components/analytics/VisitorOverview";
 import WeeklyActivityChart from "@/components/analytics/WeeklyActivityChart";
 import XPProgressCard from "@/components/analytics/XPProgressCard";
 import AppLayout from "@/components/layout/AppLayout";
@@ -171,6 +172,8 @@ export default function AnalyticsPage() {
             {statusMessage}
           </p>
         </header>
+
+        <VisitorOverview />
 
         <section aria-labelledby="overview-heading">
           <div className="mb-4 flex items-center gap-3">
