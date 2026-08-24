@@ -14,8 +14,24 @@ import {
 
 
 export const metadata: Metadata = {
-  title: "DataBloom OS",
+  metadataBase: new URL("https://www.databloomos.com"),
+  title: {
+    default: "DataBloom OS",
+    template: "%s | DataBloom OS",
+  },
   description: "Your cozy digital study companion",
+  openGraph: {
+    type: "website",
+    url: "https://www.databloomos.com",
+    siteName: "DataBloom OS",
+    title: "DataBloom OS",
+    description: "Your cozy digital study companion",
+  },
+  twitter: {
+    card: "summary",
+    title: "DataBloom OS",
+    description: "Your cozy digital study companion",
+  },
 };
 
 const themeInitializationScript = `(() => {

@@ -5,18 +5,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const routes = [
     "",
-    "/profile",
     "/formula-studio",
     "/practice-lab",
     "/career-hub",
-    "/planner",
     "/resume-builder",
     "/interview-hub",
-    "/analytics",
   ];
 
   return routes.map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date(),
   }));
 }
