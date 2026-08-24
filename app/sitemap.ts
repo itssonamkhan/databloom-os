@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/career-hub",
     "/resume-builder",
     "/interview-hub",
+    "/data-analyst-interview-preparation",
   ];
 
   return routes.map((route) => ({

@@ -31,16 +31,21 @@ export default function OnboardingGuard({
   );
   const isOnboarding = pathname === "/onboarding";
   const isLogin = pathname === "/login";
+  const isPublicInterviewGuide =
+    pathname === "/data-analyst-interview-preparation";
 
   useEffect(() => {
-    if (!completed && !isOnboarding && !isLogin) {
+    if (!completed && !isOnboarding && !isLogin && !isPublicInterviewGuide) {
       router.replace("/onboarding");
     } else if (completed && isOnboarding) {
       router.replace("/");
     }
-  }, [completed, isLogin, isOnboarding, router]);
+  }, [completed, isLogin, isOnboarding, isPublicInterviewGuide, router]);
 
-  if ((!completed && !isOnboarding && !isLogin) || (completed && isOnboarding)) {
+  if (
+    (!completed && !isOnboarding && !isLogin && !isPublicInterviewGuide) ||
+    (completed && isOnboarding)
+  ) {
     return null;
   }
 
