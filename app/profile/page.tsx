@@ -318,7 +318,7 @@ export default function ProfilePage() {
             </span>
           </div>
 
-          <div className="rounded-[1.75rem] border border-white bg-gradient-to-br from-white/95 via-pink-50/70 to-purple-50/75 p-2 shadow-inner sm:p-4">
+          <div className="databloom-phase3-gradient-surface rounded-[1.75rem] border border-white bg-gradient-to-br from-white/95 via-pink-50/70 to-purple-50/75 p-2 shadow-inner sm:p-4">
             <PersonalizationSettings />
           </div>
         </section>
@@ -511,7 +511,7 @@ export default function ProfilePage() {
                     <Link
                       key={formula.id}
                       href={`/formula-studio/${formula.id}`}
-                      className={`group flex items-center justify-between gap-4 rounded-2xl border border-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+                      className={`databloom-phase3-gradient-surface group flex items-center justify-between gap-4 rounded-2xl border border-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
                         index % 3 === 0
                           ? "bg-pink-50"
                           : index % 3 === 1
@@ -554,7 +554,7 @@ export default function ProfilePage() {
               description="See how much of your Excel formula library you’ve explored."
             />
 
-            <div className="mt-7 rounded-3xl bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-5">
+            <div className="databloom-phase3-gradient-surface mt-7 rounded-3xl bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-5">
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold text-slate-600">

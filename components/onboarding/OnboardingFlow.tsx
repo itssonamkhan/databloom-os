@@ -16,6 +16,7 @@ import {
   loadUserPreferences,
   persistUserTheme,
   saveUserPreferences,
+  skipOnboarding,
   studyBuddies,
   studyStyles,
   themes,
@@ -97,11 +98,21 @@ export default function OnboardingFlow() {
   }
 
   function finishOnboarding() {
+    completeOnboarding(() =>
+      saveUserPreferences({
+        ...preferences,
+        hasCompletedOnboarding: true,
+      }),
+    );
+  }
+
+  function skipOnboardingFlow() {
+    completeOnboarding(() => skipOnboarding(preferences));
+  }
+
+  function completeOnboarding(persist: () => boolean) {
     setSaveError(false);
-    const saved = saveUserPreferences({
-      ...preferences,
-      hasCompletedOnboarding: true,
-    });
+    const saved = persist();
 
     if (!saved) {
       setSaveError(true);
@@ -161,9 +172,18 @@ export default function OnboardingFlow() {
           <p className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/65 px-4 py-2 text-sm font-bold text-purple-800 shadow-sm backdrop-blur-xl">
             <Sparkles size={16} aria-hidden="true" /> DataBloom OS
           </p>
-          <p className="rounded-full bg-white/65 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-xl">
-            {screen + 1} / 7
-          </p>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={skipOnboardingFlow}
+              className="min-h-11 rounded-full border border-purple-200 bg-white/65 px-3 py-2 text-xs font-bold text-purple-800 shadow-sm backdrop-blur-xl transition hover:bg-purple-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700 sm:px-4 sm:text-sm"
+            >
+              Skip onboarding
+            </button>
+            <p className="rounded-full bg-white/65 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-xl">
+              {screen + 1} / 7
+            </p>
+          </div>
         </div>
 
         <div className="mt-5 flex gap-2" aria-label={`Onboarding step ${screen + 1} of 7`}>
@@ -330,12 +350,13 @@ export default function OnboardingFlow() {
                       <OptionButton key={theme} icon={themeIcons[theme]} label={theme} selected={preferences.theme === theme} onClick={() => updatePreference("theme", theme)} />
                     ))}
                   </OptionGrid>
-                  {saveError && (
-                    <p role="alert" className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center font-semibold text-rose-800">
-                      DataBloom could not save your choices. Check browser storage permissions and try again.
-                    </p>
-                  )}
                 </StepLayout>
+              )}
+
+              {saveError && (
+                <p role="alert" className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center font-semibold text-rose-800">
+                  DataBloom could not save your choices. Check browser storage permissions and try again.
+                </p>
               )}
 
               {screen > 0 && (

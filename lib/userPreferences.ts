@@ -139,6 +139,29 @@ function dispatchPreferencesUpdate(preferences: UserPreferences) {
   );
 }
 
+function persistPreferences(preferences: UserPreferences) {
+  try {
+    window.localStorage.setItem(keys.userName, preferences.userName);
+    window.localStorage.setItem(keys.studyBuddy, preferences.studyBuddy);
+    window.localStorage.setItem(
+      keys.customBuddyName,
+      preferences.customBuddyName,
+    );
+    window.localStorage.setItem(keys.careerGoal, preferences.careerGoal);
+    window.localStorage.setItem(keys.studyStyle, preferences.studyStyle);
+    window.localStorage.setItem(keys.dailyGoal, preferences.dailyGoal);
+    window.localStorage.setItem(keys.theme, preferences.theme);
+    window.localStorage.setItem(
+      keys.completed,
+      String(preferences.hasCompletedOnboarding),
+    );
+    dispatchPreferencesUpdate(preferences);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function saveUserPreferences(
   preferences: Omit<UserPreferences, "hasCompletedOnboarding"> & {
     hasCompletedOnboarding?: boolean;
@@ -156,26 +179,31 @@ export function saveUserPreferences(
 
   if (!normalized.userName) return false;
 
-  try {
-    window.localStorage.setItem(keys.userName, normalized.userName);
-    window.localStorage.setItem(keys.studyBuddy, normalized.studyBuddy);
-    window.localStorage.setItem(
-      keys.customBuddyName,
-      normalized.customBuddyName.trim(),
-    );
-    window.localStorage.setItem(keys.careerGoal, normalized.careerGoal);
-    window.localStorage.setItem(keys.studyStyle, normalized.studyStyle);
-    window.localStorage.setItem(keys.dailyGoal, normalized.dailyGoal);
-    window.localStorage.setItem(keys.theme, normalized.theme);
-    window.localStorage.setItem(
-      keys.completed,
-      String(normalized.hasCompletedOnboarding),
-    );
-    dispatchPreferencesUpdate(normalized);
-    return true;
-  } catch {
-    return false;
-  }
+  return persistPreferences(normalized);
+}
+
+export function skipOnboarding(
+  preferences?: Omit<UserPreferences, "hasCompletedOnboarding">,
+) {
+  if (!canUseStorage()) return false;
+
+  const stored = loadUserPreferences();
+  const source = preferences ?? {
+    userName: stored.userName,
+    studyBuddy: stored.studyBuddy,
+    customBuddyName: stored.customBuddyName,
+    careerGoal: stored.careerGoal,
+    studyStyle: stored.studyStyle,
+    dailyGoal: stored.dailyGoal,
+    theme: stored.theme,
+  };
+
+  return persistPreferences({
+    ...source,
+    userName: source.userName.trim(),
+    customBuddyName: source.customBuddyName.trim(),
+    hasCompletedOnboarding: true,
+  });
 }
 
 export function hasCompletedOnboarding() {
