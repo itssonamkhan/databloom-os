@@ -33,17 +33,40 @@ export default function OnboardingGuard({
   const isLogin = pathname === "/login";
   const isPublicInterviewGuide =
     pathname === "/data-analyst-interview-preparation";
+  const isPublicLearnRoute =
+    pathname === "/learn" || /^\/learn\/[^/]+$/.test(pathname);
+  const isContentManager = pathname === "/content-manager";
 
   useEffect(() => {
-    if (!completed && !isOnboarding && !isLogin && !isPublicInterviewGuide) {
+    if (
+      !completed &&
+      !isOnboarding &&
+      !isLogin &&
+      !isPublicInterviewGuide &&
+      !isPublicLearnRoute &&
+      !isContentManager
+    ) {
       router.replace("/onboarding");
     } else if (completed && isOnboarding) {
       router.replace("/");
     }
-  }, [completed, isLogin, isOnboarding, isPublicInterviewGuide, router]);
+  }, [
+    completed,
+    isLogin,
+    isOnboarding,
+    isPublicInterviewGuide,
+    isPublicLearnRoute,
+    isContentManager,
+    router,
+  ]);
 
   if (
-    (!completed && !isOnboarding && !isLogin && !isPublicInterviewGuide) ||
+    (!completed &&
+      !isOnboarding &&
+      !isLogin &&
+      !isPublicInterviewGuide &&
+      !isPublicLearnRoute &&
+      !isContentManager) ||
     (completed && isOnboarding)
   ) {
     return null;
