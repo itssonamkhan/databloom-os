@@ -30,11 +30,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { playClickSound } from "@/lib/sounds";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { getBuddyPresentation } from "@/lib/userPreferences";
+import { createClient } from "@/lib/supabase/client";
 
 type NavItem = { text: string; href: string; icon: LucideIcon };
 
@@ -86,6 +87,34 @@ export default function Sidebar() {
   const preferences = useUserPreferences();
   const buddy = getBuddyPresentation(preferences);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isContentManagerOwner, setIsContentManagerOwner] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
+
+    const checkOwnerAccess = () => {
+      void fetch("/api/content/articles", { cache: "no-store" })
+        .then((response) => {
+          if (active) setIsContentManagerOwner(response.ok);
+        })
+        .catch(() => {
+          if (active) setIsContentManagerOwner(false);
+        });
+    };
+
+    checkOwnerAccess();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      checkOwnerAccess();
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   function handleNavigate() {
     playClickSound();
@@ -136,7 +165,13 @@ export default function Sidebar() {
                 {group.label}
               </p>
               <div className="space-y-1.5">
-                {group.items.map((item) => {
+                {(group.label === "Your workspace" && isContentManagerOwner
+                  ? [
+                      ...group.items,
+                      { text: "Content Manager", href: "/content-manager", icon: FileText },
+                    ]
+                  : group.items
+                ).map((item) => {
                   const Icon = item.icon;
                   const itemText = item.href === "/mochi" ? `${buddy.name} AI` : item.text;
                   return (
