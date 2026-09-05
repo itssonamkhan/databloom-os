@@ -98,9 +98,10 @@ export default function DailyGoals() {
 
 
     // XP update
-    addXP(
-      goal.xp
-    );
+    const date = new Date();
+    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const goalKey = goal.text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    addXP({ rewardId: `daily-goal:${dateKey}:${goalKey}`, source: "daily-goal", optimisticXP: goal.xp });
 
 
 

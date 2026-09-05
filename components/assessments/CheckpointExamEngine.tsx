@@ -267,7 +267,7 @@ export default function CheckpointExamEngine({
           saved.masteryResult?.officialMasteryScore;
         if (saved.xpAwarded) {
           xpAwarded = assessment.xpReward;
-          addXP(assessment.xpReward);
+          addXP({ rewardId: `final-exam:${studio.studioId}:${assessment.id}`, source: "final-exam", optimisticXP: assessment.xpReward });
           playXPSound();
         }
       } else {
@@ -279,7 +279,7 @@ export default function CheckpointExamEngine({
         });
         if (saved.xpAwarded) {
           xpAwarded = assessment.xpReward;
-          addXP(assessment.xpReward);
+          addXP({ rewardId: `checkpoint:${studio.studioId}:${assessment.id}`, source: "checkpoint", optimisticXP: assessment.xpReward });
           playXPSound();
         }
       }

@@ -88,7 +88,7 @@ export default function PowerQueryPractice({
     setCompleted(result.state.completedPracticeIds.includes(lesson.id));
     playSuccessSound();
     if (result.newlyCompleted) {
-      addXP(reward);
+      addXP({ rewardId: `power-query:practice:${lesson.id}`, source: "power-query-practice", optimisticXP: reward });
       registerStudyActivity({ kind: "practice", source: `power-query-practice:${lesson.id}`, minutes: 10, xp: reward });
       playXPSound();
     }

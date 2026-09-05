@@ -90,7 +90,7 @@ export default function PythonLessonDetail({ lesson }: { lesson: PythonLesson })
 
     if (!result.newlyCompleted) return;
 
-    addXP(lesson.xpReward);
+    addXP({ rewardId: `python:lesson:${lesson.id}`, source: "python-lesson", optimisticXP: lesson.xpReward });
     registerStudyActivity({ kind: "lesson", source: `python:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     playXPSound();
     setShowCompletion(true);

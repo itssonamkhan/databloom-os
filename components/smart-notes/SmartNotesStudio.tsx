@@ -94,9 +94,9 @@ export default function SmartNotesStudio() {
     }).sort((left, right) => Number(right.pinned) - Number(left.pinned) || right.updatedAt.localeCompare(left.updatedAt));
   }, [favoritesOnly, includeArchived, liveNotes, query, subject, tag]);
 
-  function awardXP(amount: number, message: string) {
+  function awardXP(amount: number, message: string, milestone: "first-note-created" | "first-note-completed" | "first-collection-created") {
     if (!amount) return;
-    addXP(amount);
+    addXP({ rewardId: `smart-notes:milestone:${milestone}`, source: "smart-notes", optimisticXP: amount });
     incrementStats(0, 0, amount, 0);
     registerStudyDay();
     playXPSound();
@@ -118,7 +118,7 @@ export default function SmartNotesStudio() {
     setShowTemplates(false);
     setView("editor");
     playSuccessSound();
-    awardXP(result.xpAward, "First note created!");
+    awardXP(result.xpAward, "First note created!", "first-note-created");
   }
 
   function handleNotePatch(id: string, patch: Partial<SmartNote>) {
@@ -130,7 +130,7 @@ export default function SmartNotesStudio() {
     const result = toggleSmartNoteCompleted(id);
     setState(result.state);
     if (result.completed) playSuccessSound();
-    awardXP(result.xpAward, "First note completed!");
+    awardXP(result.xpAward, "First note completed!", "first-note-completed");
   }
 
   function handleCollectionCreate(event: React.FormEvent) {
@@ -141,7 +141,7 @@ export default function SmartNotesStudio() {
     setCollectionName("");
     setCollectionDescription("");
     playSuccessSound();
-    awardXP(result.xpAward, "First collection created!");
+    awardXP(result.xpAward, "First collection created!", "first-collection-created");
   }
 
   function handleSearchSubmit(event: React.FormEvent) {

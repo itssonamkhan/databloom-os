@@ -94,7 +94,7 @@ export default function PowerQueryLessonDetail({
     setCompleted(result.state.completedLessonIds.includes(lesson.id));
     if (!result.newlyCompleted) return;
 
-    addXP(lesson.xpReward);
+    addXP({ rewardId: `power-query:lesson:${lesson.id}`, source: "power-query-lesson", optimisticXP: lesson.xpReward });
     registerStudyActivity({ kind: "lesson", source: `power-query:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     playXPSound();
     setShowCompletion(true);

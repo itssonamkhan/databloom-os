@@ -234,11 +234,11 @@ function nextRecurringDate(task: PlannerTask): string {
 export function setPlannerTaskCompletion(
   id: string,
   completed: boolean,
-): { state: PlannerState; firstCompletion: boolean; xpAward: number } {
+): { state: PlannerState; firstCompletion: boolean; xpAward: number; rewardedMilestoneIds: string[] } {
   const state = loadPlannerState();
   const current = state.tasks.find((task) => task.id === id);
   if (!current || current.completed === completed) {
-    return { state, firstCompletion: false, xpAward: 0 };
+    return { state, firstCompletion: false, xpAward: 0, rewardedMilestoneIds: [] };
   }
 
   const firstCompletion = completed && !current.everCompleted;
@@ -280,6 +280,7 @@ export function setPlannerTaskCompletion(
 
   let rewardedMilestones = state.rewardedMilestones;
   let xpAward = 0;
+  const rewardedMilestoneIds: string[] = [];
   if (firstCompletion) {
     const completedEver = tasks.filter((task) => task.everCompleted).length;
     for (const milestone of milestoneRewards) {
@@ -289,14 +290,15 @@ export function setPlannerTaskCompletion(
       ) {
         rewardedMilestones = [...rewardedMilestones, milestone.id];
         xpAward += milestone.xp;
+        rewardedMilestoneIds.push(milestone.id);
       }
     }
   }
 
   const next = { ...state, tasks, rewardedMilestones };
   return savePlannerState(next)
-    ? { state: next, firstCompletion, xpAward }
-    : { state, firstCompletion: false, xpAward: 0 };
+    ? { state: next, firstCompletion, xpAward, rewardedMilestoneIds }
+    : { state, firstCompletion: false, xpAward: 0, rewardedMilestoneIds: [] };
 }
 
 export function getPlannerSummary(state = loadPlannerState()): PlannerSummary {

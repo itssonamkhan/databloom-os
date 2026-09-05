@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { loadStreak, StreakData } from "@/lib/streak";
+import { loadStreak, STREAK_UPDATED_EVENT, StreakData } from "@/lib/streak";
 
 
 export default function StreakCard() {
@@ -17,8 +17,15 @@ export default function StreakCard() {
 
   useEffect(() => {
 
-    setStreak(loadStreak());
+    const syncStreak = () => setStreak(loadStreak());
+    syncStreak();
+    window.addEventListener(STREAK_UPDATED_EVENT, syncStreak);
+    window.addEventListener("storage", syncStreak);
 
+    return () => {
+      window.removeEventListener(STREAK_UPDATED_EVENT, syncStreak);
+      window.removeEventListener("storage", syncStreak);
+    };
   }, []);
 
 

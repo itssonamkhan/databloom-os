@@ -1,23 +1,36 @@
 const XP_KEY = "databloom-xp";
 const LAST_CELEBRATED_LEVEL_KEY = "databloom-last-celebrated-level";
 
+const DEFAULT_XP = 0;
+
+function normalizeXP(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+    ? Math.floor(value)
+    : DEFAULT_XP;
+}
+
 export function saveXP(xp: number) {
   if (typeof window === "undefined") return;
 
-  localStorage.setItem(XP_KEY, JSON.stringify(xp));
+  localStorage.setItem(XP_KEY, JSON.stringify(normalizeXP(xp)));
 }
 
 export function loadXP(): number {
-  if (typeof window === "undefined") return 240;
+  if (typeof window === "undefined") return DEFAULT_XP;
 
-  const savedXP = localStorage.getItem(XP_KEY);
+  let savedXP: string | null;
+  try {
+    savedXP = localStorage.getItem(XP_KEY);
+  } catch {
+    return DEFAULT_XP;
+  }
 
-  if (!savedXP) return 240;
+  if (!savedXP) return DEFAULT_XP;
 
   try {
-    return JSON.parse(savedXP);
+    return normalizeXP(JSON.parse(savedXP));
   } catch {
-    return 240;
+    return DEFAULT_XP;
   }
 }
 

@@ -170,7 +170,10 @@ export default function PlannerStudio() {
       xp: result.xpAward,
     });
     if (result.xpAward > 0) {
-      addXP(result.xpAward);
+      for (const milestoneId of result.rewardedMilestoneIds) {
+        const milestone = milestoneId === "first-task-completed" ? 25 : milestoneId === "five-tasks-completed" ? 50 : 75;
+        addXP({ rewardId: `planner:milestone:${milestoneId}`, source: "planner", optimisticXP: milestone });
+      }
       playXPSound();
     } else {
       playSuccessSound();

@@ -95,7 +95,7 @@ export default function StatisticsLessonDetail({
 
     if (!result.newlyCompleted) return;
 
-    addXP(lesson.xpReward);
+      addXP({ rewardId: `statistics:lesson:${lesson.id}`, source: "statistics-lesson", optimisticXP: lesson.xpReward });
     registerStudyActivity({ kind: "lesson", source: `statistics:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     unlockAchievement("statistics_starter");
     if (result.state.completedLessonIds.length >= 10) {

@@ -108,7 +108,7 @@ export default function StatisticsPractice({
     playSuccessSound();
 
     if (result.newlyCompleted) {
-      addXP(reward);
+      addXP({ rewardId: `statistics:practice:${lesson.id}`, source: "statistics-practice", optimisticXP: reward });
       registerStudyActivity({ kind: "practice", source: `statistics-practice:${lesson.id}`, minutes: 10, xp: reward });
       playXPSound();
     }

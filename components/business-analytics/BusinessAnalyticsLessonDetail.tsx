@@ -61,7 +61,7 @@ export default function BusinessAnalyticsLessonDetail({ lesson }: { lesson: Busi
     const result = completeBusinessAnalyticsLesson(lesson.id);
     setCompleted(result.state.completedLessonIds.includes(lesson.id));
     if (!result.newlyCompleted) return;
-    addXP(lesson.xpReward);
+    addXP({ rewardId: `business-analytics:lesson:${lesson.id}`, source: "business-analytics-lesson", optimisticXP: lesson.xpReward });
     registerStudyActivity({ kind: "lesson", source: `business-analytics:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     playXPSound();
     setShowCompletion(true);

@@ -3,6 +3,7 @@ import Achievements from "@/components/home/Achievements";
 import DailyGoals from "@/components/home/DailyGoals";
 import FormulaChallenge from "@/components/home/FormulaChallenge";
 import HomeJourneyRecommendation from "@/components/home/HomeJourneyRecommendation";
+import Link from "next/link";
 import MochiMission from "@/components/home/MochiMission";
 import MochiWidget from "@/components/home/MochiWidget";
 import MusicWidget from "@/components/home/MusicWidget";
@@ -122,6 +123,12 @@ export default function Home() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2"><MusicWidget /><MochiMission /></div>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2"><FormulaChallenge /><Achievements /></div>
           </div>
+
+          <footer className="mt-12 flex flex-wrap justify-center gap-x-5 gap-y-2 pb-4 text-sm font-bold text-[var(--databloom-text-accent)]">
+            <Link className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]" href="/privacy">Privacy</Link>
+            <Link className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]" href="/terms">Terms of Use</Link>
+            <Link className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]" href="/contact">Contact</Link>
+          </footer>
         </div>
       </div>
     </main>

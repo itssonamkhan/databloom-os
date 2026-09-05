@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import PersonalizationSettings from "@/components/profile/PersonalizationSettings";
 import AppLayout from "@/components/layout/AppLayout";
@@ -35,6 +36,7 @@ import {
 } from "@/lib/careerHub";
 import {
   loadStreak,
+  STREAK_UPDATED_EVENT,
   type StreakData,
 } from "@/lib/streak";
 import { loadUnlockedAchievements } from "@/lib/unlockedAchievements";
@@ -60,6 +62,9 @@ import {
 } from "@/lib/planner";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { getBuddyPresentation } from "@/lib/userPreferences";
+import { createClient } from "@/lib/supabase/client";
+import { clearPendingRewards } from "@/lib/progress/pendingRewards";
+import { removeDeletedUserProgressPartition } from "@/lib/progress/localProgressPartition";
 
 export default function ProfilePage() {
   const { xp, currentLevelName } = useProgress();
@@ -169,6 +174,7 @@ export default function ProfilePage() {
     );
     window.addEventListener(ANALYTICS_UPDATED_EVENT, loadProfileData);
     window.addEventListener(PLANNER_EVENT, loadProfileData);
+    window.addEventListener(STREAK_UPDATED_EVENT, loadProfileData);
 
     return () => {
       window.removeEventListener(
@@ -202,6 +208,7 @@ export default function ProfilePage() {
       );
       window.removeEventListener(ANALYTICS_UPDATED_EVENT, loadProfileData);
       window.removeEventListener(PLANNER_EVENT, loadProfileData);
+      window.removeEventListener(STREAK_UPDATED_EVENT, loadProfileData);
     };
   }, []);
 
@@ -606,9 +613,152 @@ export default function ProfilePage() {
             </div>
           </div>
         </section>
+
+        <AccountAndPrivacySection />
       </div>
     </div>
     </AppLayout>
+  );
+}
+
+function AccountAndPrivacySection() {
+  const router = useRouter();
+  const [authState, setAuthState] = useState<"loading" | "guest" | "authenticated">("loading");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [notice, setNotice] = useState<{ tone: "error" | "success"; message: string } | null>(null);
+  const controllerRef = useRef<AbortController | null>(null);
+  const redirectTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
+
+    function applyUser(id: string | null) {
+      if (!active) return;
+      setUserId(id);
+      setAuthState(id ? "authenticated" : "guest");
+    }
+
+    void supabase.auth.getUser().then(({ data }) => applyUser(data.user?.id ?? null));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      applyUser(session?.user.id ?? null);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+      controllerRef.current?.abort();
+      if (redirectTimerRef.current !== null) window.clearTimeout(redirectTimerRef.current);
+    };
+  }, []);
+
+  async function handleDelete(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!userId || confirmation !== "DELETE" || isDeleting) return;
+    if (!window.confirm("Delete your DataBloom account permanently? This cannot be undone.")) return;
+
+    let deleted = false;
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    setIsDeleting(true);
+    setNotice(null);
+
+    try {
+      const response = await fetch("/api/account", {
+        method: "DELETE",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({ confirmation: "DELETE" }),
+      });
+
+      if (!response.ok) {
+        setNotice({ tone: "error", message: "We could not delete your account. Please try again." });
+        return;
+      }
+
+      const supabase = createClient();
+      await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+      clearPendingRewards(userId);
+      removeDeletedUserProgressPartition(userId);
+      setNotice({ tone: "success", message: "Your account has been deleted. Redirecting to DataBloom…" });
+      redirectTimerRef.current = window.setTimeout(() => router.replace("/"), 900);
+      deleted = true;
+    } catch (error) {
+      if ((error as { name?: string }).name !== "AbortError") {
+        setNotice({ tone: "error", message: "We could not delete your account. Please try again." });
+      }
+    } finally {
+      if (controllerRef.current === controller) controllerRef.current = null;
+      if (!deleted) setIsDeleting(false);
+    }
+  }
+
+  return (
+    <section className="rounded-[2rem] border border-white/90 bg-white/70 p-6 shadow-[0_20px_55px_rgba(76,29,149,0.10)] backdrop-blur-xl sm:p-7">
+      <SectionHeading
+        eyebrow="Account and privacy"
+        title="Manage your account"
+        description="Review your privacy information or permanently remove your DataBloom account."
+      />
+
+      <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold text-purple-700">
+        <Link href="/privacy" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700">Privacy</Link>
+        <Link href="/terms" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700">Terms</Link>
+        <Link href="/contact" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-700">Contact</Link>
+      </div>
+
+      {authState === "loading" ? (
+        <p className="mt-5 text-sm font-semibold text-slate-600" role="status">Checking your account…</p>
+      ) : null}
+
+      {authState === "guest" ? (
+        <div className="mt-5 rounded-2xl border border-purple-100 bg-purple-50/70 p-5">
+          <p className="font-black text-slate-900">Sign in to manage your account</p>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Guest learning stays available on this device.</p>
+          <Link href="/login" className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-purple-600 px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-purple-700">Sign in</Link>
+        </div>
+      ) : null}
+
+      {authState === "authenticated" ? (
+        <form onSubmit={handleDelete} className="mt-5 rounded-2xl border border-rose-200 bg-rose-50/70 p-5">
+          <h3 className="text-lg font-black text-slate-900">Delete account</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Deletion is permanent. Your account and cloud learning data cannot be restored.</p>
+          <label className="mt-4 block text-sm font-black text-slate-800" htmlFor="delete-account-confirmation">
+            Type DELETE to continue
+            <input
+              id="delete-account-confirmation"
+              name="delete-account-confirmation"
+              type="text"
+              value={confirmation}
+              onChange={(input) => setConfirmation(input.target.value)}
+              autoComplete="off"
+              spellCheck={false}
+              disabled={isDeleting}
+              className="mt-2 min-h-11 w-full rounded-xl border border-rose-200 bg-white px-3 text-slate-900 outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-100 disabled:cursor-not-allowed disabled:opacity-70"
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={confirmation !== "DELETE" || isDeleting}
+            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-rose-700 px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-rose-800 disabled:cursor-not-allowed disabled:bg-rose-200 disabled:text-rose-700"
+          >
+            {isDeleting ? "Deleting account…" : "Permanently delete account"}
+          </button>
+        </form>
+      ) : null}
+
+      {notice ? (
+        <p className={`mt-4 text-sm font-bold ${notice.tone === "error" ? "text-rose-700" : "text-emerald-700"}`} role={notice.tone === "error" ? "alert" : "status"}>
+          {notice.message}
+        </p>
+      ) : null}
+    </section>
   );
 }
 

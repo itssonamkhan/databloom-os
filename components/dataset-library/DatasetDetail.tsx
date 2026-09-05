@@ -90,7 +90,7 @@ export default function DatasetDetail({ dataset }: { dataset: DatasetLibraryItem
     const result = completeDatasetLibraryItem(dataset.id);
     setCompleted(result.state.completedLessonIds.includes(dataset.id));
     if (!result.newlyCompleted) return;
-    addXP(dataset.xpReward);
+    addXP({ rewardId: `dataset:item:${dataset.id}`, source: "dataset", optimisticXP: dataset.xpReward });
     registerStudyActivity({ kind: "lesson", source: `dataset:${dataset.id}`, minutes: 15, xp: dataset.xpReward });
     playXPSound();
     setShowCompletion(true);

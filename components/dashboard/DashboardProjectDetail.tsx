@@ -89,7 +89,7 @@ export default function DashboardProjectDetail({
 
     if (!isFirstCompletion) return;
 
-    addXP(project.xpReward);
+    addXP({ rewardId: `dashboard:project:${project.id}`, source: "dashboard", optimisticXP: project.xpReward });
     registerStudyActivity({
       kind: "lesson",
       source: `dashboard:${project.id}`,

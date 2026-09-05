@@ -329,7 +329,7 @@ export default function PracticeLabHub() {
 
     playSuccessSound();
     if (result.newlyRewarded) {
-      addXP(result.xpAward);
+      addXP({ rewardId: `practice-lab:question:${currentQuestion.id}`, source: "practice-lab", optimisticXP: result.xpAward });
       playXPSound();
     }
     setFeedback({

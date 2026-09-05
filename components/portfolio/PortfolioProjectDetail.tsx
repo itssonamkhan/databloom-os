@@ -79,7 +79,7 @@ export default function PortfolioProjectDetail({
     setCompleted(result.state.completedProjectIds.includes(project.id));
     if (!result.newlyCompleted) return;
     if (result.xpAward) {
-      addXP(result.xpAward);
+      addXP({ rewardId: `portfolio:project:${project.id}`, source: "portfolio", optimisticXP: result.xpAward });
       registerStudyActivity({
         kind: "study",
         source: `portfolio-project:${project.id}`,

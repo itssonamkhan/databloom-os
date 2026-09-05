@@ -30,7 +30,9 @@ export default function MochiMission() {
     playClickSound();
     if (missionCompleted) return;
 
-    addXP(mission.reward);
+    const date = new Date();
+    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    addXP({ rewardId: `mochi-mission:${dateKey}:${mission.id}`, source: "mochi-mission", optimisticXP: mission.reward });
     completeMission();
     playXPSound();
     playSuccessSound();

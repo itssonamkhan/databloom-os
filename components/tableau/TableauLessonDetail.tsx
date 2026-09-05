@@ -84,7 +84,7 @@ export default function TableauLessonDetail({ lesson }: { lesson: TableauLesson 
     setCompleted(result.state.completedLessonIds.includes(lesson.id));
     if (!result.newlyCompleted) return;
 
-    addXP(lesson.xpReward);
+    addXP({ rewardId: `tableau:lesson:${lesson.id}`, source: "tableau-lesson", optimisticXP: lesson.xpReward });
     registerStudyActivity({ kind: "lesson", source: `tableau:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     playXPSound();
     setShowCompletion(true);

@@ -31,20 +31,27 @@ export default function OnboardingGuard({
   );
   const isOnboarding = pathname === "/onboarding";
   const isLogin = pathname === "/login";
+  const isForgotPassword = pathname === "/forgot-password";
+  const isResetPassword = pathname === "/reset-password";
   const isPublicInterviewGuide =
     pathname === "/data-analyst-interview-preparation";
   const isPublicLearnRoute =
     pathname === "/learn" || /^\/learn\/[^/]+$/.test(pathname);
   const isContentManager = pathname === "/content-manager";
+  const isLegalPage =
+    pathname === "/privacy" || pathname === "/terms" || pathname === "/contact";
 
   useEffect(() => {
     if (
       !completed &&
       !isOnboarding &&
       !isLogin &&
+      !isForgotPassword &&
+      !isResetPassword &&
       !isPublicInterviewGuide &&
       !isPublicLearnRoute &&
-      !isContentManager
+      !isContentManager &&
+      !isLegalPage
     ) {
       router.replace("/onboarding");
     } else if (completed && isOnboarding) {
@@ -53,10 +60,13 @@ export default function OnboardingGuard({
   }, [
     completed,
     isLogin,
+    isForgotPassword,
+    isResetPassword,
     isOnboarding,
     isPublicInterviewGuide,
     isPublicLearnRoute,
     isContentManager,
+    isLegalPage,
     router,
   ]);
 
@@ -64,9 +74,12 @@ export default function OnboardingGuard({
     (!completed &&
       !isOnboarding &&
       !isLogin &&
+      !isForgotPassword &&
+      !isResetPassword &&
       !isPublicInterviewGuide &&
       !isPublicLearnRoute &&
-      !isContentManager) ||
+      !isContentManager &&
+      !isLegalPage) ||
     (completed && isOnboarding)
   ) {
     return null;

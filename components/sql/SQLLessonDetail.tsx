@@ -76,7 +76,7 @@ export default function SQLLessonDetail({ lesson }: { lesson: SQLLesson }) {
     const result = completeSQLLesson(lesson.id);
     setCompleted(result.state.completedLessonIds.includes(lesson.id));
     if (!result.newlyCompleted) return;
-    addXP(lesson.xpReward);
+    addXP({ rewardId: `sql:lesson:${lesson.id}`, source: "sql-lesson", optimisticXP: lesson.xpReward });
     registerStudyActivity({ kind: "lesson", source: `sql:${lesson.id}`, minutes: 15, xp: lesson.xpReward });
     playXPSound();
     setShowCompletion(true);

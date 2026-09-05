@@ -34,6 +34,8 @@ import VisitorOverview from "@/components/analytics/VisitorOverview";
 import WeeklyActivityChart from "@/components/analytics/WeeklyActivityChart";
 import XPProgressCard from "@/components/analytics/XPProgressCard";
 import AppLayout from "@/components/layout/AppLayout";
+import { useProgress } from "@/context/ProgressContext";
+import { STREAK_UPDATED_EVENT } from "@/lib/streak";
 import {
   downloadAnalyticsSummary,
   loadAnalyticsSnapshot,
@@ -70,6 +72,7 @@ function formatDateRange(dates: string[]) {
 }
 
 export default function AnalyticsPage() {
+  const { xp } = useProgress();
   const [snapshot, setSnapshot] = useState(loadAnalyticsSnapshot);
   const [statusMessage, setStatusMessage] = useState("");
 
@@ -79,6 +82,7 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     window.addEventListener(ANALYTICS_UPDATED_EVENT, syncOnly);
+    window.addEventListener(STREAK_UPDATED_EVENT, syncOnly);
 
     function handleStorage(event: StorageEvent) {
       if (event.key === null || event.key === ANALYTICS_HISTORY_STORAGE_KEY) {
@@ -90,6 +94,7 @@ export default function AnalyticsPage() {
 
     return () => {
       window.removeEventListener(ANALYTICS_UPDATED_EVENT, syncOnly);
+      window.removeEventListener(STREAK_UPDATED_EVENT, syncOnly);
       window.removeEventListener("storage", handleStorage);
     };
   }, [syncOnly]);
@@ -193,7 +198,7 @@ export default function AnalyticsPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <AnalyticsStatCard
               label="Total XP"
-              value={snapshot.xp.toLocaleString()}
+              value={xp.toLocaleString()}
               detail="Lifetime learning rewards"
               icon={<Zap size={21} />}
               tone="purple"
@@ -434,7 +439,7 @@ export default function AnalyticsPage() {
 
         <div className="grid min-w-0 gap-6 xl:grid-cols-2">
           <XPProgressCard
-            xp={snapshot.xp}
+            xp={xp}
             currentLevelName={snapshot.level.name}
             currentLevelMinXP={snapshot.level.minXP}
             currentBadge={snapshot.level.badge}

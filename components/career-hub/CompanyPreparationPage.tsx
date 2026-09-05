@@ -43,7 +43,7 @@ export default function CompanyPreparationPage({ company }: { company: Company }
     const result = toggleCareerCompletion(`company:${company.slug}:${index + 1}`);
     setState(result.state);
     if (result.xpAward) {
-      addXP(result.xpAward);
+      addXP({ rewardId: `career:completion:company:${company.slug}:${index + 1}`, source: "career", optimisticXP: result.xpAward });
       incrementStats(1, 1, result.xpAward, 0);
       registerStudyDay();
       playXPSound();

@@ -12,12 +12,63 @@ export type StreakData = {
   lastStudyDate: string | null;
 };
 
+const EMPTY_STREAK: StreakData = {
+  current: 0,
+  longest: 0,
+  lastStudyDate: null,
+};
+
+function isDateKey(value: unknown): value is string {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  );
+}
+
+function normalizeStreak(value: unknown): StreakData {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return { ...EMPTY_STREAK };
+  }
+
+  const candidate = value as Partial<StreakData>;
+  const current = candidate.current;
+  const longest = candidate.longest;
+  const lastStudyDate = candidate.lastStudyDate;
+
+  if (
+    typeof current !== "number" ||
+    !Number.isFinite(current) ||
+    current < 0 ||
+    !Number.isInteger(current) ||
+    typeof longest !== "number" ||
+    !Number.isFinite(longest) ||
+    longest < 0 ||
+    !Number.isInteger(longest) ||
+    longest < current ||
+    (lastStudyDate !== null && !isDateKey(lastStudyDate))
+  ) {
+    return { ...EMPTY_STREAK };
+  }
+
+  return { current, longest, lastStudyDate };
+}
+
 
 
 function today() {
-  return new Date()
-    .toISOString()
-    .split("T")[0];
+  const date = new Date();
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
 }
 
 
@@ -30,9 +81,11 @@ function yesterday() {
     date.getDate() - 1
   );
 
-  return date
-    .toISOString()
-    .split("T")[0];
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
 
 }
 
@@ -43,28 +96,24 @@ export function loadStreak(): StreakData {
 
   if(typeof window === "undefined"){
 
-    return {
-      current:0,
-      longest:0,
-      lastStudyDate:null,
-    };
+    return { ...EMPTY_STREAK };
 
   }
 
 
 
-  const saved =
-    localStorage.getItem(STREAK_KEY);
+  let saved: string | null;
+  try {
+    saved = localStorage.getItem(STREAK_KEY);
+  } catch {
+    return { ...EMPTY_STREAK };
+  }
 
 
 
   if(!saved){
 
-    return {
-      current:0,
-      longest:0,
-      lastStudyDate:null,
-    };
+    return { ...EMPTY_STREAK };
 
   }
 
@@ -72,17 +121,13 @@ export function loadStreak(): StreakData {
 
   try{
 
-    return JSON.parse(saved);
+    return normalizeStreak(JSON.parse(saved));
 
   }
 
   catch{
 
-    return {
-      current:0,
-      longest:0,
-      lastStudyDate:null,
-    };
+    return { ...EMPTY_STREAK };
 
   }
 
@@ -101,13 +146,15 @@ export function saveStreak(
 
 
 
+  const safeData = normalizeStreak(data);
+
   localStorage.setItem(
     STREAK_KEY,
-    JSON.stringify(data)
+    JSON.stringify(safeData)
   );
 
   window.dispatchEvent(
-    new CustomEvent(STREAK_UPDATED_EVENT, { detail: data })
+    new CustomEvent(STREAK_UPDATED_EVENT, { detail: safeData })
   );
 
 }

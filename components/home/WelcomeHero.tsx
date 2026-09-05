@@ -8,11 +8,25 @@ import {
   getTimeGreeting,
 } from "@/lib/userPreferences";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { loadStreak, STREAK_UPDATED_EVENT } from "@/lib/streak";
 
 export default function WelcomeHero() {
   const { xp } = useProgress();
   const preferences = useUserPreferences();
   const [greeting, setGreeting] = useState(() => getTimeGreeting());
+  const [streak, setStreak] = useState(() => loadStreak());
+
+  useEffect(() => {
+    const syncStreak = () => setStreak(loadStreak());
+    syncStreak();
+    window.addEventListener(STREAK_UPDATED_EVENT, syncStreak);
+    window.addEventListener("storage", syncStreak);
+
+    return () => {
+      window.removeEventListener(STREAK_UPDATED_EVENT, syncStreak);
+      window.removeEventListener("storage", syncStreak);
+    };
+  }, []);
 
   useEffect(() => {
     const syncGreeting = () => setGreeting(getTimeGreeting());
@@ -41,7 +55,7 @@ export default function WelcomeHero() {
       <div className="mt-6 flex flex-wrap gap-4">
         <div className="flex items-center gap-2 rounded-2xl bg-pink-100 px-5 py-3 font-semibold text-gray-800 shadow-sm">
           <span className="text-xl">🔥</span>
-          <span>7 Day Streak</span>
+          <span>{streak.current} Day Streak</span>
         </div>
 
         <div className="flex items-center gap-2 rounded-2xl bg-purple-100 px-5 py-3 font-semibold text-gray-800 shadow-sm">

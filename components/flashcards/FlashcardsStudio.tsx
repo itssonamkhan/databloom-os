@@ -186,7 +186,7 @@ export default function FlashcardsStudio() {
     const result = rateFlashcard(cardId, rating);
     setState(result.state);
     if (result.xpAward > 0) {
-      addXP(result.xpAward);
+      addXP({ rewardId: `flashcard:card:${cardId}`, source: "flashcard", optimisticXP: result.xpAward });
       registerStudyActivity({ kind: "study", source: `flashcard:${cardId}`, xp: result.xpAward });
       playXPSound();
     } else {

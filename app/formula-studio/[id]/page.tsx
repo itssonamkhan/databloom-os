@@ -588,7 +588,7 @@ export default function FormulaDetails({
 
     markFormulaLearned(formula.id);
 
-    addXP(20);
+    addXP({ rewardId: `formula:lesson:${formula.id}`, source: "formula-lesson", optimisticXP: 20 });
 
     registerStudyActivity({
       kind: "lesson",

@@ -117,9 +117,9 @@ export default function CertificationHub() {
     (trackerStatus === "All" || item.status === trackerStatus),
   );
 
-  function awardXP(amount: number) {
+  function awardXP(amount: number, rewardId: string) {
     if (!amount) return;
-    addXP(amount);
+    addXP({ rewardId, source: "career-certification", optimisticXP: amount });
     incrementStats(1, 1, amount, 0);
     registerStudyDay();
     playXPSound();
@@ -134,7 +134,8 @@ export default function CertificationHub() {
       return;
     }
     if (result.saved) {
-      awardXP(result.xpAward);
+      const rewardKind = result.xpAward === 70 ? "added-completed" : "added";
+      awardXP(result.xpAward, `career:certification:${rewardKind}:${result.item.id}`);
       playSuccessSound();
       sync();
       setMessage(result.xpAward ? `Added to your tracker · +${result.xpAward} XP earned once.` : "Added to your tracker.");
@@ -154,7 +155,8 @@ export default function CertificationHub() {
     event.preventDefault();
     const result = saveCertificationTrackerRecord({ ...form, name: form.name.trim(), provider: form.provider.trim() }, editingId);
     if (!result.saved) return;
-    awardXP(result.xpAward);
+    const rewardKind = result.xpAward === 70 ? "added-completed" : result.xpAward === 50 ? "completed" : "added";
+    awardXP(result.xpAward, `career:certification:${rewardKind}:${result.item.id}`);
     playSuccessSound();
     setForm(blankTrackerRecord);
     setEditingId(undefined);

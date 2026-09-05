@@ -29,7 +29,9 @@ export default function FormulaChallenge() {
     playClickSound();
 
     if (!completed && completeTodayFormulaChallenge()) {
-      addXP(challenge.reward);
+      const date = new Date();
+      const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      addXP({ rewardId: `formula-challenge:date:${dateKey}`, source: "formula-challenge", optimisticXP: challenge.reward });
       registerStudyActivity({
         kind: "practice",
         source: `formula-challenge:${challenge.title}`,

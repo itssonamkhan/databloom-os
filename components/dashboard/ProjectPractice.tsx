@@ -163,7 +163,7 @@ export default function ProjectPractice({
     playSuccessSound();
 
     if (result.newlyRewarded) {
-      addXP(task.xpReward);
+      addXP({ rewardId: `dashboard-practice:${project.id}:${task.id}`, source: "dashboard-practice", optimisticXP: task.xpReward });
       registerStudyActivity({ kind: "practice", source: `dashboard-practice:${project.id}:${task.id}`, minutes: 10, xp: task.xpReward });
       playXPSound();
     }

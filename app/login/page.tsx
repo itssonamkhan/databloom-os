@@ -2,6 +2,7 @@
 
 import { Suspense, type FormEvent, useState } from "react";
 import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
@@ -28,6 +29,20 @@ function LoginForm() {
     setErrorMessage("");
   }
 
+  function getSafeAuthMessage(message: string, mode: "login" | "signup") {
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes("rate limit")) {
+      return "Too many attempts. Please wait a moment and try again.";
+    }
+
+    if (mode === "signup") {
+      return "We could not create the account with those details. Please check them and try again.";
+    }
+
+    return "We could not sign you in. Check your email and password and try again.";
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
@@ -45,9 +60,9 @@ function LoginForm() {
         });
 
         if (error) {
-          setErrorMessage(error.message);
+          setErrorMessage(getSafeAuthMessage(error.message, "signup"));
         } else {
-          setMessage("Check your email to confirm your DataBloom account.");
+          setMessage("If this email can be used, check your inbox to confirm your DataBloom account.");
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -56,7 +71,7 @@ function LoginForm() {
         });
 
         if (error) {
-          setErrorMessage(error.message);
+          setErrorMessage(getSafeAuthMessage(error.message, "login"));
         } else {
           router.push("/dashboard");
           router.refresh();
@@ -82,7 +97,7 @@ function LoginForm() {
         },
       });
 
-      if (error) setErrorMessage(error.message);
+      if (error) setErrorMessage(getSafeAuthMessage(error.message, "login"));
     } catch {
       setErrorMessage("Something went wrong. Please try again.");
     } finally {
@@ -155,7 +170,27 @@ function LoginForm() {
           Continue with Google
         </button>
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        {isSignUp ? (
+          <p className="mb-6 text-center text-xs leading-5 text-[var(--databloom-text-muted)]">
+            By creating an account, you confirm that you are at least 18 and agree to the{" "}
+            <Link
+              href="/terms"
+              className="font-bold text-[var(--databloom-text-accent)] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]"
+            >
+              Terms of Use
+            </Link>{" "}
+            and acknowledge the{" "}
+            <Link
+              href="/privacy"
+              className="font-bold text-[var(--databloom-text-accent)] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]"
+            >
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        ) : null}
+
+        <form className="space-y-5" method="post" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -165,6 +200,7 @@ function LoginForm() {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
               autoComplete="email"
               required
@@ -184,16 +220,28 @@ function LoginForm() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
               autoComplete={isSignUp ? "new-password" : "current-password"}
               required
-              minLength={6}
+              minLength={isSignUp ? 8 : undefined}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               className="min-h-12 w-full rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-input)] px-4 py-3 text-[var(--databloom-text-primary)] outline-none placeholder:text-[var(--databloom-text-muted)] focus:border-[var(--databloom-focus)] focus:ring-2 focus:ring-[var(--databloom-focus)]"
-              placeholder="At least 6 characters"
+              placeholder={isSignUp ? "At least 8 characters" : "Your password"}
             />
           </div>
+
+          {!isSignUp ? (
+            <p className="-mt-2 text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-bold text-[var(--databloom-text-accent)] underline-offset-4 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </p>
+          ) : null}
 
           {message ? (
             <p className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3 text-sm font-semibold text-emerald-800" role="status">
@@ -220,6 +268,14 @@ function LoginForm() {
         <p className="mt-7 text-center text-xs leading-5 text-[var(--databloom-text-muted)]">
           Your learning progress stays cozy, personal, and ready whenever you return.
         </p>
+        <nav
+          aria-label="Legal navigation"
+          className="mt-3 flex justify-center gap-4 text-xs font-bold text-[var(--databloom-text-accent)]"
+        >
+          <Link className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]" href="/privacy">Privacy</Link>
+          <Link className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]" href="/terms">Terms of Use</Link>
+          <Link className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]" href="/contact">Contact</Link>
+        </nav>
       </section>
     </main>
   );

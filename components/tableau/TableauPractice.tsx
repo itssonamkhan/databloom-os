@@ -88,7 +88,7 @@ export default function TableauPractice({
     setCompleted(result.state.completedPracticeIds.includes(lesson.id));
     playSuccessSound();
     if (result.newlyCompleted) {
-      addXP(reward);
+      addXP({ rewardId: `tableau:practice:${lesson.id}`, source: "tableau-practice", optimisticXP: reward });
       registerStudyActivity({ kind: "practice", source: `tableau-practice:${lesson.id}`, minutes: 10, xp: reward });
       playXPSound();
     }

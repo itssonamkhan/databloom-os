@@ -222,7 +222,7 @@ export default function InterviewHub() {
     const result = markInterviewQuestionLearned(question.id);
     if (!result.saved) return;
     if (result.newlyRewarded) {
-      addXP(result.xpAward);
+      addXP({ rewardId: `interview-question:${question.id}`, source: "interview-question", optimisticXP: result.xpAward });
       registerStudyActivity({ kind: "lesson", source: `interview-question:${question.id}`, minutes: 1, xp: result.xpAward });
       playXPSound();
     } else {
@@ -302,7 +302,7 @@ export default function InterviewHub() {
           onRecord={(answer, rating) => {
             const result = recordMockResponse(currentMockQuestion.id, answer, rating);
             if (result.newlyRewarded) {
-              addXP(result.xpAward);
+              addXP({ rewardId: `interview-question:${currentMockQuestion.id}`, source: "interview-question", optimisticXP: result.xpAward });
               playXPSound();
             } else {
               playSuccessSound();

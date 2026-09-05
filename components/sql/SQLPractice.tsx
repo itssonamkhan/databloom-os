@@ -79,7 +79,7 @@ export default function SQLPractice({
     setCompleted(result.state.completedPracticeIds.includes(lesson.id));
     playSuccessSound();
     if (result.newlyCompleted) {
-      addXP(practiceReward);
+      addXP({ rewardId: `sql:practice:${lesson.id}`, source: "sql-practice", optimisticXP: practiceReward });
       registerStudyActivity({ kind: "practice", source: `sql-practice:${lesson.id}`, minutes: 10, xp: practiceReward });
       playXPSound();
     }

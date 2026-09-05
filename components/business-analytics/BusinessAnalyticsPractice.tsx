@@ -89,7 +89,7 @@ export default function BusinessAnalyticsPractice({
     setCompleted(result.state.completedPracticeIds.includes(lesson.id));
     playSuccessSound();
     if (result.newlyCompleted) {
-      addXP(reward);
+      addXP({ rewardId: `business-analytics:practice:${lesson.id}`, source: "business-analytics-practice", optimisticXP: reward });
       registerStudyActivity({ kind: "practice", source: `business-analytics-practice:${lesson.id}`, minutes: 10, xp: reward });
       playXPSound();
     }

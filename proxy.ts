@@ -10,7 +10,7 @@ function getSupabaseConfig() {
 
   if (!url || !key || key === "your_supabase_publishable_key_here") {
     console.error(
-      "[DataBloom] Supabase middleware is disabled. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in .env.local.",
+      "[DataBloom] Supabase proxy is disabled. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in .env.local.",
     );
     return null;
   }
@@ -30,7 +30,7 @@ function ensureVisitorCookie(request: NextRequest, response: NextResponse) {
   });
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const config = getSupabaseConfig();
   let supabaseResponse = NextResponse.next({ request });
 

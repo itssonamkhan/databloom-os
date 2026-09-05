@@ -5,6 +5,7 @@ import { StudyMusicProvider } from "@/context/StudyMusicContext";
 import OnboardingGuard from "@/components/onboarding/OnboardingGuard";
 import AnalyticsHistoryTracker from "@/components/analytics/AnalyticsHistoryTracker";
 import AnonymousVisitorTracker from "@/components/analytics/AnonymousVisitorTracker";
+import { CloudProgressProvider } from "@/context/CloudProgressContext";
 import {
   DATABLOOM_THEME_ATTRIBUTE,
   defaultUserPreferences,
@@ -69,7 +70,8 @@ export default function RootLayout({
 
         <AnonymousVisitorTracker />
 
-        <ProgressProvider>
+        <CloudProgressProvider>
+          <ProgressProvider>
 
           <AnalyticsHistoryTracker />
 
@@ -79,7 +81,8 @@ export default function RootLayout({
             </OnboardingGuard>
           </StudyMusicProvider>
 
-        </ProgressProvider>
+          </ProgressProvider>
+        </CloudProgressProvider>
 
       </body>
 

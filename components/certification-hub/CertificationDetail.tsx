@@ -54,9 +54,9 @@ export default function CertificationDetail({ certification }: { certification: 
   const favorite = state.certificationFavoriteIds.includes(certification.id);
   const tracked = state.certifications.find((item) => item.catalogId === certification.id);
 
-  function awardXP(amount: number) {
+  function awardXP(amount: number, rewardId: string) {
     if (!amount) return;
-    addXP(amount);
+    addXP({ rewardId, source: "career-certification", optimisticXP: amount });
     incrementStats(1, 1, amount, 0);
     registerStudyDay();
     playXPSound();
@@ -70,7 +70,8 @@ export default function CertificationDetail({ certification }: { certification: 
       return;
     }
     if (result.saved) {
-      awardXP(result.xpAward);
+      const rewardKind = result.xpAward === 70 ? "added-completed" : "added";
+      awardXP(result.xpAward, `career:certification:${rewardKind}:${result.item.id}`);
       playSuccessSound();
       setState(result.state);
       setMessage(result.xpAward ? `Added to tracker · +${result.xpAward} XP earned once.` : "Added to tracker.");
@@ -82,7 +83,7 @@ export default function CertificationDetail({ certification }: { certification: 
     const result = toggleCertificationPreparationStep(certification.id, stepId);
     setState(result.state);
     if (result.xpAward) {
-      awardXP(result.xpAward);
+      awardXP(result.xpAward, `career:certification:roadmap:${certification.id}`);
       playSuccessSound();
       setMessage(`Preparation roadmap completed · +${result.xpAward} XP earned once.`);
     }

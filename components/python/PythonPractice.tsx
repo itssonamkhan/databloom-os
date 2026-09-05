@@ -128,7 +128,7 @@ export default function PythonPractice({
     playSuccessSound();
 
     if (result.newlyCompleted) {
-      addXP(reward);
+      addXP({ rewardId: `python:practice:${lesson.id}`, source: "python-practice", optimisticXP: reward });
       registerStudyActivity({ kind: "practice", source: `python-practice:${lesson.id}`, minutes: 10, xp: reward });
       playXPSound();
     }
