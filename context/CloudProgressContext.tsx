@@ -14,6 +14,7 @@ type CloudProgressContextValue = { ready: boolean };
 export const CloudProgressContext = createContext<CloudProgressContextValue>({ ready: false });
 
 const SYNC_DELAY_MS = 900;
+const CLOUD_HYDRATION_TIMEOUT_MS = 5_000;
 
 function isSnapshot(value: unknown): value is CoreProgressSnapshot {
   return Boolean(value && typeof value === "object" && Array.isArray((value as CoreProgressSnapshot).items) && Array.isArray((value as CoreProgressSnapshot).dailyStats));
@@ -39,8 +40,20 @@ export function CloudProgressProvider({ children }: { children: React.ReactNode 
     const supabase = createClient();
 
     const fetchCloud = async (generation: number, signal?: AbortSignal) => {
+      const timeoutController = new AbortController();
+      const abortForIdentityChange = () => timeoutController.abort();
+      if (signal?.aborted) timeoutController.abort();
+      else signal?.addEventListener("abort", abortForIdentityChange, { once: true });
+      const timeout = window.setTimeout(
+        () => timeoutController.abort(),
+        CLOUD_HYDRATION_TIMEOUT_MS,
+      );
       try {
-        const response = await fetch("/api/progress", { cache: "no-store", credentials: "same-origin", signal });
+        const response = await fetch("/api/progress", {
+          cache: "no-store",
+          credentials: "same-origin",
+          signal: timeoutController.signal,
+        });
         if (!response.ok) return;
         const payload: unknown = await response.json();
         if (disposed || generation !== generationRef.current || !isSnapshot(payload)) return;
@@ -53,6 +66,9 @@ export function CloudProgressProvider({ children }: { children: React.ReactNode 
         }
       } catch {
         // The restored account partition remains usable while offline.
+      } finally {
+        window.clearTimeout(timeout);
+        signal?.removeEventListener("abort", abortForIdentityChange);
       }
     };
 
@@ -143,11 +159,11 @@ export function CloudProgressProvider({ children }: { children: React.ReactNode 
       revisionRef.current = 0;
       if (!switchLocalProgressIdentity(nextUserId ? { type: "user", id: nextUserId } : "guest")) {
         if (process.env.NODE_ENV !== "production") console.warn("DataBloom progress storage is unavailable.");
-        if (!nextUserId) {
-          hydratedRef.current = true;
-          setReady(true);
-          installListeners();
-        }
+        // Storage failures must not blank public pages. With no readable local
+        // partition, there is no prior account state to expose.
+        hydratedRef.current = true;
+        setReady(true);
+        installListeners();
         if (switchingIdentityRef.current === nextUserId) switchingIdentityRef.current = undefined;
         return;
       }
@@ -167,19 +183,26 @@ export function CloudProgressProvider({ children }: { children: React.ReactNode 
       if (switchingIdentityRef.current === nextUserId) switchingIdentityRef.current = undefined;
     };
 
+    const resolveIdentity = (nextUserId: string | null) => {
+      if (disposed) return;
+      if (nextUserId !== userIdRef.current || !hydratedRef.current) {
+        void switchIdentity(nextUserId);
+      }
+    };
+
+    // Until Supabase proves an authenticated identity, render from the isolated
+    // guest partition. A later auth result replaces it with that user's own
+    // partition before any cloud snapshot is applied.
+    resolveIdentity(null);
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      const nextUserId = session?.user.id ?? null;
-      if (nextUserId === userIdRef.current && hydratedRef.current) return;
-      void switchIdentity(nextUserId);
+      resolveIdentity(session?.user.id ?? null);
     });
-    void supabase.auth.getUser().then(({ data }) => {
-      if (!disposed) {
-        const nextUserId = data.user?.id ?? null;
-        if (nextUserId !== userIdRef.current || !hydratedRef.current) void switchIdentity(nextUserId);
-      }
-    });
+    void supabase.auth.getUser()
+      .then(({ data }) => resolveIdentity(data.user?.id ?? null))
+      .catch(() => resolveIdentity(null));
 
     return () => {
       disposed = true;
