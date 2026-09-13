@@ -1,0 +1,61 @@
+product_id,sku,product_name,category,subcategory,list_price_inr,unit_cogs_inr,packaging_cost_per_unit_inr
+P001,DBR-ELE-01,Audio Item 01,electronics,Audio,3499,2904.17,42
+P002,DBR-ELE-02,Accessories Item 02,Electronics,Accessories,2199,1838.36,42
+P003,DBR-ELE-03,Smart Home Item 03,electronics,Smart Home,4999,4209.16,42
+P004,DBR-ELE-04,Audio Item 04,Electronics,Audio,4999,4239.15,42
+P005,DBR-ELE-05,Accessories Item 05,electronics,Accessories,1299,1109.35,42
+P006,DBR-ELE-06,Smart Home Item 06,electronics,Smart Home,3499,2582.26,42
+P007,DBR-ELE-07,Audio Item 07,electronics,Audio,2199,1662.44,42
+P008,DBR-ELE-08,Accessories Item 08,electronics,Accessories,3499,2708.23,42
+P009,DBR-ELE-09,Smart Home Item 09,Electronics,Smart Home,3499,2519.28,42
+P010,DBR-ELE-10,Audio Item 10,electronics,Audio,2199,1622.86,42
+P011,DBR-ELE-11,Accessories Item 11,electronics,Accessories,1299,982.04,42
+P012,DBR-ELE-12,Smart Home Item 12,Electronics,Smart Home,1299,1005.43,42
+P013,DBR-FAS-01,Apparel Item 01,Fashion,Apparel,999,479.52,24
+P014,DBR-FAS-02,Footwear Item 02,Fashion,Footwear,1899,934.31,24
+P015,DBR-FAS-03,Bags Item 03,Fashion,Bags,1399,705.1,24
+P016,DBR-FAS-04,Apparel Item 04,Fashion,Apparel,1399,721.88,24
+P017,DBR-FAS-05,Footwear Item 05,FASHION,Footwear,1899,911.52,24
+P018,DBR-FAS-06,Bags Item 06,FASHION,Bags,1899,934.31,24
+P019,DBR-FAS-07,Apparel Item 07,Fashion,Apparel,1399,705.1,24
+P020,DBR-FAS-08,Footwear Item 08,FASHION,Footwear,1899,979.88,24
+P021,DBR-FAS-09,Bags Item 09,FASHION,Bags,999,479.52,24
+P022,DBR-FAS-10,Apparel Item 10,FASHION,Apparel,699,343.91,24
+P023,DBR-FAS-11,Footwear Item 11,FASHION,Footwear,999,503.5,24
+P024,DBR-FAS-12,Bags Item 12,Fashion,Bags,999,515.48,24
+P025,DBR-HOM-01,Cookware Item 01,Home & Kitchen ,Cookware,2299,1356.41,31
+P026,DBR-HOM-02,Storage Item 02,Home & Kitchen,Storage,549,332.01,31
+P027,DBR-HOM-03,Small Appliances Item 03,Home & Kitchen ,Small Appliances,849,525.96,31
+P028,DBR-HOM-04,Cookware Item 04,Home & Kitchen,Cookware,1299,823.89,31
+P029,DBR-HOM-05,Storage Item 05,Home & Kitchen,Storage,849,500.91,31
+P030,DBR-HOM-06,Small Appliances Item 06,Home & Kitchen ,Small Appliances,849,513.43,31
+P031,DBR-HOM-07,Cookware Item 07,Home & Kitchen,Cookware,2299,1424.23,31
+P032,DBR-HOM-08,Storage Item 08,Home & Kitchen,Storage,549,348.2,31
+P033,DBR-HOM-09,Small Appliances Item 09,Home & Kitchen ,Small Appliances,2299,1356.41,31
+P034,DBR-HOM-10,Cookware Item 10,Home & Kitchen,Cookware,849,513.43,31
+P035,DBR-HOM-11,Storage Item 11,Home & Kitchen,Storage,1299,804.73,31
+P036,DBR-HOM-12,Small Appliances Item 12,Home & Kitchen,Small Appliances,1299,823.89,31
+P037,DBR-BEA-01,Skin Care Item 01,Beauty,Skin Care,349,150.07,19
+P038,DBR-BEA-02,Personal Care Item 02,Beauty,Personal Care,599,264.01,19
+P039,DBR-BEA-03,Wellness Item 03,Beauty,Wellness,1199,541.35,19
+P040,DBR-BEA-04,Skin Care Item 04,Beauty,Skin Care,1199,554.24,19
+P041,DBR-BEA-05,Personal Care Item 05,Beauty,Personal Care,899,386.57,19
+P042,DBR-BEA-06,Wellness Item 06,Beauty,Wellness,899,396.23,19
+P043,DBR-BEA-07,Skin Care Item 07,Beauty,Skin Care,1199,541.35,19
+P044,DBR-BEA-08,Personal Care Item 08,Beauty,Personal Care,1199,554.24,19
+P045,DBR-BEA-09,Wellness Item 09,Beauty,Wellness,599,257.57,19
+P046,DBR-BEA-10,Skin Care Item 10,Beauty,Skin Care,599,264.01,19
+P047,DBR-BEA-11,Personal Care Item 11,Beauty,Personal Care,349,157.57,19
+P048,DBR-BEA-12,Wellness Item 12,Beauty,Wellness,1199,554.24,19
+P049,DBR-ESS-01,Home Care Item 01,Essentials,Home Care,649,337.48,16
+P050,DBR-ESS-02,Pantry Item 02,Essentials,Pantry,649,345.92,16
+P051,DBR-ESS-03,Daily Use Item 03,Essentials,Daily Use,449,245.15,16
+P052,DBR-ESS-04,Home Care Item 04,Essentials,Home Care,199,111.24,16
+P053,DBR-ESS-05,Pantry Item 05,Essentials,Pantry,299,155.48,16
+P054,DBR-ESS-06,Daily Use Item 06,Essentials,Daily Use,299,159.37,16
+P055,DBR-ESS-07,Home Care Item 07,Essentials,Home Care,449,245.15,16
+P056,DBR-ESS-08,Pantry Item 08,Essentials,Pantry,449,250.99,16
+P057,DBR-ESS-09,Daily Use Item 09,Essentials,Daily Use,649,337.48,16
+P058,DBR-ESS-10,Home Care Item 10,Essentials,Home Care,649,345.92,16
+P059,DBR-ESS-11,Pantry Item 11,Essentials,Pantry,449,245.15,16
+P060,DBR-ESS-12,Daily Use Item 12,Essentials,Daily Use,649,362.79,16

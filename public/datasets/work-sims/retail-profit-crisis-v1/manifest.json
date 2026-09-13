@@ -1,0 +1,37 @@
+{
+  "datasetVersion": "retail-profit-crisis-v1",
+  "generatorSeed": 20260913,
+  "fictionalDataNotice": "DataBloom Retail Co. and all records are fictional and created exclusively for educational use.",
+  "files": [
+    {
+      "file": "orders.csv",
+      "rowCount": 1200,
+      "sha256": "56320856a90b26fdba1bc9b5a852c77711d0951a99eaf7c5e4a34917d415df6c"
+    },
+    {
+      "file": "order_items.csv",
+      "rowCount": 2600,
+      "sha256": "df9f90dc613eeb6604d400173c6ebc6ac0e9414dfa04283cae5d55d6801d0d47"
+    },
+    {
+      "file": "products.csv",
+      "rowCount": 60,
+      "sha256": "4dcf6ad9c018a1f58ce2388958661ce0be1e9078242a8945a1d2a99f6a147f42"
+    },
+    {
+      "file": "customers.csv",
+      "rowCount": 700,
+      "sha256": "0f89a25e61833098148bd06a19b7f8211798652bd8c476d0745e4884e0e6c9cd"
+    },
+    {
+      "file": "returns_refunds.csv",
+      "rowCount": 200,
+      "sha256": "2eba5d41041d50412a7d193bffa4a60c1b0c89955e7b63758baa45cbd34696e7"
+    },
+    {
+      "file": "shipments.csv",
+      "rowCount": 1150,
+      "sha256": "0299753f388a95f5ee2a4ece5ab7688c18b7e93fb5e556f31e389568165d4e37"
+    }
+  ]
+}

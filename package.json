@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:worksim-retail-profit-crisis": "node scripts/generate-retail-profit-crisis-dataset.mjs",
+    "verify:worksim-retail-profit-crisis": "node scripts/verify-retail-profit-crisis-dataset.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
