@@ -61,6 +61,7 @@ const navigationGroups: Array<{ label: string; items: NavItem[] }> = [
     label: "Practice and career",
     items: [
       { text: "Practice Lab", href: "/practice-lab", icon: FlaskConical },
+      { text: "WorkSims", href: "/work-sims", icon: BriefcaseBusiness },
       { text: "Interview Hub", href: "/interview-hub", icon: MessagesSquare },
       { text: "Career Hub", href: "/career-hub", icon: Compass },
       { text: "Resume Builder", href: "/resume-builder", icon: FileText },

@@ -1,27 +1,15 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import {
+  WORK_SIM_CATALOG,
+  type WorkSimId,
+  type WorkSimStageId,
+} from "@/lib/workSims/catalog";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-export const WORK_SIM_CATALOG = {
-  "retail-profit-crisis-v1": {
-    datasetVersion: "retail-profit-crisis-v1",
-    maximumScore: 100,
-    stages: {
-      brief: 0,
-      "data-audit": 10,
-      "kpi-diagnosis": 25,
-      "sql-diagnosis": 30,
-      "excel-analysis": 20,
-      "dashboard-plan": 10,
-      "executive-summary": 5,
-    },
-  },
-} as const;
-
-export type WorkSimId = keyof typeof WORK_SIM_CATALOG;
-export type WorkSimStageId = keyof (typeof WORK_SIM_CATALOG)[WorkSimId]["stages"];
+export { WORK_SIM_CATALOG, type WorkSimId, type WorkSimStageId };
 export type WorkSimStatus = "in_progress" | "completed" | "abandoned";
 export type WorkSimCompletionState = "not_started" | "in_progress" | "completed";
 

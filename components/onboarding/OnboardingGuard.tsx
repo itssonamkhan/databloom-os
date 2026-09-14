@@ -38,6 +38,9 @@ export default function OnboardingGuard({
   const isPublicLearnRoute =
     pathname === "/learn" || /^\/learn\/[^/]+$/.test(pathname);
   const isContentManager = pathname === "/content-manager";
+  const isPublicWorkSimRoute =
+    pathname === "/work-sims" ||
+    pathname === "/work-sims/retail-profit-crisis-v1";
   const isLegalPage =
     pathname === "/privacy" || pathname === "/terms" || pathname === "/contact";
 
@@ -51,6 +54,7 @@ export default function OnboardingGuard({
       !isPublicInterviewGuide &&
       !isPublicLearnRoute &&
       !isContentManager &&
+      !isPublicWorkSimRoute &&
       !isLegalPage
     ) {
       router.replace("/onboarding");
@@ -66,6 +70,7 @@ export default function OnboardingGuard({
     isPublicInterviewGuide,
     isPublicLearnRoute,
     isContentManager,
+    isPublicWorkSimRoute,
     isLegalPage,
     router,
   ]);
@@ -79,6 +84,7 @@ export default function OnboardingGuard({
       !isPublicInterviewGuide &&
       !isPublicLearnRoute &&
       !isContentManager &&
+      !isPublicWorkSimRoute &&
       !isLegalPage) ||
     (completed && isOnboarding)
   ) {

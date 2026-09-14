@@ -9,9 +9,25 @@ import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
+function getSafeNextPath(value: string | null) {
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
+    return "/dashboard";
+  }
+
+  try {
+    const destination = new URL(value, "https://www.databloomos.com");
+    return destination.origin === "https://www.databloomos.com"
+      ? `${destination.pathname}${destination.search}${destination.hash}`
+      : "/dashboard";
+  } catch {
+    return "/dashboard";
+  }
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const nextPath = getSafeNextPath(searchParams.get("next"));
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,7 +71,7 @@ function LoginForm() {
           email,
           password,
           options: {
-            emailRedirectTo: `${location.origin}/auth/callback`,
+            emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
           },
         });
 
@@ -73,7 +89,7 @@ function LoginForm() {
         if (error) {
           setErrorMessage(getSafeAuthMessage(error.message, "login"));
         } else {
-          router.push("/dashboard");
+          router.push(nextPath);
           router.refresh();
         }
       }
@@ -93,7 +109,7 @@ function LoginForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
         },
       });
 
