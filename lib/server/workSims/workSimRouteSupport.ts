@@ -161,3 +161,34 @@ export async function readEmptyJsonBody(request: Request) {
     return false;
   }
 }
+
+export async function readJsonObjectBody(request: Request, maximumBytes: number): Promise<unknown | null> {
+  const contentLength = Number(request.headers.get("content-length"));
+  if (!Number.isInteger(maximumBytes) || maximumBytes < 1 || (Number.isFinite(contentLength) && contentLength > maximumBytes)) return null;
+  const reader = request.body?.getReader();
+  if (!reader) return null;
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maximumBytes) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    const value: unknown = JSON.parse(new TextDecoder().decode(bytes));
+    return typeof value === "object" && value !== null && !Array.isArray(value) ? value : null;
+  } catch {
+    return null;
+  }
+}

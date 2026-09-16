@@ -201,22 +201,45 @@ export async function abandonAndRetryWorkSimAttempt(supabase: SupabaseClient, us
   return rpcAttempt(supabase, "abandon_and_start_work_sim_attempt", userId, simulationId);
 }
 
-/** The score and completion flag must come from a future server-only answer validator, never a browser payload. */
-export async function recordValidatedWorkSimStageResult(supabase: SupabaseClient, userId: string, input: { attemptId: string; simulationId: string; stageId: string; score: number; completed: boolean; hintCount: number }): Promise<{ stageResult: WorkSimStageResult; canonicalAttemptScore: number }> {
+/** Scores must come from a server-only answer validator, never a browser payload. */
+export async function submitValidatedWorkSimStageResult(supabase: SupabaseClient, userId: string, input: { attemptId: string; simulationId: string; stageId: string; score: number; hintCount: number }): Promise<{ stageResult: WorkSimStageResult; canonicalAttempt: { score: number; status: WorkSimStatus; completedAt: string | null } }> {
   assertUserId(userId);
   if (!UUID_PATTERN.test(input.attemptId)) throw new WorkSimProgressError();
   assertSimulationId(input.simulationId);
-  if (!isWorkSimStageId(input.simulationId, input.stageId) || integer(input.score, 0, WORK_SIM_CATALOG[input.simulationId].stages[input.stageId]) === null || typeof input.completed !== "boolean" || integer(input.hintCount, 0, 100) === null) throw new WorkSimProgressError();
-  const { data, error } = await supabase.rpc("record_work_sim_stage_result", {
-    p_user_id: userId, p_attempt_id: input.attemptId, p_stage_id: input.stageId,
-    p_score: input.score, p_completed: input.completed, p_hint_count: input.hintCount,
+  if (!isWorkSimStageId(input.simulationId, input.stageId) || integer(input.score, 0, WORK_SIM_CATALOG[input.simulationId].stages[input.stageId]) === null || integer(input.hintCount, 0, 100) === null) throw new WorkSimProgressError();
+  const { data, error } = await supabase.rpc("submit_ordered_work_sim_stage_result", {
+    p_user_id: userId,
+    p_attempt_id: input.attemptId,
+    p_simulation_id: input.simulationId,
+    p_stage_id: input.stageId,
+    p_score: input.score,
+    p_hint_count: input.hintCount,
   });
   const row = Array.isArray(data) ? data[0] : data;
   if (error || !isRecord(row)) throw new WorkSimProgressError();
-  const stageResult = parseStageResult(input.simulationId, { ...row, attempt_id: row.attempt_id ?? input.attemptId });
-  const canonicalAttemptScore = integer(row.canonical_attempt_score, 0, WORK_SIM_CATALOG[input.simulationId].maximumScore);
-  if (!stageResult || canonicalAttemptScore === null) throw new WorkSimProgressError();
-  return { stageResult, canonicalAttemptScore };
+  const stageResult = parseStageResult(input.simulationId, {
+    attempt_id: row.result_attempt_id,
+    stage_id: row.result_stage_id,
+    submission_count: row.result_submission_count,
+    best_score: row.result_best_score,
+    last_score: row.result_last_score,
+    maximum_score: row.result_maximum_score,
+    completion_state: row.result_completion_state,
+    hint_count: row.result_hint_count,
+    first_submitted_at: row.result_first_submitted_at,
+    last_submitted_at: row.result_last_submitted_at,
+  });
+  const score = integer(row.canonical_attempt_score, 0, WORK_SIM_CATALOG[input.simulationId].maximumScore);
+  const completedAt = row.canonical_attempt_completed_at === null ? null : timestamp(row.canonical_attempt_completed_at);
+  if (!stageResult || score === null || (row.canonical_attempt_status !== "in_progress" && row.canonical_attempt_status !== "completed") || (row.canonical_attempt_status === "completed" && !completedAt)) throw new WorkSimProgressError();
+  return {
+    stageResult,
+    canonicalAttempt: {
+      score,
+      status: row.canonical_attempt_status,
+      completedAt,
+    },
+  };
 }
 
 export async function completeWorkSimAttempt(supabase: SupabaseClient, userId: string, attemptId: string): Promise<WorkSimAttempt> {
