@@ -70,6 +70,9 @@ export default function WorkSimCatalogue() {
               {data.simulations.map(({ simulation, status }) => {
                 const authenticated = data.authenticated;
                 const action = status === "in_progress" ? "Continue" : status === "completed" ? "Review result" : "View assignment";
+                const destination = status === "in_progress"
+                  ? `/work-sims/${simulation.id}/attempt`
+                  : `/work-sims/${simulation.id}`;
                 return (
                   <article key={simulation.id} className="databloom-phase3-surface flex min-w-0 flex-col rounded-3xl border border-[var(--databloom-border)] p-6 shadow-md sm:p-7">
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -99,7 +102,7 @@ export default function WorkSimCatalogue() {
                     </div>
                     <div className="mt-7">
                       {authenticated ? (
-                        <Link href={`/work-sims/${simulation.id}`} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">
+                        <Link href={destination} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">
                           {action} <ArrowRight size={18} aria-hidden="true" />
                         </Link>
                       ) : (

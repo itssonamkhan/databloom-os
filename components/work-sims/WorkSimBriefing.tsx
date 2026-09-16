@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Download, LoaderCircle, LockKeyhole, PlayCircle, ShieldCheck } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
@@ -17,12 +18,14 @@ type Progress = {
 type DetailResponse = { authenticated: boolean; simulation: WorkSimPublicCatalogueItem; progress: Progress | null };
 
 const simulationId = "retail-profit-crisis-v1";
+const workspacePath = `/work-sims/${simulationId}/attempt`;
 
 function loginHref() {
   return `/login?next=${encodeURIComponent(`/work-sims/${simulationId}`)}`;
 }
 
 export default function WorkSimBriefing() {
+  const router = useRouter();
   const fallback = getWorkSimCatalogueItem(simulationId)!;
   const [detail, setDetail] = useState<DetailResponse | null>(null);
   const [error, setError] = useState("");
@@ -62,7 +65,8 @@ export default function WorkSimBriefing() {
         body: "{}",
       });
       if (!response.ok) throw new Error("Unavailable");
-      await load();
+      router.push(workspacePath);
+      router.refresh();
     } catch {
       setError("Your WorkSim attempt could not be started. Please try again.");
     } finally {
@@ -133,9 +137,8 @@ export default function WorkSimBriefing() {
             const state = isComplete ? "Completed" : isCurrent ? "Current stage" : progress?.currentAttempt ? "Locked" : "Available after starting";
             return <li key={stage.id} className="flex min-w-0 items-start gap-4 rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-glass)] p-4"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-[var(--databloom-accent-soft)] text-sm font-black">{index + 1}</span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center justify-between gap-2"><h3 className="font-black">{stage.title}</h3><span className="text-sm font-bold text-[var(--databloom-text-secondary)]">{state} · {stage.maximumScore} points</span></div><p className="mt-1 leading-6 text-[var(--databloom-text-secondary)]">{stage.description}</p></div></li>;
           })}</ol>
-          {progress?.currentAttempt ? <p className="mt-6 rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] p-4 text-sm font-semibold leading-6">Interactive submissions will be added in the next WorkSim task. Your canonical attempt is ready; no scores or completion can be changed here yet.</p> : null}
           <div className="mt-7">
-            {detail === null ? <p className="inline-flex items-center gap-2 font-bold text-[var(--databloom-text-secondary)]"><LoaderCircle className="animate-spin" size={18} aria-hidden="true" /> Loading assignment status…</p> : !detail.authenticated ? <Link href={loginHref()} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]"><LockKeyhole size={18} aria-hidden="true" /> Sign in to start</Link> : progress?.currentAttempt ? <button type="button" disabled className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-5 py-3 font-black text-[var(--databloom-text-secondary)] opacity-80">Attempt in progress <ArrowRight size={18} aria-hidden="true" /></button> : progress?.bestCompletedAttempt ? <p className="font-bold text-[var(--databloom-text-secondary)]">Your completed result is ready to review. A new attempt will be available with the next interactive WorkSim task.</p> : <button type="button" onClick={() => void startOrResume()} disabled={starting} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)] disabled:cursor-not-allowed disabled:opacity-60">{starting ? "Starting…" : "Start assignment"} <PlayCircle size={18} aria-hidden="true" /></button>}
+            {detail === null ? <p className="inline-flex items-center gap-2 font-bold text-[var(--databloom-text-secondary)]"><LoaderCircle className="animate-spin" size={18} aria-hidden="true" /> Loading assignment status…</p> : !detail.authenticated ? <Link href={loginHref()} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]"><LockKeyhole size={18} aria-hidden="true" /> Sign in to start</Link> : progress?.currentAttempt ? <Link href={workspacePath} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">Continue assignment <ArrowRight size={18} aria-hidden="true" /></Link> : progress?.bestCompletedAttempt ? <Link href={workspacePath} className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-5 py-3 font-black text-[var(--databloom-text-primary)] shadow-sm transition hover:bg-[var(--databloom-accent-soft)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">Review completion <ArrowRight size={18} aria-hidden="true" /></Link> : <button type="button" onClick={() => void startOrResume()} disabled={starting} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)] disabled:cursor-not-allowed disabled:opacity-60">{starting ? "Starting…" : "Start assignment"} <PlayCircle size={18} aria-hidden="true" /></button>}
           </div>
         </section>
       </div>
