@@ -7,6 +7,7 @@ import {
   isWorkSimId,
   WORK_SIM_PUBLIC_CATALOGUE,
   type WorkSimId,
+  type WorkSimResultSummary,
 } from "@/lib/workSims/catalog";
 import {
   getCurrentAndBestWorkSimProgress,
@@ -32,7 +33,28 @@ export async function getWorkSimViewer(): Promise<WorkSimViewer> {
   }
 }
 
-function safeProgress(progress: WorkSimProgress) {
+export function getSafeWorkSimResult(
+  progress: WorkSimProgress,
+): WorkSimResultSummary {
+  const status = progress.currentAttempt
+    ? "in_progress"
+    : progress.latestCompletedAttempt
+      ? "completed"
+      : "not_started";
+
+  return {
+    status,
+    latestScore: progress.currentAttempt?.score
+      ?? progress.latestCompletedAttempt?.score
+      ?? null,
+    bestScore: progress.bestCompletedAttempt?.score ?? null,
+    maximumScore: progress.definition.maximumScore,
+    attemptCount: progress.attemptCount,
+    completedAt: progress.latestCompletedAttempt?.completedAt ?? null,
+  };
+}
+
+export function getSafeWorkSimProgress(progress: WorkSimProgress) {
   const currentAttempt = progress.currentAttempt
     ? {
         attemptNumber: progress.currentAttempt.attemptNumber,
@@ -53,6 +75,7 @@ function safeProgress(progress: WorkSimProgress) {
   return {
     currentAttempt,
     bestCompletedAttempt,
+    result: getSafeWorkSimResult(progress),
     completedStageIds: progress.stageResults
       .filter((stage) => stage.completionState === "completed")
       .map((stage) => stage.stageId),
@@ -80,7 +103,7 @@ export async function getSafeWorkSimDetail(
     userId,
     simulationId,
   );
-  return safeProgress(progress);
+  return getSafeWorkSimProgress(progress);
 }
 
 export async function getSafeWorkSimCatalogue(userId: string | null) {
@@ -88,6 +111,7 @@ export async function getSafeWorkSimCatalogue(userId: string | null) {
     return WORK_SIM_PUBLIC_CATALOGUE.map((simulation) => ({
       simulation,
       status: "not_started" as const,
+      result: null,
     }));
   }
 
@@ -97,11 +121,8 @@ export async function getSafeWorkSimCatalogue(userId: string | null) {
       if (!detail) throw new Error("WorkSim service unavailable.");
       return {
         simulation,
-        status: detail.currentAttempt
-          ? ("in_progress" as const)
-          : detail.bestCompletedAttempt
-            ? ("completed" as const)
-            : ("not_started" as const),
+        status: detail.result.status,
+        result: detail.result,
       };
     }),
   );

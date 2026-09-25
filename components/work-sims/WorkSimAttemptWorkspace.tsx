@@ -16,9 +16,10 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
+import WorkSimRetryButton from "@/components/work-sims/WorkSimRetryButton";
 import {
   getWorkSimCatalogueItem,
-  type WorkSimPublicCatalogueItem,
+  type WorkSimResultSummary,
 } from "@/lib/workSims/catalog";
 import type { RetailProfitCrisisAssignment } from "@/lib/workSims/retailProfitCrisisAssignments";
 
@@ -37,16 +38,7 @@ type CurrentStageResponse = {
   attempt: Attempt;
 };
 
-type WorkSimProgress = {
-  currentAttempt: Attempt | null;
-  bestCompletedAttempt: (Attempt & { status: string }) | null;
-};
-
-type WorkSimDetailResponse = {
-  authenticated: boolean;
-  simulation: WorkSimPublicCatalogueItem;
-  progress: WorkSimProgress | null;
-};
+type WorkSimResultResponse = { result: WorkSimResultSummary };
 
 type SubmissionResponse = {
   stage: {
@@ -59,11 +51,7 @@ type SubmissionResponse = {
   feedback: { message: string };
 };
 
-type Completion = {
-  attemptNumber: number;
-  score: number;
-  maximumScore: number;
-};
+type Completion = WorkSimResultSummary;
 
 type SubmissionNotice = {
   stageTitle: string;
@@ -114,6 +102,17 @@ function numericAnswerValue(value: unknown): number | "" {
   return typeof value === "number" ? value : "";
 }
 
+function completionDateLabel(value: string | null) {
+  if (!value) return "Completion date unavailable";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Completion date unavailable";
+  return date.toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export default function WorkSimAttemptWorkspace() {
   const router = useRouter();
   const simulation = getWorkSimCatalogueItem(simulationId)!;
@@ -149,20 +148,21 @@ export default function WorkSimAttemptWorkspace() {
       }
 
       if (response.status === 404) {
-        const detailResponse = await fetch(`/api/work-sims/${simulationId}`, {
+        const resultResponse = await fetch(`/api/work-sims/${simulationId}/result`, {
           cache: "no-store",
           credentials: "same-origin",
         });
-        const detailPayload = await readJson(detailResponse);
-        if (detailResponse.status === 401 || (isRecord(detailPayload) && detailPayload.authenticated === false)) {
+        const resultPayload = await readJson(resultResponse);
+        if (resultResponse.status === 401) {
           router.replace(loginHref());
           return;
         }
-        if (detailResponse.ok && isRecord(detailPayload) && isRecord(detailPayload.progress)) {
-          const detail = detailPayload as unknown as WorkSimDetailResponse;
-          if (detail.progress?.bestCompletedAttempt) {
+        if (resultResponse.ok && isRecord(resultPayload) && isRecord(resultPayload.result)) {
+          const result = resultPayload as unknown as WorkSimResultResponse;
+          if (result.result.status === "completed") {
             setCurrent(null);
-            setCompletion(detail.progress.bestCompletedAttempt);
+            setAnswers({});
+            setCompletion(result.result);
             return;
           }
         }
@@ -248,17 +248,7 @@ export default function WorkSimAttemptWorkspace() {
         message: result.feedback.message,
       });
 
-      if (result.attempt.status === "completed") {
-        setCurrent(null);
-        setAnswers({});
-        setCompletion({
-          attemptNumber: current.attempt.attemptNumber,
-          score: result.attempt.score,
-          maximumScore: result.attempt.maximumScore,
-        });
-      } else {
-        await loadCurrentStage();
-      }
+      await loadCurrentStage();
     } catch {
       setError("Your stage could not be submitted. Your responses are still here, so you can try again.");
     } finally {
@@ -287,7 +277,7 @@ export default function WorkSimAttemptWorkspace() {
 
         {loading ? <section className="databloom-phase3-surface flex min-h-56 items-center justify-center rounded-3xl border border-[var(--databloom-border)] p-6 shadow-sm" aria-live="polite"><LoaderCircle className="animate-spin text-[var(--databloom-text-accent)]" aria-hidden="true" /><span className="ml-3 font-bold text-[var(--databloom-text-secondary)]">Loading your assignment…</span></section> : null}
 
-        {completion ? <section className="databloom-phase3-surface rounded-3xl border border-[var(--databloom-border)] p-6 shadow-sm sm:p-8" aria-labelledby="work-sim-complete"><div className="flex flex-wrap items-start gap-4"><span className="grid size-12 place-items-center rounded-full bg-[var(--databloom-accent-soft)] text-[var(--databloom-text-accent)]"><Trophy aria-hidden="true" /></span><div className="min-w-0"><p className="text-sm font-black uppercase tracking-[0.18em] text-[var(--databloom-text-accent)]">Assignment complete</p><h2 id="work-sim-complete" className="mt-1 text-3xl font-black">You completed the WorkSim</h2><p className="mt-3 max-w-2xl leading-7 text-[var(--databloom-text-secondary)]">Attempt {completion.attemptNumber} finished with a canonical score of {completion.score}/{completion.maximumScore}. Keep your findings and recommendations as evidence of your analysis practice.</p></div></div><Link href={briefingPath} className="mt-6 inline-flex min-h-11 items-center rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">Return to briefing</Link></section> : null}
+        {completion ? <section className="databloom-phase3-surface rounded-3xl border border-[var(--databloom-border)] p-6 shadow-sm sm:p-8" aria-labelledby="work-sim-complete"><div className="flex flex-wrap items-start gap-4"><span className="grid size-12 place-items-center rounded-full bg-[var(--databloom-accent-soft)] text-[var(--databloom-text-accent)]"><Trophy aria-hidden="true" /></span><div className="min-w-0"><p className="text-sm font-black uppercase tracking-[0.18em] text-[var(--databloom-text-accent)]">Assignment complete</p><h2 id="work-sim-complete" className="mt-1 text-3xl font-black">You completed the WorkSim</h2><p className="mt-3 max-w-2xl leading-7 text-[var(--databloom-text-secondary)]">Your latest completed score is {completion.latestScore ?? 0}/{completion.maximumScore}. Your best score is {completion.bestScore ?? 0}/{completion.maximumScore}. Completed {completion.attemptCount === 1 ? "across 1 attempt" : `across ${completion.attemptCount} attempts`} on {completionDateLabel(completion.completedAt)}.</p></div></div><div className="mt-6 flex flex-wrap items-start gap-3"><Link href="/work-sims" className="inline-flex min-h-11 items-center rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">Return to WorkSims</Link><WorkSimRetryButton simulationId={simulationId} workspacePath={workspacePath} onStarted={() => { setCompletion(null); setNotice(null); void loadCurrentStage(); }} /></div></section> : null}
 
         {current ? <section className="grid min-w-0 gap-6 xl:grid-cols-[0.7fr_1.3fr]">
           <aside className="databloom-phase3-surface min-w-0 rounded-3xl border border-[var(--databloom-border)] p-5 shadow-sm sm:p-6" aria-label="Assignment progress">

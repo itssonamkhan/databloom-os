@@ -5,12 +5,19 @@ import { useEffect, useState } from "react";
 import { ArrowRight, BriefcaseBusiness, CircleCheck, Clock3, LoaderCircle, LockKeyhole, Sparkles } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
-import type { WorkSimPublicCatalogueItem } from "@/lib/workSims/catalog";
+import type {
+  WorkSimPublicCatalogueItem,
+  WorkSimResultSummary,
+} from "@/lib/workSims/catalog";
 
 type WorkSimStatus = "not_started" | "in_progress" | "completed";
 type CatalogueResponse = {
   authenticated: boolean;
-  simulations: Array<{ simulation: WorkSimPublicCatalogueItem; status: WorkSimStatus }>;
+  simulations: Array<{
+    simulation: WorkSimPublicCatalogueItem;
+    status: WorkSimStatus;
+    result: WorkSimResultSummary | null;
+  }>;
 };
 
 function statusLabel(status: WorkSimStatus) {
@@ -67,12 +74,15 @@ export default function WorkSimCatalogue() {
               <h2 id="available-work-sims" className="mt-1 text-3xl font-black">Learn by doing</h2>
             </div>
             <div className="grid gap-6 lg:grid-cols-2">
-              {data.simulations.map(({ simulation, status }) => {
+              {data.simulations.map(({ simulation, status, result }) => {
                 const authenticated = data.authenticated;
                 const action = status === "in_progress" ? "Continue" : status === "completed" ? "Review result" : "View assignment";
                 const destination = status === "in_progress"
                   ? `/work-sims/${simulation.id}/attempt`
                   : `/work-sims/${simulation.id}`;
+                const bestScore = status === "completed"
+                  ? result?.bestScore ?? null
+                  : null;
                 return (
                   <article key={simulation.id} className="databloom-phase3-surface flex min-w-0 flex-col rounded-3xl border border-[var(--databloom-border)] p-6 shadow-md sm:p-7">
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -97,6 +107,11 @@ export default function WorkSimCatalogue() {
                       </div>
                     </dl>
                     <p className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--databloom-text-secondary)]"><Clock3 size={16} aria-hidden="true" /> Estimated time: {simulation.estimatedTime}</p>
+                    {bestScore !== null ? (
+                      <p className="mt-3 text-sm font-black text-[var(--databloom-text-accent)]">
+                        Best score: {bestScore}/{result?.maximumScore ?? simulation.maximumScore}
+                      </p>
+                    ) : null}
                     <div className="mt-5 flex flex-wrap gap-2">
                       {simulation.skills.map((skill) => <span key={skill} className="rounded-full border border-[var(--databloom-border)] bg-[var(--databloom-accent-soft)] px-3 py-1.5 text-sm font-bold">{skill}</span>)}
                     </div>

@@ -60,6 +60,8 @@ export type WorkSimProgress = {
   definition: WorkSimDefinition;
   currentAttempt: WorkSimAttempt | null;
   bestCompletedAttempt: WorkSimAttempt | null;
+  latestCompletedAttempt: WorkSimAttempt | null;
+  attemptCount: number;
   stageResults: WorkSimStageResult[];
 };
 
@@ -171,14 +173,27 @@ export async function getCurrentAndBestWorkSimProgress(supabase: SupabaseClient,
   const attempts = attemptsResult.data.map(parseAttempt).filter((attempt): attempt is WorkSimAttempt => Boolean(attempt));
   if (attempts.length !== attemptsResult.data.length) throw new WorkSimProgressError();
   const currentAttempt = attempts.find((attempt) => attempt.status === "in_progress") ?? null;
-  const bestCompletedAttempt = attempts.filter((attempt) => attempt.status === "completed").sort((left, right) => right.score - left.score || right.attemptNumber - left.attemptNumber)[0] ?? null;
+  const completedAttempts = attempts.filter((attempt) => attempt.status === "completed");
+  const bestCompletedAttempt = completedAttempts
+    .slice()
+    .sort((left, right) => right.score - left.score || right.attemptNumber - left.attemptNumber)[0] ?? null;
+  const latestCompletedAttempt = completedAttempts
+    .slice()
+    .sort((left, right) => right.attemptNumber - left.attemptNumber)[0] ?? null;
   const stageResultsResult = currentAttempt
     ? await supabase.from("work_sim_stage_results").select("attempt_id, stage_id, submission_count, best_score, last_score, maximum_score, completion_state, hint_count, first_submitted_at, last_submitted_at").eq("attempt_id", currentAttempt.id).order("stage_id", { ascending: true })
     : { data: [], error: null };
   if (stageResultsResult.error || !Array.isArray(stageResultsResult.data)) throw new WorkSimProgressError();
   const stageResults = stageResultsResult.data.map((row) => parseStageResult(definition.simulationId, row)).filter((result): result is WorkSimStageResult => Boolean(result));
   if (stageResults.length !== stageResultsResult.data.length) throw new WorkSimProgressError();
-  return { definition, currentAttempt, bestCompletedAttempt, stageResults };
+  return {
+    definition,
+    currentAttempt,
+    bestCompletedAttempt,
+    latestCompletedAttempt,
+    attemptCount: attempts.length,
+    stageResults,
+  };
 }
 
 async function rpcAttempt(supabase: SupabaseClient, functionName: "start_or_resume_work_sim_attempt" | "abandon_and_start_work_sim_attempt", userId: string, simulationId: WorkSimId): Promise<WorkSimAttempt> {

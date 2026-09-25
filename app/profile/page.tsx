@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import PersonalizationSettings from "@/components/profile/PersonalizationSettings";
+import WorkSimResults from "@/components/profile/WorkSimResults";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProgress } from "@/context/ProgressContext";
 import { getFavorites } from "@/lib/favorites";
@@ -399,6 +400,8 @@ export default function ProfilePage() {
             <ProgressLink href="/planner" emoji="🗓️" label="Planner" value={`${plannerSummary.completed} of ${plannerSummary.total} complete · ${plannerSummary.progressPercentage}%`} background="from-blue-50 to-purple-50" />
           </div>
         </section>
+
+        <WorkSimResults />
 
         <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="relative overflow-hidden rounded-[2rem] border border-white/90 bg-white/70 p-6 shadow-[0_20px_55px_rgba(76,29,149,0.10)] backdrop-blur-xl sm:p-7">

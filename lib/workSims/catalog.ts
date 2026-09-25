@@ -40,6 +40,22 @@ export type WorkSimPublicCatalogueItem = {
   kpis: readonly { name: string; definition: string }[];
 };
 
+/**
+ * This is the only progress shape that may cross a WorkSim API boundary.
+ * It deliberately excludes attempt IDs, learner IDs, stage answers, and
+ * server-side scoring details.
+ */
+export type WorkSimResultStatus = "not_started" | "in_progress" | "completed";
+
+export type WorkSimResultSummary = {
+  status: WorkSimResultStatus;
+  latestScore: number | null;
+  bestScore: number | null;
+  maximumScore: number;
+  attemptCount: number;
+  completedAt: string | null;
+};
+
 const RETAIL_STAGES: readonly WorkSimPublicStage[] = [
   { id: "brief", title: "Manager brief", description: "Read the assignment, context, and expected business outcome.", maximumScore: 0 },
   { id: "data-audit", title: "Data audit", description: "Check the tables, relationships, and intentional data-quality issues.", maximumScore: 10 },

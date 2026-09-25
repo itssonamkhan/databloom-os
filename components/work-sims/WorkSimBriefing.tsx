@@ -6,12 +6,17 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Download, LoaderCircle, LockKeyhole, PlayCircle, ShieldCheck } from "lucide-react";
 
 import AppLayout from "@/components/layout/AppLayout";
-import { getWorkSimCatalogueItem, type WorkSimPublicCatalogueItem } from "@/lib/workSims/catalog";
+import {
+  getWorkSimCatalogueItem,
+  type WorkSimPublicCatalogueItem,
+  type WorkSimResultSummary,
+} from "@/lib/workSims/catalog";
 
 type StageResult = { stageId: string; completionState: "not_started" | "in_progress" | "completed"; bestScore: number; maximumScore: number };
 type Progress = {
   currentAttempt: { attemptNumber: number; status: string; score: number; maximumScore: number } | null;
   bestCompletedAttempt: { attemptNumber: number; status: string; score: number; maximumScore: number } | null;
+  result: WorkSimResultSummary;
   completedStageIds: string[];
   stageResults: StageResult[];
 };
@@ -51,7 +56,14 @@ export default function WorkSimBriefing() {
 
   const simulation = detail?.simulation ?? fallback;
   const progress = detail?.progress;
-  const completed = useMemo(() => new Set(progress?.completedStageIds ?? []), [progress?.completedStageIds]);
+  const completed = useMemo(
+    () => new Set(
+      progress?.result.status === "completed"
+        ? simulation.stages.map((stage) => stage.id)
+        : progress?.completedStageIds ?? [],
+    ),
+    [progress?.completedStageIds, progress?.result.status, simulation.stages],
+  );
   const firstIncompleteIndex = simulation.stages.findIndex((stage) => !completed.has(stage.id));
 
   async function startOrResume() {
@@ -130,7 +142,7 @@ export default function WorkSimBriefing() {
         </section>
 
         <section className="databloom-phase3-surface rounded-3xl border border-[var(--databloom-border)] p-6 shadow-sm sm:p-8" aria-labelledby="assignment-stages">
-          <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-black uppercase tracking-[0.18em] text-[var(--databloom-text-accent)]">Assignment roadmap</p><h2 id="assignment-stages" className="mt-1 text-3xl font-black">Seven stages</h2></div>{progress?.currentAttempt ? <p className="rounded-full border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-4 py-2 text-sm font-black">Attempt {progress.currentAttempt.attemptNumber} · {progress.currentAttempt.score}/{progress.currentAttempt.maximumScore} points</p> : progress?.bestCompletedAttempt ? <p className="rounded-full border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-4 py-2 text-sm font-black">Completed attempt {progress.bestCompletedAttempt.attemptNumber} · {progress.bestCompletedAttempt.score}/{progress.bestCompletedAttempt.maximumScore}</p> : null}</div>
+          <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-black uppercase tracking-[0.18em] text-[var(--databloom-text-accent)]">Assignment roadmap</p><h2 id="assignment-stages" className="mt-1 text-3xl font-black">Seven stages</h2></div>{progress?.currentAttempt ? <p className="rounded-full border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-4 py-2 text-sm font-black">In progress · Attempt {progress.currentAttempt.attemptNumber} · {progress.currentAttempt.score}/{progress.currentAttempt.maximumScore} points</p> : progress?.result.status === "completed" && progress.result.bestScore !== null ? <p className="rounded-full border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-4 py-2 text-sm font-black">Completed · Best score {progress.result.bestScore}/{progress.result.maximumScore}</p> : detail?.authenticated ? <p className="rounded-full border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-4 py-2 text-sm font-black">Not started</p> : null}</div>
           <ol className="mt-6 space-y-3">{simulation.stages.map((stage, index) => {
             const isComplete = completed.has(stage.id);
             const isCurrent = Boolean(progress?.currentAttempt) && index === firstIncompleteIndex;
@@ -138,7 +150,7 @@ export default function WorkSimBriefing() {
             return <li key={stage.id} className="flex min-w-0 items-start gap-4 rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-glass)] p-4"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-[var(--databloom-accent-soft)] text-sm font-black">{index + 1}</span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center justify-between gap-2"><h3 className="font-black">{stage.title}</h3><span className="text-sm font-bold text-[var(--databloom-text-secondary)]">{state} · {stage.maximumScore} points</span></div><p className="mt-1 leading-6 text-[var(--databloom-text-secondary)]">{stage.description}</p></div></li>;
           })}</ol>
           <div className="mt-7">
-            {detail === null ? <p className="inline-flex items-center gap-2 font-bold text-[var(--databloom-text-secondary)]"><LoaderCircle className="animate-spin" size={18} aria-hidden="true" /> Loading assignment status…</p> : !detail.authenticated ? <Link href={loginHref()} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]"><LockKeyhole size={18} aria-hidden="true" /> Sign in to start</Link> : progress?.currentAttempt ? <Link href={workspacePath} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">Continue assignment <ArrowRight size={18} aria-hidden="true" /></Link> : progress?.bestCompletedAttempt ? <Link href={workspacePath} className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-5 py-3 font-black text-[var(--databloom-text-primary)] shadow-sm transition hover:bg-[var(--databloom-accent-soft)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">Review completion <ArrowRight size={18} aria-hidden="true" /></Link> : <button type="button" onClick={() => void startOrResume()} disabled={starting} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)] disabled:cursor-not-allowed disabled:opacity-60">{starting ? "Starting…" : "Start assignment"} <PlayCircle size={18} aria-hidden="true" /></button>}
+            {detail === null ? <p className="inline-flex items-center gap-2 font-bold text-[var(--databloom-text-secondary)]"><LoaderCircle className="animate-spin" size={18} aria-hidden="true" /> Loading assignment status…</p> : !detail.authenticated ? <Link href={loginHref()} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]"><LockKeyhole size={18} aria-hidden="true" /> Sign in to start</Link> : progress?.currentAttempt ? <Link href={workspacePath} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">Continue assignment <ArrowRight size={18} aria-hidden="true" /></Link> : progress?.result.status === "completed" ? <Link href={workspacePath} className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-[var(--databloom-border)] bg-[var(--databloom-glass)] px-5 py-3 font-black text-[var(--databloom-text-primary)] shadow-sm transition hover:bg-[var(--databloom-accent-soft)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)]">Review completion <ArrowRight size={18} aria-hidden="true" /></Link> : <button type="button" onClick={() => void startOrResume()} disabled={starting} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[var(--databloom-action)] px-5 py-3 font-black text-[var(--databloom-text-on-accent)] shadow-sm transition hover:bg-[var(--databloom-action-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--databloom-focus)] disabled:cursor-not-allowed disabled:opacity-60">{starting ? "Starting…" : "Start assignment"} <PlayCircle size={18} aria-hidden="true" /></button>}
           </div>
         </section>
       </div>
