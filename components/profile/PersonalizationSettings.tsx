@@ -259,7 +259,7 @@ export default function PersonalizationSettings() {
   }
 
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-white/90 bg-gradient-to-br from-white/90 via-pink-50/70 to-purple-50/80 p-5 shadow-[0_18px_45px_rgba(126,34,206,0.1)] sm:p-7">
+    <section className="databloom-phase3-gradient-surface relative overflow-hidden rounded-[2rem] border border-white/90 bg-gradient-to-br from-white/90 via-pink-50/70 to-purple-50/80 p-5 shadow-[0_18px_45px_rgba(126,34,206,0.1)] sm:p-7">
       <div
         aria-hidden="true"
         className="absolute -right-12 -top-14 size-44 rounded-full bg-pink-200/35 blur-3xl"
@@ -724,6 +724,7 @@ function SelectionCard({
       onClick={onClick}
       aria-label={ariaLabel}
       aria-pressed={selected}
+      data-databloom-profile-selection-card="true"
       className={`relative rounded-[1.5rem] border p-4 text-left transition hover:-translate-y-1 hover:shadow-lg ${
         selected
           ? "border-purple-500 bg-gradient-to-br from-purple-50 via-pink-50 to-white ring-4 ring-purple-100 shadow-md"

@@ -442,7 +442,7 @@ html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
 }
 
 html[data-databloom-theme]:not([data-databloom-theme="Sakura"])
-  :where(button, a):where([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]):where(
+  :where(button, a):not([data-databloom-profile-selection-card]):where([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]):where(
     [class~="bg-purple-500"],
     [class~="bg-purple-600"],
     [class~="bg-purple-700"],
