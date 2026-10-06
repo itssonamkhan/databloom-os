@@ -6,6 +6,7 @@ import OnboardingGuard from "@/components/onboarding/OnboardingGuard";
 import AnalyticsHistoryTracker from "@/components/analytics/AnalyticsHistoryTracker";
 import AnonymousVisitorTracker from "@/components/analytics/AnonymousVisitorTracker";
 import { CloudProgressProvider } from "@/context/CloudProgressContext";
+import SiteFooter from "@/components/layout/SiteFooter";
 import {
   DATABLOOM_THEME_ATTRIBUTE,
   defaultUserPreferences,
@@ -83,6 +84,8 @@ export default function RootLayout({
 
           </ProgressProvider>
         </CloudProgressProvider>
+
+        <SiteFooter />
 
       </body>
 

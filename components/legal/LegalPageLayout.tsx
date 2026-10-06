@@ -65,15 +65,9 @@ export function LegalPageLayout({
           </div>
         </article>
 
-        <footer className="flex flex-wrap items-center justify-between gap-4 pb-4 pt-8 text-sm text-[var(--databloom-text-secondary)]">
-          <Link
-            href="/"
-            className="font-black text-[var(--databloom-text-accent)] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]"
-          >
-            Return to DataBloom OS
-          </Link>
-          <span>Effective 5 September 2026</span>
-        </footer>
+        <p className="pb-4 pt-8 text-sm text-[var(--databloom-text-secondary)]">
+          Effective 5 September 2026
+        </p>
       </div>
     </main>
   );

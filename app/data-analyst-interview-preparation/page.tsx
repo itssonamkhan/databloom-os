@@ -260,9 +260,10 @@ export default function DataAnalystInterviewPreparationPage() {
           </Link>
         </section>
 
-        <footer className="pb-4 pt-8 text-center text-sm text-slate-600">
+        <p className="pb-4 pt-8 text-center text-sm text-[var(--databloom-text-secondary)]">
           A practical starting point for learning, practicing, and explaining your work.
-        </footer>
+        </p>
+
       </div>
     </main>
   );

@@ -113,14 +113,15 @@ export default async function LearnPage() {
           )}
         </section>
 
-        <footer className="pb-4 pt-8 text-center text-sm text-[var(--databloom-text-secondary)]">
+        <p className="pb-4 pt-8 text-center text-sm text-[var(--databloom-text-secondary)]">
           <Link
             href="/"
-            className="font-black text-[var(--databloom-text-accent)] underline-offset-4 hover:underline"
+            className="font-black text-[var(--databloom-text-accent)] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--databloom-focus)]"
           >
             Return to DataBloom OS
           </Link>
-        </footer>
+        </p>
+
       </div>
     </main>
   );
