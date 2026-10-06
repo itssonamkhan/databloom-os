@@ -13,7 +13,7 @@ export default function SiteFooter() {
         <div className="space-y-1 text-center sm:text-left">
           <p>© 2026 DataBloom OS. All rights reserved.</p>
           <p className="text-xs leading-5 text-[var(--databloom-text-muted)]">
-            DataBloom OS content, design, and branding are protected by applicable intellectual-property laws.
+            Original DataBloom OS content, design, and branding are protected by applicable intellectual-property laws.
           </p>
         </div>
 

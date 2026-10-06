@@ -78,7 +78,7 @@ export default function TermsPage() {
 
       <LegalSection title="Content and intellectual property">
         <p>
-          DataBloom&apos;s product content, design, and branding are protected by applicable
+          Original DataBloom OS content, design, and branding are protected by applicable
           intellectual-property laws. You retain ownership of original notes and content you
           create in the service. Do not copy, resell, or redistribute DataBloom materials in
           a way that violates applicable law or these terms.
