@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ProgressProvider } from "@/context/ProgressContext";
-import { StudyMusicProvider } from "@/context/StudyMusicContext";
 import OnboardingGuard from "@/components/onboarding/OnboardingGuard";
 import AnalyticsHistoryTracker from "@/components/analytics/AnalyticsHistoryTracker";
 import AnonymousVisitorTracker from "@/components/analytics/AnonymousVisitorTracker";
@@ -76,11 +75,9 @@ export default function RootLayout({
 
           <AnalyticsHistoryTracker />
 
-          <StudyMusicProvider>
-            <OnboardingGuard>
-              {children}
-            </OnboardingGuard>
-          </StudyMusicProvider>
+          <OnboardingGuard>
+            {children}
+          </OnboardingGuard>
 
           </ProgressProvider>
         </CloudProgressProvider>
